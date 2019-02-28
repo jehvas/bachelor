@@ -4,7 +4,6 @@ from collections import Counter
 
 from pip._vendor.distlib.compat import raw_input
 
-
 def load(svm_file):
     with open(svm_file, "rb") as fp:
         svm = c.load(fp)
@@ -34,14 +33,13 @@ def make_dict():
     return dict.most_common(3000)
 
 
-d = make_dict()
-
-
+d = load("spamdict.dict")
+#make_dict()
 
 while True:
     features = []
-    inp = raw_input(">").split()
-    if inp[0] == "exit":
+    inp = raw_input(">").lower().split()
+    if len(inp) > 0 and inp[0] == "exit":
         break
     for word in d:
         features.append(inp.count(word[0]))
