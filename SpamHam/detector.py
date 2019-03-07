@@ -1,47 +1,26 @@
-import pickle as c
 import os
-from collections import Counter
+import utility
+from SVM.spam import process_single_mail, sum_vectors, root_mean_square, create_sentence_vector
 
-from pip._vendor.distlib.compat import raw_input
-
-def load(svm_file):
-    with open(svm_file, "rb") as fp:
-        svm = c.load(fp)
-    return svm
+svm = utility.load("text-classifier.mdl")
 
 
-svm = load("text-classifier.mdl")
 
-
-def make_dict():
-    direc = "emails/"
-    files = os.listdir(direc)
-
-    emails = [direc + email for email in files]
-    words = []
-    for email in emails:
-        f = open(email, encoding="latin-1")
+direc = "testerino/"
+files = os.listdir(direc)
+emails = [direc + email for email in files]
+email_data = []
+for file in emails:
+    print(file)
+    with open(file, encoding="latin-1") as f:
         text = f.read()
-        words += text.split(" ")
+        processed_email = process_single_mail(text)
+        if len(processed_email) > 0:
+            email_data.append(processed_email)
 
-    for i in range(len(words)):
-        if not words[i].isalpha():
-            words[i] = ""
-
-    dict = Counter(words)
-    del dict[""]
-    return dict.most_common(3000)
-
-
-d = load("spamdict.dict")
-#make_dict()
-
-while True:
-    features = []
-    inp = raw_input(">").lower().split()
-    if len(inp) > 0 and inp[0] == "exit":
-        break
-    for word in d:
-        features.append(inp.count(word[0]))
-    res = svm.predict([features])
-    print(["Ham", "Spam!"][res[0]])
+sum_vectors_array = sum_vectors(email_data)
+rms_array = root_mean_square(sum_vectors_array)
+features = create_sentence_vector(rms_array, sum_vectors_array)
+for feature in features:
+    res = svm.predict([feature])
+    print(res)
