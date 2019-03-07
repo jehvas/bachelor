@@ -3,10 +3,14 @@ import abc
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 
+from utility import utility
+
 
 class AbstractDataset(abc.ABC):
+    stop_words = set(stopwords.words("english"))
+
     @abc.abstractmethod
-    def load(self):
+    def load(self, load_filtered_data=False):
         pass
 
     def process_single_mail(self, text):
@@ -14,8 +18,6 @@ class AbstractDataset(abc.ABC):
         sentence_no_stop_words = self.filter_stop_words(texttokenized)
         email_words = [w for w in sentence_no_stop_words if w.isalpha()]
         return email_words
-
-    stop_words = set(stopwords.words("english"))
 
     def filter_stop_words(self, texttokenized):
         filtered_sentence = []
