@@ -8,7 +8,7 @@ from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import train_test_split as tts
 from sklearn.svm import SVC
 
-from utility import utility
+from src.utility import utility
 
 word_indexes = {}
 

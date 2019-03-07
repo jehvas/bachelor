@@ -1,10 +1,8 @@
 import os
 import utility
-from SVM.spam import process_single_mail, sum_vectors, root_mean_square, create_sentence_vector
+from src.SVM.spam import process_single_mail, sum_vectors, root_mean_square, create_sentence_vector
 
 svm = utility.load("text-classifier.mdl")
-
-
 
 direc = "testerino/"
 files = os.listdir(direc)

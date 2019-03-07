@@ -1,6 +1,5 @@
 import numpy as np
 import os
-from utility import utility
 
 
 def loadGloveModel(gloveFile):

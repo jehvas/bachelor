@@ -1,4 +1,5 @@
-from Datasets import AbstractDataset
+import AbstractDataset
+
 
 class Spamassassin(AbstractDataset.AbstractDataset):
     def load(self):

@@ -1,6 +1,7 @@
 import os
 
-from Datasets import AbstractDataset
+import AbstractDataset
+
 
 class SpamHam(AbstractDataset.AbstractDataset):
     def load(self):
