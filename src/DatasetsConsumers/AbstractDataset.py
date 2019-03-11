@@ -2,8 +2,26 @@ import abc
 
 from nltk import word_tokenize
 from nltk.corpus import stopwords
+from utility.utility import save, load, file_exists
 
-from utility import utility
+
+def post_load(caller, emails, labels):
+    caller_name = type(caller).__name__
+    print("Finished loading dataset:", caller_name)
+    save(emails, caller_name + "_saved_mails")
+    save(labels, caller_name + "_saved_labels")
+
+
+def pre_load(caller):
+    caller_name = type(caller).__name__
+    print("Being loading dataset:", caller_name)
+    if file_exists(caller_name + "_saved_mails") and file_exists(caller_name + "_saved_labels"):
+        words = load(caller_name + "_saved_mails")
+        labels = load(caller_name + "_saved_labels")
+        return words, labels
+    else:
+        print("Saved mails and labels not found... Creating them\n")
+        return None
 
 
 class AbstractDataset(abc.ABC):
@@ -19,9 +37,9 @@ class AbstractDataset(abc.ABC):
         email_words = [w for w in sentence_no_stop_words if w.isalpha()]
         return email_words
 
-    def filter_stop_words(self, texttokenized):
+    def filter_stop_words(self, text_tokenized):
         filtered_sentence = []
-        for w in texttokenized:
+        for w in text_tokenized:
             if w not in self.stop_words:
                 filtered_sentence.append(w)
         return filtered_sentence

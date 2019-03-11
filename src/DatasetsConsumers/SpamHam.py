@@ -1,19 +1,14 @@
 import os
 from DatasetsConsumers import AbstractDataset
-
-from utility import utility
+from DatasetsConsumers.AbstractDataset import post_load, pre_load
 
 
 class SpamHam(AbstractDataset.AbstractDataset):
     def load(self, load_filtered_data=False):
         if load_filtered_data:
-            if (os.path.exists(utility.output_path + "SpamHam_saved_mails")) \
-                    and (os.path.exists(utility.output_path + "SpamHam_saved_labels")):
-                words = utility.load(utility.output_path + "SpamHam_saved_mails")
-                labels = utility.load(utility.output_path + "SpamHam_saved_labels")
-                return words, labels
-            else:
-                print("Saved mails and labels not found... Creating them\n")
+            load_check_result = pre_load(self)
+            if load_check_result is not None:
+                return load_check_result
 
         direc = "../../data/emails/"
         files = os.listdir(direc)
@@ -38,7 +33,5 @@ class SpamHam(AbstractDataset.AbstractDataset):
             f.close()
 
             words.append(self.process_single_mail(text))
-
-        utility.save(words, utility.output_path + "SpamHam_saved_mails")
-        utility.save(labels, utility.output_path + "SpamHam_saved_labels")
+        post_load(self, words, labels)
         return words, labels

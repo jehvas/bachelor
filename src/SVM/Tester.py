@@ -1,6 +1,16 @@
+from sklearn.externals.joblib import Parallel, delayed
+
+from DatasetsConsumers.GoLang import GoLang
+
+
+if __name__ == '__main__':
+    words, labels = GoLang().load()
+    print(words)
+
+'''
 import os
 import utility
-from src.SVM.spam import process_single_mail, sum_vectors, root_mean_square, create_sentence_vector
+from src.SVM.SVM import process_single_mail, sum_vectors, root_mean_square, create_sentence_vector
 
 svm = utility.load("text-classifier.mdl")
 
@@ -22,3 +32,4 @@ features = create_sentence_vector(rms_array, sum_vectors_array)
 for feature in features:
     res = svm.predict([feature])
     print(res)
+'''

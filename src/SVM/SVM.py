@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split as tts
 from sklearn.svm import SVC
 
 from DatasetsConsumers import SpamHam
+from DatasetsConsumers.GoLang import GoLang
 from Glove import glovemodel
 from src.utility import utility
 
@@ -47,15 +48,15 @@ def create_sentence_vector(rms_array, vectors_sum_2darray):
     return sentence_vectors
 
 
-if os.path.exists(utility.output_path + "Glove_saved_gModel"):
-    gModel = utility.load(utility.output_path + "Glove_saved_gModel")
+if utility.file_exists("Glove_saved_gModel"):
+    gModel = utility.load("Glove_saved_gModel")
 else:
     gModel = glovemodel.loadGloveModel("../../data/GloveWordEmbeddings/glove.6B.50d.txt")
-    utility.save(gModel, utility.output_path + "Glove_saved_gModel")
+    utility.save(gModel, "Glove_saved_gModel")
 
 dimensionCount = len(next(iter(gModel.values())))
 
-Dataset_Consumer = SpamHam.SpamHam()
+Dataset_Consumer = GoLang()
 
 emails, labels = Dataset_Consumer.load(True)
 # utility.save(emails, "saved_emails")
@@ -65,7 +66,7 @@ emails, labels = Dataset_Consumer.load(True)
 sum_vectors_array = sum_vectors(emails)
 rms_array = root_mean_square(sum_vectors_array)
 features = create_sentence_vector(rms_array, sum_vectors_array)
-
+print("email", len(emails), "label", len(labels))
 x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2)
 
 svmclassifier = SVC(kernel="linear")

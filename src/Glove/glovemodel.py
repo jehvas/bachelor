@@ -1,10 +1,11 @@
 import numpy as np
 import os
+from utility.utility import print_progress
 
 
 def loadGloveModel(gloveFile):
     print("Loading Glove Model")
-    with open(gloveFile, 'r') as f:
+    with open(gloveFile, 'r+', encoding="utf8") as f:
         # total of 1917494 lines in glove.42B.300d.txt
         total = os.stat(gloveFile).st_size
         c = 0
@@ -15,9 +16,10 @@ def loadGloveModel(gloveFile):
             embedding = np.array([float(val) for val in splitLine[1:]])
             model[word] = embedding
             if (c % 50000 == 0):
-                print("{:.2f}".format(c / total * 100), "%")
+                print_progress(c, total)
             c = c + len(line)
-        print("Done.", len(model), " words loaded!")
+        print("c: ", c, "total: ", total)
+        print("Done.", len(model), " words of loaded!")
         return model
 
 
