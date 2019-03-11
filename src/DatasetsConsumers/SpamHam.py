@@ -39,6 +39,6 @@ class SpamHam(AbstractDataset.AbstractDataset):
 
             words.append(self.process_single_mail(text))
 
-        utility.save(emails, utility.output_path + "SpamHam_saved_mails")
+        utility.save(words, utility.output_path + "SpamHam_saved_mails")
         utility.save(labels, utility.output_path + "SpamHam_saved_labels")
         return words, labels
