@@ -1,11 +1,10 @@
-from sklearn.externals.joblib import Parallel, delayed
-
+from DatasetsConsumers.Chromium import Chromium
+from DatasetsConsumers.Enron import Enron
 from DatasetsConsumers.GoLang import GoLang
 
-
 if __name__ == '__main__':
-    words, labels = GoLang().load()
-    print(words)
+    emails, labels = Enron().load(True)
+    print(emails)
 
 '''
 import os

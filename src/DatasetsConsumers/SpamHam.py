@@ -1,8 +1,9 @@
 import os
-from DatasetsConsumers import AbstractDataset
+
+from DatasetsConsumers.AbstractDataset import AbstractDataset
 
 
-class SpamHam(AbstractDataset.AbstractDataset):
+class SpamHam(AbstractDataset):
     def load(self, load_filtered_data=False):
         if load_filtered_data:
             load_check_result = super().pre_load()

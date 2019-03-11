@@ -17,6 +17,7 @@ def file_exists(file_name):
 
 
 def load(file_name):
+    file_name = output_path + file_name
     with open(file_name, "rb") as fp:
         svm = p.load(fp)
     print("Loaded", file_name)

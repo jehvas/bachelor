@@ -1,7 +1,7 @@
 from DatasetsConsumers.CommonDevConsumer import CommonDevConsumer
 
 
-class GoLang(CommonDevConsumer):
+class Chromium(CommonDevConsumer):
     def common_load(self, json_path, mails_path, load_filtered_data):
         return super().common_load(json_path, mails_path, load_filtered_data)
 
@@ -10,8 +10,8 @@ class GoLang(CommonDevConsumer):
             load_check_result = super().pre_load()
             if load_check_result is not None:
                 return load_check_result
-        words, labels = self.common_load('../../data/Go-nuts/golang-nuts.json/golang-nuts.json',
-                                         '../../data/Go-nuts/golang-nuts/',
+        words, labels = self.common_load('../../data/Chromium/chromium-dev.json/chromium-dev.json',
+                                         '../../data/Chromium/chromium-dev/',
                                          load_filtered_data)
         super().post_load(words, labels)
         return words, labels

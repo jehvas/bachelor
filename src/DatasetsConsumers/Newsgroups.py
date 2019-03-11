@@ -1,23 +1,20 @@
 import os
 import time
 from joblib import Parallel, delayed
-from DatasetsConsumers import AbstractDataset
+
+from DatasetsConsumers.AbstractDataset import AbstractDataset
 from utility import utility
 
 
-class Newsgroups(AbstractDataset.AbstractDataset):
+class Newsgroups(AbstractDataset):
     def load(self, load_filtered_data=False):
         if load_filtered_data:
-            if (os.path.exists(utility.output_path + "20Newsgroups_saved_mails")) \
-                    and (os.path.exists(utility.output_path + "20Newsgroups_saved_labels")):
-                words = utility.load(utility.output_path + "20Newsgroups_saved_mails")
-                labels = utility.load(utility.output_path + "20Newsgroups_saved_labels")
-                return words, labels
-            else:
-                print("Saved mails and labels not found... Creating them\n")
+            load_check_result = super().pre_load()
+            if load_check_result is not None:
+                return load_check_result
 
         direc = "../../data/20Newsgroups/"
-        subdirecs = self.getSubdirectories(direc)
+        subdirecs = self.get_subdirectories(direc)
 
         words = []
         labels = []
@@ -31,8 +28,7 @@ class Newsgroups(AbstractDataset.AbstractDataset):
                 words.append(item)
 
         print("--- %s seconds ---" % (time.time() - start_time))
-        utility.save(words, utility.output_path + "20Newsgroups_saved_mails")
-        utility.save(labels, utility.output_path + "20Newsgroups_saved_labels")
+        super().post_load(words, labels)
         return words, labels
 
     def test(self, path):
@@ -48,7 +44,7 @@ class Newsgroups(AbstractDataset.AbstractDataset):
             words.append(self.process_single_mail(text))
         return words
 
-    def getSubdirectories(self, path):
+    def get_subdirectories(self, path):
         subdirectories = []
         for item in os.listdir(path):
             if os.path.isdir(os.path.join(path, item)):

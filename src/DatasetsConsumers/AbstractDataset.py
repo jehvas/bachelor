@@ -1,8 +1,7 @@
 import abc
-
+from utility.utility import save, load, file_exists
 from nltk import word_tokenize
 from nltk.corpus import stopwords
-from utility.utility import save, load, file_exists
 
 
 class AbstractDataset(abc.ABC):
@@ -16,22 +15,29 @@ class AbstractDataset(abc.ABC):
         caller_name = type(self).__name__
         print("Being loading dataset:", caller_name)
         if file_exists(caller_name + "_saved_mails") and file_exists(caller_name + "_saved_labels"):
-            words = load(caller_name + "_saved_mails")
+            emails = load(caller_name + "_saved_mails")
             labels = load(caller_name + "_saved_labels")
-            return words, labels
+            self.finalize(caller_name, emails, labels)
+            return emails, labels
         else:
             print("Saved mails and labels not found... Creating them\n")
             return None
 
     def post_load(self, emails, labels):
         caller_name = type(self).__name__
-        print("Finished loading dataset:", caller_name)
+        self.finalize(caller_name, emails, labels)
         save(emails, caller_name + "_saved_mails")
         save(labels, caller_name + "_saved_labels")
 
+    def finalize(self, name, emails, labels):
+        if len(emails) != len(labels):
+            raise Exception("length of emails & labels should match!!")
+
+        print("Finished loading dataset:", name, "\t\t", "Size: ", len(emails), ",", len(labels))
+
     def process_single_mail(self, text):
-        texttokenized = word_tokenize(text.lower())
-        sentence_no_stop_words = self.filter_stop_words(texttokenized)
+        text_tokenized = word_tokenize(text.lower())
+        sentence_no_stop_words = self.filter_stop_words(text_tokenized)
         email_words = [w for w in sentence_no_stop_words if w.isalpha()]
         return email_words
 
