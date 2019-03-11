@@ -1,12 +1,11 @@
 import os
 from DatasetsConsumers import AbstractDataset
-from DatasetsConsumers.AbstractDataset import post_load, pre_load
 
 
 class SpamHam(AbstractDataset.AbstractDataset):
     def load(self, load_filtered_data=False):
         if load_filtered_data:
-            load_check_result = pre_load(self)
+            load_check_result = super().pre_load()
             if load_check_result is not None:
                 return load_check_result
 
@@ -33,5 +32,5 @@ class SpamHam(AbstractDataset.AbstractDataset):
             f.close()
 
             words.append(self.process_single_mail(text))
-        post_load(self, words, labels)
+        super().post_load(words, labels)
         return words, labels
