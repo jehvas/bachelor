@@ -5,7 +5,7 @@ from sklearn.svm import SVC
 from DatasetsConsumers.Chromium import Chromium
 from Glove.glovemodel import GloVe
 
-print("Running algorithm: SVM")
+print("Running algorithm: Algorithms.SVM")
 
 # Load dataset
 Dataset_Consumer = Chromium()
@@ -19,7 +19,7 @@ features = GloVe_Obj.get_features(emails)
 x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2)
 
 
-# SVM Stuff
+# Algorithms.SVM Stuff
 svm_classifier = SVC(kernel="linear")
 
 

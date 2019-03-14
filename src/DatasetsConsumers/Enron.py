@@ -8,7 +8,7 @@ from utility.utility import print_progress
 
 ENRON_FILE_PATH = "../../data/Enron/emails.csv"
 ENRON_ROW_COUNT = 517401
-csv.field_size_limit(sys.maxsize)
+csv.field_size_limit(1_000_000)
 
 
 class Enron(AbstractDataset):

@@ -16,6 +16,10 @@ def file_exists(file_name):
     return os.path.exists(output_path + file_name)
 
 
+def get_file_path(file_name):
+    return output_path + file_name
+
+
 def load(file_name):
     file_name = output_path + file_name
     with open(file_name, "rb") as fp:

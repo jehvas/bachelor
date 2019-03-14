@@ -9,7 +9,7 @@ if __name__ == '__main__':
 '''
 import os
 import utility
-from src.SVM.SVM import process_single_mail, sum_vectors, root_mean_square, create_sentence_vector
+from src.Algorithms.SVM.Algorithms.SVM import process_single_mail, sum_vectors, root_mean_square, create_sentence_vector
 
 svm = utility.load("text-classifier.mdl")
 

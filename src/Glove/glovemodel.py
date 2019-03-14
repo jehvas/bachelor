@@ -2,7 +2,7 @@ import math
 
 import numpy as np
 import os
-from utility.utility import print_progress, file_exists, load, save
+from utility.utility import print_progress, file_exists, load, save, get_file_path
 
 GLOVE_DIR = "../../data/GloveWordEmbeddings/"
 
@@ -10,37 +10,33 @@ GLOVE_DIR = "../../data/GloveWordEmbeddings/"
 class GloVe:
     dimensionCount = 0
     model = {}
+    features = None
 
     def __init__(self, glove_file):
         self.load_glove_model(glove_file)
 
     def load_glove_model(self, glove_file):
         if file_exists("Glove_saved_gModel"):
-            self.model = load("Glove_saved_gModel")
-            self.dimensionCount = len(next(iter(self.model.values())))
+            self.features = load("Glove_saved_gModel")
         else:
             print("Loading Glove Model")
             with open(GLOVE_DIR + glove_file, 'r+', encoding="utf8") as f:
-                # total of 1917494 lines in glove.42B.300d.txt
-                total = os.stat(glove_file).st_size
-                c = 0
                 for line in f:
                     split_line = line.split()
                     word = split_line[0]
                     embedding = np.array([float(val) for val in split_line[1:]])
                     self.model[word] = embedding
-                    if c % 50000 == 0:
-                        print_progress(c, total)
-                    c = c + len(line)
-                print("c: ", c, "total: ", total)
                 print("Done.", len(self.model), " words of loaded!")
-                save(self.model, "Glove_saved_gModel")
                 self.dimensionCount = len(next(iter(self.model.values())))
 
     def get_features(self, emails):
+        if self.features is not None:
+            return self.features
         sum_vectors_array = self.sum_vectors(emails)
         rms_array = self.root_mean_square(sum_vectors_array)
-        return self.create_sentence_vector(rms_array, sum_vectors_array)
+        self.features = self.create_sentence_vector(rms_array, sum_vectors_array)
+        save(self.features, "Glove_saved_gModel")
+        return self.features
 
     def sum_vectors(self, words_in_emails):
         all_vector_sum = []
