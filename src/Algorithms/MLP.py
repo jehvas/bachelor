@@ -17,7 +17,7 @@ if __name__ == '__main__':
     emails, labels = Dataset_Consumer.load(True)
 
     # Load GloVe model
-    GloVe_Obj = GloVe("glove.6B.50d.txt")
+    GloVe_Obj = GloVe(50)
     features = GloVe_Obj.get_features(emails, Dataset_Consumer)
 
 

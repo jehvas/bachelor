@@ -15,19 +15,20 @@ GLOVE_DIR = ROOTPATH + "/data/GloveWordEmbeddings/"
 
 class GloVe:
     dimensionCount = 0
+    glove_file = ''
     model = {}
 
-    def __init__(self, glove_file):
-        self.load_glove_model(glove_file)
+    def __init__(self, dimension_count):
+        self.dimensionCount = dimension_count
+        self.glove_file = "glove.6B." + str(dimension_count) + "d.txt"
 
     # Load model
-    def load_glove_model(self, glove_file):
-        glove_model_file_name = "glove_model_" + glove_file
+    def load_glove_model(self):
+        glove_model_file_name = "glove_model_" + self.glove_file
         if file_exists(glove_model_file_name):
             self.model = load(glove_model_file_name)
         else:
-            self.load_word_embeddings(glove_file, glove_model_file_name)
-        self.dimensionCount = len(next(iter(self.model.values())))
+            self.load_word_embeddings(self.glove_file, glove_model_file_name)
 
     def load_word_embeddings(self, glove_file, save_name):
         print("Loading Glove word embeddings")
@@ -63,7 +64,7 @@ class GloVe:
         feature_file_name = dataset_name + '_features'
         if file_exists(feature_file_name):
             return load(feature_file_name)
-
+        self.load_glove_model()
         sum_vectors_array = self.sum_vectors(emails)
         features = preprocessing.scale(sum_vectors_array)
         save(features, feature_file_name)
