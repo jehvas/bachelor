@@ -2,6 +2,7 @@ import os
 import re
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
+from rootfile import ROOTPATH
 from utility import utility
 
 
@@ -12,7 +13,7 @@ class Spamassassin(AbstractDataset):
             if load_check_result is not None:
                 return load_check_result
 
-        direcs = ["../../data/SpamAssassin/easy_ham/", "../../data/SpamAssassin/spam_2/"]
+        direcs = [ROOTPATH + "/data/SpamAssassin/easy_ham/", ROOTPATH + "/data/SpamAssassin/spam_2/"]
 
         words = []
         labels = []

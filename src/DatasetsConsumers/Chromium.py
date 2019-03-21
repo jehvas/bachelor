@@ -1,7 +1,8 @@
 from DatasetsConsumers.CommonDevConsumer import CommonDevConsumer
+from rootfile import ROOTPATH
 
-JSON_PATH = '../../../data/Chromium/chromium-dev.json/chromium-dev.json'
-DATA_PATH = '../../../data/Chromium/chromium-dev/'
+JSON_PATH = ROOTPATH + '/data/Chromium/chromium-dev.json/chromium-dev.json'
+DATA_PATH = ROOTPATH + '/data/Chromium/chromium-dev/'
 
 
 class Chromium(CommonDevConsumer):
