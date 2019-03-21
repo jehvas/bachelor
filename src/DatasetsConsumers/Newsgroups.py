@@ -1,9 +1,13 @@
 import os
 import time
 from joblib import Parallel, delayed
+import nltk
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
+from rootfile import ROOTPATH
 from utility import utility
+
+stemmer = nltk.SnowballStemmer("english", ignore_stopwords=True)
 
 
 class Newsgroups(AbstractDataset):
@@ -13,9 +17,8 @@ class Newsgroups(AbstractDataset):
             if load_check_result is not None:
                 return load_check_result
 
-        direc = "../../data/20Newsgroups/"
+        direc = ROOTPATH + "/data/20Newsgroups/"
         subdirecs = self.get_subdirectories(direc)
-
         words = []
         labels = []
         start_time = time.time()
@@ -25,7 +28,7 @@ class Newsgroups(AbstractDataset):
 
         for sublist in val:
             for item in sublist:
-                words.append(item)
+                words.append([stemmer.stem(word) for word in item])
 
         print("--- %s seconds ---" % (time.time() - start_time))
         super().post_load(words, labels)

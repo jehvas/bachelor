@@ -1,5 +1,5 @@
 from sklearn.metrics import precision_recall_fscore_support
-from sklearn.model_selection import train_test_split as tts
+from sklearn.model_selection import train_test_split as tts, StratifiedKFold
 from sklearn.svm import SVC
 
 from DatasetsConsumers.Chromium import Chromium
@@ -16,8 +16,7 @@ GloVe_Obj = GloVe("glove.6B.50d.txt")
 features = GloVe_Obj.get_features(emails)
 
 # Create training data
-x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2)
-
+x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1)
 
 # Algorithms.SVM Stuff
 svm_classifier = SVC(kernel="linear")

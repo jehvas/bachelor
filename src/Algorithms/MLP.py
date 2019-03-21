@@ -1,3 +1,5 @@
+from collections import Counter
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -6,6 +8,7 @@ from sklearn.model_selection import train_test_split as tts
 from torch import optim
 
 from DatasetsConsumers.Newsgroups import Newsgroups
+from DatasetsConsumers.SpamHam import SpamHam
 from Glove.glovemodel import GloVe
 
 # Load dataset
@@ -13,12 +16,12 @@ Dataset_Consumer = Newsgroups()
 emails, labels = Dataset_Consumer.load(True)
 
 # Load GloVe model
-GloVe_Obj = GloVe("glove.6B.50d.txt")
+GloVe_Obj = GloVe("glove.6B.200d.txt")
 features = GloVe_Obj.get_features(emails)
 
-# Create training data & SVM Stuff
-x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2)
 
+# Create training data & SVM Stuff
+x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, stratify=labels)
 n_inputs = x_train
 
 zippedtrain = list(zip(x_train, y_train))
@@ -32,7 +35,7 @@ testloader = torch.utils.data.DataLoader(zippedtest, batch_size=batch_size,
 
 
 def run(_hidden_size, _num_epochs):
-    input_size = 50
+    input_size = 200
     hidden_size = _hidden_size
     output_size = 20
     num_epochs = _num_epochs
@@ -41,34 +44,36 @@ def run(_hidden_size, _num_epochs):
         def __init__(self):
             super(Net, self).__init__()
 
+            self.relu = nn.ReLU()
             self.fc1 = nn.Linear(input_size, hidden_size)
             self.fc2 = nn.Linear(hidden_size, hidden_size)
-            self.fc3 = nn.Linear(hidden_size, hidden_size)
-            self.fc4 = nn.Linear(hidden_size, output_size)
+            self.fc3 = nn.Linear(hidden_size, output_size)
 
         def forward(self, x):
-            x = nn.functional.relu(self.fc1(x))
-            x = nn.functional.relu(self.fc2(x))
-            x = nn.functional.relu(self.fc3(x))
-            x = nn.functional.relu(self.fc4(x))
+            x = self.fc1(x)
+            x = self.relu(x)
+            x = self.fc2(x)
+            x = self.relu(x)
+            x = self.fc3(x)
             return x
 
     net = Net()
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
 
     for epoch in range(num_epochs):  # loop over the dataset multiple times
         # print("Epoch: ", epoch + 1, "/", num_epochs)
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
+            net.zero_grad()
             # get the inputs
             inputs, labels = data
             inputs = inputs.float()
-            # zero the parameter gradients
+
             optimizer.zero_grad()
-            # forward + backward + optimize
             outputs = net(inputs)
+
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -80,24 +85,32 @@ def run(_hidden_size, _num_epochs):
                       (epoch + 1, i + 1, running_loss / 200))
                 running_loss = 0.0'''
 
-    print('Finished Training')
+    #print('Finished Training')
 
     correct = 0
     total = 0
-    with torch.no_grad():
+    for i, data in enumerate(testloader, 0):
+        net.zero_grad()
+        inputs, labels = data
+        outputs = net(inputs.float())
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
+
+    '''with torch.no_grad():
         for data in testloader:
             inputs, labels = data
             outputs = net(inputs.float())
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
-            correct += (predicted == labels).sum().item()
+            correct += (predicted == labels).sum().item()'''
 
     print("nodes: ", hidden_size, ': Accuracy: %d %%' % (
             100 * correct / total))
 
 
 for i in range(1, 20):
-    run(i * 10, 40)
+    run(100+i*10, 100)
 
 '''
 # MLP Stuff
