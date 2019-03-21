@@ -21,7 +21,7 @@ class Newsgroups(AbstractDataset):
 
         direc = ROOTPATH + "/data/20Newsgroups/"
         subdirecs = self.get_subdirectories(direc)
-        words = []
+        emails = []
         labels = []
         start_time = time.time()
         val = Parallel(n_jobs=-1)(delayed(self.test)(direc + i + "/") for i in subdirecs)
@@ -30,13 +30,11 @@ class Newsgroups(AbstractDataset):
 
         for sublist in val:
             for item in sublist:
-                words.append([stemmer.stem(word) for word in item])
-
-        super().setVocabulary(words)
+                emails.append([stemmer.stem(word) for word in item])
 
         print("--- %s seconds ---" % (time.time() - start_time))
-        super().post_load(words, labels)
-        return words, labels
+        super().post_load(emails, labels)
+        return emails, labels
 
 
     def test(self, path):

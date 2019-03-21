@@ -33,6 +33,7 @@ class AbstractDataset(abc.ABC):
     def post_load(self, emails, labels):
         caller_name = type(self).__name__
         self.finalize(caller_name, emails, labels)
+        self.setVocabulary(emails)
         save(emails, caller_name + "_saved_mails")
         save(labels, caller_name + "_saved_labels")
 
