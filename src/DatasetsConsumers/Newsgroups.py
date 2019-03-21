@@ -1,5 +1,7 @@
 import os
 import time
+
+import itertools
 from joblib import Parallel, delayed
 import nltk
 
@@ -30,9 +32,12 @@ class Newsgroups(AbstractDataset):
             for item in sublist:
                 words.append([stemmer.stem(word) for word in item])
 
+        super().setVocabulary(words)
+
         print("--- %s seconds ---" % (time.time() - start_time))
         super().post_load(words, labels)
         return words, labels
+
 
     def test(self, path):
         print(path)

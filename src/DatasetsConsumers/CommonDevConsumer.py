@@ -23,9 +23,9 @@ class CommonDevConsumer(AbstractDataset):
         with open(json_path, 'r', encoding='UTF8') as f:
             import json
             parsed_json = json.loads(f.read())
-            results = Parallel(n_jobs=1)(
+            results = Parallel(n_jobs=-1)(
                 delayed(self.parse_topic)(mail_json, self.get_topic_label(mail_json['topic']), len(parsed_json)) for
-                mail_json in parsed_json[:1000])
+                mail_json in parsed_json)
             tmp_emails, tmp_labels = zip(*results)
 
             emails = []
@@ -70,3 +70,6 @@ class CommonDevConsumer(AbstractDataset):
             self.topicDict[topic] = self.counter
             self.counter += 1
             return self.counter - 1
+
+    def n_categories(self):
+        return self.counter
