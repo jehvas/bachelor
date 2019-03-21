@@ -1,4 +1,9 @@
 import abc
+
+import time
+
+import itertools
+
 from utility.utility import save, load, file_exists
 from nltk import word_tokenize
 from nltk.corpus import stopwords
@@ -6,6 +11,7 @@ from nltk.corpus import stopwords
 
 class AbstractDataset(abc.ABC):
     stop_words = set(stopwords.words("english"))
+    vocabulary = {}
 
     @abc.abstractmethod
     def load(self, load_filtered_data=False):
@@ -17,6 +23,7 @@ class AbstractDataset(abc.ABC):
         if file_exists(caller_name + "_saved_mails") and file_exists(caller_name + "_saved_labels"):
             emails = load(caller_name + "_saved_mails")
             labels = load(caller_name + "_saved_labels")
+            self.setVocabulary(emails)
             self.finalize(caller_name, emails, labels)
             return emails, labels
         else:
@@ -40,6 +47,16 @@ class AbstractDataset(abc.ABC):
         sentence_no_stop_words = self.filter_stop_words(text_tokenized)
         email_words = [w for w in sentence_no_stop_words if w.isalpha()]
         return email_words
+
+    def setVocabulary(self, words):
+        start_time2 = time.time()
+        merged = list(itertools.chain(*words))
+        idx = 0
+        for word in merged:
+            if word not in self.vocabulary:
+                self.vocabulary[word] = idx
+                idx += 1
+        print("Vocab --- %s seconds ---" % (time.time() - start_time2))
 
     def filter_stop_words(self, text_tokenized):
         filtered_sentence = []

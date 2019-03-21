@@ -1,5 +1,7 @@
 import os
 import time
+
+import itertools
 from joblib import Parallel, delayed
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
@@ -13,7 +15,7 @@ class Newsgroups(AbstractDataset):
             if load_check_result is not None:
                 return load_check_result
 
-        direc = "../../data/20Newsgroups/"
+        direc = "../../../data/20Newsgroups/"
         subdirecs = self.get_subdirectories(direc)
 
         words = []
@@ -27,9 +29,17 @@ class Newsgroups(AbstractDataset):
             for item in sublist:
                 words.append(item)
 
+        super().setVocabulary(words)
+
         print("--- %s seconds ---" % (time.time() - start_time))
         super().post_load(words, labels)
         return words, labels
+
+    def getVocabulary(self):
+        start_time2 = time.time()
+        merged = list(itertools.chain(*words))
+        self.vocabulary = set(merged)
+        print("--- %s seconds ---" % (time.time() - start_time2))
 
     def test(self, path):
         print(path)
