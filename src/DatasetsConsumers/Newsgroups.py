@@ -30,12 +30,11 @@ class Newsgroups(AbstractDataset):
 
         for sublist in val:
             for item in sublist:
-                emails.append([stemmer.stem(word) for word in item])
+                emails.append([word for word in item])
 
         print("--- %s seconds ---" % (time.time() - start_time))
         super().post_load(emails, labels)
         return emails, labels
-
 
     def test(self, path):
         print(path)

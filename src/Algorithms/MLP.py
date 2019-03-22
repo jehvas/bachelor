@@ -17,12 +17,12 @@ if __name__ == '__main__':
     emails, labels = Dataset_Consumer.load(True)
 
     # Load GloVe model
-    GloVe_Obj = GloVe(50)
+    GloVe_Obj = GloVe(100)
     features = GloVe_Obj.get_features(emails, Dataset_Consumer)
 
 
     # Create training data & SVM Stuff
-    x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, stratify=labels)
+    x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1)
     n_inputs = x_train
 
     zippedtrain = list(zip(x_train, y_train))
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     batch_size = 200
 
     trainloader = torch.utils.data.DataLoader(zippedtrain, batch_size=batch_size,
-                                              shuffle=True, num_workers=4)
+                                              shuffle=False, num_workers=4)
     testloader = torch.utils.data.DataLoader(zippedtest, batch_size=batch_size,
                                              shuffle=False, num_workers=4)
 
@@ -46,11 +46,13 @@ if __name__ == '__main__':
                 super(Net, self).__init__()
 
                 self.relu = nn.ReLU()
+                #self.embedding = nn.Embedding(len(Dataset_Consumer.vocabulary), GloVe_Obj.dimensionCount)
                 self.fc1 = nn.Linear(input_size, hidden_size)
                 self.fc2 = nn.Linear(hidden_size, hidden_size)
                 self.fc3 = nn.Linear(hidden_size, output_size)
 
             def forward(self, x):
+                #x = self.embedding(x)
                 x = self.fc1(x)
                 x = self.relu(x)
                 x = self.fc2(x)
@@ -110,8 +112,8 @@ if __name__ == '__main__':
                 100 * correct / total))
 
 
-    for i in range(1, 20):
-        run(100, 10)
+    for i in range(1, 2):
+        run(100, 40)
 
     '''
     # MLP Stuff
