@@ -60,8 +60,9 @@ class GloVe:
 
     # Check if features exist
     def get_features(self, emails, dataset):
+        print("Loading embedding features")
         dataset_name = type(dataset).__name__
-        feature_file_name = dataset_name + '_features'
+        feature_file_name = dataset_name + '_features_' + str(self.dimensionCount)
         if file_exists(feature_file_name):
             return load(feature_file_name)
         self.load_glove_model()
