@@ -2,6 +2,8 @@ import os
 import time
 
 import itertools
+
+import numpy
 from joblib import Parallel, delayed
 import nltk
 
@@ -33,6 +35,7 @@ class Newsgroups(AbstractDataset):
                 emails.append([word for word in item])
 
         print("--- %s seconds ---" % (time.time() - start_time))
+        emails, labels = numpy.asarray(emails), numpy.asarray(labels)
         super().post_load(emails, labels)
         return emails, labels
 
