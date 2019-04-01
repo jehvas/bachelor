@@ -13,7 +13,7 @@ from Glove.glovemodel import GloVe
 
 # Load dataset
 if __name__ == '__main__':
-    Dataset_Consumer = Trustpilot()
+    Dataset_Consumer = Newsgroups()
     emails, labels = Dataset_Consumer.load(True)
 
     # Load GloVe model
@@ -62,7 +62,7 @@ if __name__ == '__main__':
         net = Net()
 
         criterion = nn.CrossEntropyLoss()
-        optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
+        optimizer = optim.Adam(net.parameters(), lr=0.01)
 
         predictions_total = []
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
             predictions_total = np.concatenate([predictions_total, predicted.numpy()])
 
-        precision, recall, fbeta_score, support = precision_recall_fscore_support(y_test, predictions_total)
+        precision, recall, fbeta_score, support = precision_recall_fscore_support(y_test, predictions_total, average="micro")
         print("\n--- Results ---")
         print("Precision: ", precision)
         print("\n\nRecall: ", recall)
