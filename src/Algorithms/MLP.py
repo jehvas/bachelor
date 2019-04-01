@@ -1,19 +1,19 @@
 import numpy as np
-
 import torch
 import torch.nn as nn
 import torch.utils.data
-from sklearn.metrics import f1_score, precision_recall_fscore_support
+from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import train_test_split as tts
 from torch import optim
 
-from DatasetsConsumers.Newsgroups import Newsgroups
 from DatasetsConsumers.SpamHam import SpamHam
+from DatasetsConsumers.Newsgroups import Newsgroups
+from DatasetsConsumers.Trustpilot import Trustpilot
 from Glove.glovemodel import GloVe
 
 # Load dataset
 if __name__ == '__main__':
-    Dataset_Consumer = Newsgroups()
+    Dataset_Consumer = Trustpilot()
     emails, labels = Dataset_Consumer.load(True)
 
     # Load GloVe model
@@ -21,12 +21,12 @@ if __name__ == '__main__':
     features = GloVe_Obj.get_features(emails, Dataset_Consumer)
 
     # Create training data & SVM Stuff
-    x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1)
+    x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
     n_inputs = x_train
 
     zippedtrain = list(zip(x_train, y_train))
     zippedtest = list(zip(x_test, y_test))
-    batch_size = 200
+    batch_size = 300
 
     trainloader = torch.utils.data.DataLoader(zippedtrain, batch_size=batch_size,
                                               shuffle=False, num_workers=4)
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     def run(_hidden_size, _num_epochs):
         input_size = GloVe_Obj.dimensionCount
         hidden_size = _hidden_size
-        output_size = 20
+        output_size = len(np.unique(y_test))
         num_epochs = _num_epochs
 
         class Net(nn.Module):
@@ -66,12 +66,12 @@ if __name__ == '__main__':
 
         predictions_total = []
 
-        for epoch in range(num_epochs):  # loop over the dataset multiple times
+        for epoch in range(num_epochs):
             print("Epoch: ", epoch + 1, "/", num_epochs)
             running_loss = 0.0
             for i, data in enumerate(trainloader, 0):
                 net.zero_grad()
-                # get the inputs
+
                 inputs, labels = data
                 inputs = inputs.float()
                 optimizer.zero_grad()
@@ -81,14 +81,8 @@ if __name__ == '__main__':
                 loss.backward()
                 optimizer.step()
 
-                # print statistics
                 running_loss += loss.item()
-                '''if i % 200 == 0:    # print every 2000 mini-batches
-                    print('[%d, %5d] loss: %.3f' %
-                          (epoch + 1, i + 1, running_loss / 200))
-                    running_loss = 0.0'''
 
-        # print('Finished Training')
 
         for i, data in enumerate(testloader, 0):
             net.zero_grad()
@@ -98,8 +92,7 @@ if __name__ == '__main__':
 
             predictions_total = np.concatenate([predictions_total, predicted.numpy()])
 
-        precision, recall, fbeta_score, support = precision_recall_fscore_support(y_test, predictions_total,
-                                                                                  average="micro")
+        precision, recall, fbeta_score, support = precision_recall_fscore_support(y_test, predictions_total)
         print("\n--- Results ---")
         print("Precision: ", precision)
         print("\n\nRecall: ", recall)
@@ -107,4 +100,4 @@ if __name__ == '__main__':
 
 
     for i in range(1, 2):
-        run(100, 25)
+        run(100, 20)
