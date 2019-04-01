@@ -39,13 +39,13 @@ def plot_confusion_matrix(y_true, y_pred, classes,
            title=title,
            ylabel='True label',
            xlabel='Predicted label')
-
+    a = ax.get_xticklabels()
     # Rotate the tick labels and set their alignment.
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
              rotation_mode="anchor")
 
     # Loop over data dimensions and create text annotations.
-    fmt = '.2f' if normalize else 'd'
+    fmt = '.1f' if normalize else 'd'
     thresh = cm.max() / 2.
     for i in range(cm.shape[0]):
         for j in range(cm.shape[1]):
@@ -53,9 +53,7 @@ def plot_confusion_matrix(y_true, y_pred, classes,
                     ha="center", va="center",
                     color="white" if cm[i, j] > thresh else "black")
     fig.tight_layout()
-    return ax
 
-
-np.set_printoptions(precision=2)
-
-plt.show()
+    np.set_printoptions(precision=2)
+    plt.grid(True)
+    plt.show()

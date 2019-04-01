@@ -4,6 +4,7 @@ Term Frequency (tf): gives us the frequency of the word in each document in the 
 It is the ratio of number of times the word appears in a document compared to the total number of words in that document.
 It increases as the number of occurrences of that word within the document increases. Each document has its own tf.
 """
+import time
 
 
 def compute_tf(word_dicts, emails):
@@ -34,8 +35,6 @@ def compute_idf(word_count_list, doc_list):
         for word, val in occurrence_dict.items():
             if val > 0:
                 idf_dict[word] = idf_dict.get(word, 0) + 1
-            else:
-                print("What")
 
     for word, val in idf_dict.items():
         idf_dict[word] = math.log10(n / float(val))
@@ -45,12 +44,12 @@ def compute_idf(word_count_list, doc_list):
 
 # Compute TF*IDF
 def compute_tfidf(word_count_list, emails):
-    tf =compute_tf(word_count_list, emails)
+    start_time = time.time()
+    tf = compute_tf(word_count_list, emails)
     idf = compute_idf(word_count_list, emails)
     all_tfidf = tf
     for email_tfs in all_tfidf:
         for word in email_tfs:
             email_tfs[word] = email_tfs[word] * idf[word]
-            if email_tfs[word] < 0.0005 and word != 'subject':
-                print(word)
+    print("Generated TF*IDF in --- %s seconds ---" % (time.time() - start_time))
     return all_tfidf

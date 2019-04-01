@@ -14,7 +14,11 @@ from Glove.glovemodel import GloVe
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split as tts
 
+from rootfile import ROOTPATH
 from utility.TFIDF import compute_tfidf
+from utility.confusmatrix import plot_confusion_matrix
+from utility.plotter import plot_data
+from utility.sizeController import size_control, multi_size_control
 
 
 class RNNModel(nn.Module):
@@ -28,14 +32,14 @@ class RNNModel(nn.Module):
 
         # RNN
         self.rnn = nn.RNN(input_dim, hidden_dim, layer_dim, batch_first=True,
-                          nonlinearity='relu')
+                          nonlinearity='tanh').cuda()
 
         # Readout layer
-        self.fc = nn.Linear(hidden_dim, output_dim)
+        self.fc = nn.Linear(hidden_dim, output_dim).cuda()
 
     def forward(self, x):
         # Initialize hidden state with zeros
-        h0 = Variable(torch.zeros(self.layer_dim, x.size(0), self.hidden_dim)).float()
+        h0 = Variable(torch.zeros(self.layer_dim, x.size(0), self.hidden_dim)).float().cuda()
         # One time step
         out, hn = self.rnn(x, h0)
         out1 = out[-1, :, :]
@@ -50,18 +54,30 @@ Dataset_Consumer = Newsgroups()
 emails, labels = Dataset_Consumer.load(True)
 
 # Load GloVe model
-GloVe_Obj = GloVe(50)
-features = GloVe_Obj.get_features(emails, Dataset_Consumer)
+# GloVe_Obj = GloVe(200)
+# features = GloVe_Obj.get_features(emails, Dataset_Consumer)
+# input_dim = GloVe_Obj.dimensionCount  # input dimension
 
+input_dim = 512
 tfidf = compute_tfidf(Dataset_Consumer.word_count_list, emails)
-print("PROGRAM WILL NOW EXIT (REMOVE THESE LINES)")
-exit(0)
-# Create training data
-x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, stratify=labels)
+features = multi_size_control(tfidf, input_dim)
 
 # batch_size, epoch and iteration
 batch_size = 1000
-num_epochs = 1
+num_epochs = 10
+
+# Create RNN
+hidden_dim = 128  # hidden layer dimension
+layer_dim = 1  # number of hidden layers
+output_dim = 20  # output dimension
+
+learning_rate = 0.05
+
+# tfidf = compute_tfidf(Dataset_Consumer.word_count_list, emails)
+# print("PROGRAM WILL NOW EXIT (REMOVE THESE LINES)")
+# exit(0)
+# Create training data
+x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, stratify=labels)
 
 # create feature and targets tensor for train set. As you remember we need variable to accumulate gradients. Therefore first we create tensor, then we will create variable
 featuresTrain = torch.from_numpy(x_train)
@@ -79,33 +95,23 @@ test = torch.utils.data.TensorDataset(featuresTest, targetsTest)
 train_loader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=False)
 test_loader = torch.utils.data.DataLoader(test, batch_size=batch_size, shuffle=False)
 
-# Create RNN
-input_dim = GloVe_Obj.dimensionCount  # input dimension
-hidden_dim = 100  # hidden layer dimension
-layer_dim = 2  # number of hidden layers
-output_dim = 20  # output dimension
-
-model = RNNModel(input_dim, hidden_dim, layer_dim, output_dim)
-
+model = RNNModel(input_dim, hidden_dim, layer_dim, output_dim).cuda()
 # Cross Entropy Loss
 error = nn.CrossEntropyLoss()
 
 # SGD Optimizer
-learning_rate = 0.05
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
-seq_dim = 100
 loss_list = []
 iteration_list = []
 avg_accuracy_list = []
 min_accuracy_list = []
 max_accuracy_list = []
-count = 0
 for epoch in range(num_epochs):
     startTime = time.time()
-    for i, (email, labels) in enumerate(train_loader):
-        train = Variable(email.view(-1, email.size()[0], input_dim)).float()
-        labels = Variable(labels)
+    for i, (tr_email, tr_labels) in enumerate(train_loader):
+        train = tr_email.view(-1, tr_email.size()[0], input_dim).float().cuda()
+        tr_labels = tr_labels.cuda()
 
         # Clear gradients
         optimizer.zero_grad()
@@ -114,7 +120,7 @@ for epoch in range(num_epochs):
         outputs = model(train)
 
         # Calculate softmax and ross entropy loss
-        loss = error(outputs, labels)
+        loss = error(outputs, tr_labels)
 
         # Calculating gradients
         loss.backward()
@@ -122,21 +128,20 @@ for epoch in range(num_epochs):
         # Update parameters
         optimizer.step()
 
-    print("Epoch finished in:", time.time() - startTime)
     # Calculate Accuracy
     # correct = 0
     # total = 0
     # Iterate through test dataset
     all_predictions = []
     for t_email, t_labels in test_loader:
-        train = Variable(t_email.view(-1, t_email.size()[0], input_dim)).float()
+        train = t_email.view(-1, t_email.size()[0], input_dim).float().cuda()
 
         # Forward propagation
         outputs = model(train)
 
         # Get predictions from the maximum value
         predicted = torch.max(outputs.data, 1)[1]
-        all_predictions = np.concatenate([all_predictions, predicted.numpy()])
+        all_predictions = np.concatenate([all_predictions, predicted.cpu().numpy()])
         # Total number of labels
         # total += t_labels.size(0)
 
@@ -152,23 +157,28 @@ for epoch in range(num_epochs):
     loss_list.append(loss.data)
     iteration_list.append(epoch)
     # Print Loss
-    print('Epoch: {}  Loss: {}  Accuracy: {} %'.format(epoch, loss.item(), accuracy))
+    print('Epoch: {} \t {:.2f}s Loss: {:.5f}  Accuracy: {:.9f} %'.format(epoch, time.time() - startTime, loss.item(),
+                                                                         accuracy))
 
-# visualization loss
-plt.plot(iteration_list, loss_list)
-plt.xlabel("Number of epochs")
-plt.ylabel("Loss")
-plt.title("RNN: Loss vs Number of epochs. Hidden Layer Size: {}x{}".format(hidden_dim, layer_dim))
-plt.grid(True)
-plt.show()
+data = [(iteration_list, loss_list)]
+plot_data(data, "Number of epochs", "Loss", "h_dim x n - {} x {}".format(hidden_dim, layer_dim), Dataset_Consumer,
+          "RNN")
+data = [(iteration_list, min_accuracy_list), (iteration_list, avg_accuracy_list), (iteration_list, max_accuracy_list)]
+plot_data(data, "Number of epochs", "Accuracy", "h_dim x n - {} x {}".format(hidden_dim, layer_dim), Dataset_Consumer,
+          "RNN", ticks=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
+plot_emails = []
+plot_labels = []
+final_preds = []
+for t_email, t_labels in test_loader:
+    train = t_email.view(-1, t_email.size()[0], input_dim).float().cuda()
+    # Forward propagation
+    outputs = model(train)
 
-# visualization accuracy
-plt.plot(iteration_list, min_accuracy_list, color="red")
-plt.plot(iteration_list, avg_accuracy_list, color="blue")
-plt.plot(iteration_list, max_accuracy_list, color="green")
-plt.xlabel("Number of epochs")
-plt.ylabel("Accuracy")
-plt.title("RNN: Accuracy vs Number of epochs. Hidden Layer Size: {}x{}".format(hidden_dim, layer_dim))
-plt.savefig('graph.png')
-plt.grid(True)
-plt.show()
+    # Get predictions from the maximum value
+    predicted = torch.max(outputs.data, 1)[1]
+    final_preds = np.concatenate([final_preds, predicted.cpu().numpy()])
+    plot_labels.append(t_labels)
+    plot_emails.append(t_email)
+
+labs = Dataset_Consumer.get_subdirectories(ROOTPATH + "/data/20Newsgroups/")
+plot_confusion_matrix(y_test, all_predictions, labs)

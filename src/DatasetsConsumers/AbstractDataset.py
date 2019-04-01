@@ -20,6 +20,9 @@ class AbstractDataset(abc.ABC):
     def load(self, load_filtered_data=False):
         pass
 
+    def get_name(self):
+        return type(self).__name__
+
     def pre_load(self):
         caller_name = type(self).__name__
         print("Being loading dataset:", caller_name)
@@ -67,7 +70,7 @@ class AbstractDataset(abc.ABC):
             for word in mail:
                 mail_dict[word] = mail_dict.get(word, 0) + 1
             self.word_count_list.append(mail_dict)
-        print("Finished generating vocabulary\n--- %s seconds ---" % (time.time() - start_time2))
+        print("Finished generating vocabulary in --- %s seconds ---" % (time.time() - start_time2))
 
     def filter_stop_words(self, text_tokenized):
         filtered_sentence = []

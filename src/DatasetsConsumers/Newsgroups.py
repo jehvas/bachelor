@@ -11,10 +11,10 @@ from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 from utility import utility
 
-stemmer = nltk.SnowballStemmer("english", ignore_stopwords=True)
-
 
 class Newsgroups(AbstractDataset):
+    label_names = []
+
     def load(self, load_filtered_data=False):
         if load_filtered_data:
             load_check_result = super().pre_load()
