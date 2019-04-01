@@ -47,10 +47,10 @@ def run_train(dataset, features, labels, parameters):
     hidden_dim = parameters['hidden_dim']
     layer_dim = parameters['layer_dim']
     learning_rate = parameters['learning_rate']
-    output_dim = parameters['output_dim']
-    input_dim = parameters['input_dim']
+    output_dim = len(set(labels))
+    input_dim = features.shape[1]
 
-    x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, stratify=labels, random_state=1)
+    x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, stratify=labels)
 
     # create feature and targets tensor for train set. As you remember we need variable to accumulate gradients. Therefore first we create tensor, then we will create variable
     features_train = torch.from_numpy(x_train)
@@ -73,7 +73,7 @@ def run_train(dataset, features, labels, parameters):
     error = nn.CrossEntropyLoss()
 
     # SGD Optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
     loss_list = []
     iteration_list = []
@@ -102,9 +102,6 @@ def run_train(dataset, features, labels, parameters):
             optimizer.step()
 
         # Calculate Accuracy
-        # correct = 0
-        # total = 0
-        # Iterate through test dataset
         all_predictions = []
         for t_email, t_labels in test_loader:
             train = t_email.view(-1, t_email.size()[0], input_dim).float().cuda()
@@ -115,10 +112,6 @@ def run_train(dataset, features, labels, parameters):
             # Get predictions from the maximum value
             predicted = torch.max(outputs.data, 1)[1]
             all_predictions = np.concatenate([all_predictions, predicted.cpu().numpy()])
-            # Total number of labels
-            # total += t_labels.size(0)
-
-            # correct += (predicted == t_labels).sum()
 
         precision, recall, fbeta_score, support = precision_recall_fscore_support(y_test, all_predictions)
         accuracy = sum(fbeta_score) / len(fbeta_score)  # 100 * correct / float(total)
@@ -152,9 +145,11 @@ def run_train(dataset, features, labels, parameters):
     plot_confusion_matrix(y_test, all_predictions, labs)
 
     return [
-        PlotClass([(iteration_list, loss_list)], "Number of epochs", "Loss", parameters, dataset, "RNN"),
+        PlotClass([(iteration_list, loss_list)], "Number of epochs", "Loss",
+                  "h_dim x n - {} x {}".format(hidden_dim, layer_dim), dataset,
+                  "RNN"),
         PlotClass([(iteration_list, min_accuracy_list), (iteration_list, avg_accuracy_list),
                    (iteration_list, max_accuracy_list)], "Number of epochs", "Accuracy",
-                  parameters, dataset,
+                  "h_dim x n - {} x {}".format(hidden_dim, layer_dim), dataset,
                   "RNN", ticks=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
     ]

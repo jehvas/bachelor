@@ -10,12 +10,11 @@ import time
 def compute_tf(word_dicts, emails):
     all_tfs = []
     for i in range(len(emails)):
-        email = emails[i]
+        # email = emails[i]
         word_dict = word_dicts[i]
         tf_dict = {}
-        email_count = len(email)
         for word, count in word_dict.items():
-            tf_dict[word] = count / float(email_count)
+            tf_dict[word] = count
         all_tfs.append(tf_dict)
     return all_tfs
 
@@ -45,11 +44,11 @@ def compute_idf(word_count_list, doc_list):
 # Compute TF*IDF
 def compute_tfidf(word_count_list, emails):
     start_time = time.time()
-    tf = compute_tf(word_count_list, emails)
-    idf = compute_idf(word_count_list, emails)
-    all_tfidf = tf
-    for email_tfs in all_tfidf:
-        for word in email_tfs:
-            email_tfs[word] = email_tfs[word] * idf[word]
+    all_tf = compute_tf(word_count_list, emails)
+    all_idf = compute_idf(word_count_list, emails)
+    tfidf = [[]] * len(all_tf)
+    for i, tf in enumerate(all_tf):
+        tmp_list = [tf[word] * all_idf[word] for word in tf]
+        tfidf[i] = tmp_list
     print("Generated TF*IDF in --- %s seconds ---" % (time.time() - start_time))
-    return all_tfidf
+    return tfidf

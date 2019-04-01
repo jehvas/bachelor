@@ -16,7 +16,6 @@ def size_control(vector, size):
 
 def multi_size_control(vectors, size):
     sized_vectors = np.zeros([len(vectors), size])
-    for i in range(len(vectors)):
-        vector = list(vectors[i].values())
+    for i, vector in enumerate(vectors):
         sized_vectors[i] = size_control(vector, size)
     return sized_vectors

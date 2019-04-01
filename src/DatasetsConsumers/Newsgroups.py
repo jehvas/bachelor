@@ -26,20 +26,19 @@ class Newsgroups(AbstractDataset):
         emails = []
         labels = []
         start_time = time.time()
-        val = Parallel(n_jobs=-1)(delayed(self.test)(direc + i + "/") for i in subdirecs)
+        val = Parallel(n_jobs=-1)(delayed(self.parse_email_category)(direc + i + "/") for i in subdirecs)
         for i in range(len(val)):
             labels += ([i] * len(val[i]))
 
         for sublist in val:
-            for item in sublist:
-                emails.append([word for word in item])
+                emails = emails + sublist
 
         print("--- %s seconds ---" % (time.time() - start_time))
         emails, labels = numpy.asarray(emails), numpy.asarray(labels)
         super().post_load(emails, labels)
         return emails, labels
 
-    def test(self, path):
+    def parse_email_category(self, path):
         print(path)
         words = []
         files = os.listdir(path)

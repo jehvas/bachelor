@@ -1,20 +1,44 @@
 import matplotlib.pyplot as plt
 
 
-def plot_data(data, x_label, y_label, title, dataset, algorithm, save=True, ticks = None):
+class PlotClass:
+    data = None
+    x_label = None
+    y_label = None
+    parameters = None
+    dataset = None
+    algorithm = None
+    ticks = None
+
+    def __init__(self, data, x_label, y_label, parameters, dataset, algorithm, ticks=None):
+        self.data = data
+        self.x_label = x_label
+        self.y_label = y_label
+        self.parameters = parameters
+        self.dataset = dataset
+        self.algorithm = algorithm
+        self.ticks = ticks
+
+
+def plot_data(plot_class, save=True):
     # visualization loss
-    for plotTuple in data:
+    for plotTuple in plot_class.data:
         x_data, y_data = plotTuple
         plt.plot(x_data, y_data)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    plt.ylim([0, 1])
-    if ticks is not None:
-        plt.yticks(ticks)
-    filename = "{} - {}.  {} vs {} ".format(algorithm, dataset.get_name(), x_label, y_label)
-    title = "{}".format(title)
-    plt.title(filename + '\n' + title)
+    plt.xlabel(plot_class.x_label)
+    plt.ylabel(plot_class.y_label)
+    if plot_class.ticks is not None:
+        plt.ylim([0, 1])
+        plt.yticks(plot_class.ticks)
+    title = "{} - {}. {} vs {} ".format(plot_class.algorithm, plot_class.dataset.get_name(), plot_class.x_label,
+                                        plot_class.y_label)
+
+    params_text = "\n".join("{}: {}".format(k, v) for k, v in plot_class.parameters.items())
+    plt.title(title, fontsize=18)
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    plt.text(1.025, 1., params_text, fontsize=14, verticalalignment='top', bbox=props)
     plt.grid(True)
+    # plt.subplots_adjust(right=0.8)
     if save:
-        plt.savefig(filename + title + '.png')
+        plt.savefig(title + '.png')
     plt.show()

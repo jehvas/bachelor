@@ -59,6 +59,8 @@ class AbstractDataset(abc.ABC):
 
     def setVocabulary(self, emails):
         start_time2 = time.time()
+        self.vocabulary = {}
+        self.word_count_list = []
         merged = list(itertools.chain(*emails))
         idx = 0
         for word in merged:
