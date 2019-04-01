@@ -4,6 +4,8 @@ import time
 
 import itertools
 
+import numpy as np
+
 from utility.utility import save, load, file_exists
 from nltk import word_tokenize
 from nltk.corpus import stopwords
@@ -12,10 +14,14 @@ from nltk.corpus import stopwords
 class AbstractDataset(abc.ABC):
     stop_words = set(stopwords.words("english"))
     vocabulary = {}
+    word_count_list = []
 
     @abc.abstractmethod
     def load(self, load_filtered_data=False):
         pass
+
+    def get_name(self):
+        return type(self).__name__
 
     def pre_load(self):
         caller_name = type(self).__name__
@@ -32,6 +38,8 @@ class AbstractDataset(abc.ABC):
 
     def post_load(self, emails, labels):
         caller_name = type(self).__name__
+        if type(emails) is not np.ndarray or type(labels) is not np.ndarray:
+            raise Exception("Dataset must return numpy arrays!")
         self.finalize(caller_name, emails, labels)
         self.setVocabulary(emails)
         save(emails, caller_name + "_saved_mails")
@@ -49,15 +57,20 @@ class AbstractDataset(abc.ABC):
         email_words = [w for w in sentence_no_stop_words if w.isalpha()]
         return email_words
 
-    def setVocabulary(self, words):
+    def setVocabulary(self, emails):
         start_time2 = time.time()
-        merged = list(itertools.chain(*words))
+        merged = list(itertools.chain(*emails))
         idx = 0
         for word in merged:
             if word not in self.vocabulary:
                 self.vocabulary[word] = idx
                 idx += 1
-        print("Vocab --- %s seconds ---" % (time.time() - start_time2))
+        for mail in emails:
+            mail_dict = {}
+            for word in mail:
+                mail_dict[word] = mail_dict.get(word, 0) + 1
+            self.word_count_list.append(mail_dict)
+        print("Finished generating vocabulary in --- %s seconds ---" % (time.time() - start_time2))
 
     def filter_stop_words(self, text_tokenized):
         filtered_sentence = []

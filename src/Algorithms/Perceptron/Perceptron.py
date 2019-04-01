@@ -11,12 +11,12 @@ from Glove.glovemodel import GloVe
 print("Running algorithm: Algorithms.SVM")
 
 # Load dataset
-Dataset_Consumer = Chromium()
+Dataset_Consumer = SpamHam()
 emails, labels = Dataset_Consumer.load(True)
 
 # Load GloVe model
-GloVe_Obj = GloVe("glove.6B.50d.txt", Dataset_Consumer)
-features = GloVe_Obj.get_features(emails)
+GloVe_Obj = GloVe(200)
+features = GloVe_Obj.get_features(emails, Dataset_Consumer)
 
 # Create training data
 x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2)

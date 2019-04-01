@@ -2,6 +2,8 @@ import os
 import time
 
 import itertools
+
+import numpy
 from joblib import Parallel, delayed
 import nltk
 
@@ -9,10 +11,10 @@ from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 from utility import utility
 
-stemmer = nltk.SnowballStemmer("english", ignore_stopwords=True)
-
 
 class Newsgroups(AbstractDataset):
+    label_names = []
+
     def load(self, load_filtered_data=False):
         if load_filtered_data:
             load_check_result = super().pre_load()
@@ -33,6 +35,7 @@ class Newsgroups(AbstractDataset):
                 emails.append([word for word in item])
 
         print("--- %s seconds ---" % (time.time() - start_time))
+        emails, labels = numpy.asarray(emails), numpy.asarray(labels)
         super().post_load(emails, labels)
         return emails, labels
 

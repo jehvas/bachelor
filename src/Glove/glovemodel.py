@@ -4,6 +4,7 @@ import os
 import time
 import torch
 
+from utility.TFIDF import compute_tfidf
 from utility.utility import print_progress, file_exists, load, save, get_file_path
 from sklearn import preprocessing
 
@@ -60,22 +61,40 @@ class GloVe:
 
     # Check if features exist
     def get_features(self, emails, dataset):
+        print("Loading embedding features")
         dataset_name = type(dataset).__name__
-        feature_file_name = dataset_name + '_features'
+        feature_file_name = dataset_name + '_features_' + str(self.dimensionCount)
         if file_exists(feature_file_name):
             return load(feature_file_name)
         self.load_glove_model()
-        sum_vectors_array = self.sum_vectors(emails)
+        tfidf = compute_tfidf(dataset.word_count_list, emails)
+        sum_vectors_array = self.sum_vectors(emails, tfidf)
         features = preprocessing.scale(sum_vectors_array)
         save(features, feature_file_name)
         return features
 
-    def sum_vectors(self, words_in_emails):
+    def sum_vectors2(self, words_in_emails, tfidf):
         all_vector_sum = []
-        for words in words_in_emails:
+        for i in range(len(words_in_emails)):
+            words = words_in_emails[i]
             vector_sum = np.zeros(self.dimensionCount)
-            for i in range(len(words)):
-                if words[i] in self.model:
-                    vector_sum += self.model[words[i]].numpy()
+            for word in words:
+                if word in self.model:
+                    word_vector = self.model[word].numpy()
+                    word_vector *= tfidf[i][word]
+                    vector_sum += word_vector
+            all_vector_sum.append(vector_sum)
+        return all_vector_sum
+
+    def sum_vectors(self, words_in_emails, tfidf):
+        all_vector_sum = []
+        for i in range(len(words_in_emails)):
+            words = words_in_emails[i]
+            vector_sum = np.zeros(self.dimensionCount)
+            for word in words:
+                if word in self.model:
+                    word_vector = self.model[word].numpy()
+                    # word_vector *= tfidf[i][word]
+                    vector_sum += word_vector
             all_vector_sum.append(vector_sum)
         return all_vector_sum
