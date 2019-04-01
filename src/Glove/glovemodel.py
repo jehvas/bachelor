@@ -96,5 +96,6 @@ class GloVe:
                     word_vector = self.model[word].numpy()
                     # word_vector *= tfidf[i][word]
                     vector_sum += word_vector
+            vector_sum = vector_sum/len(words)
             all_vector_sum.append(vector_sum)
         return all_vector_sum
