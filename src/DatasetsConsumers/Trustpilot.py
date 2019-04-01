@@ -59,8 +59,8 @@ class Trustpilot(AbstractDataset):
 
 
         labels = list(zip(ratings, genders))
-        print(len(labels))
-        print(len(reviews))
+        labels = np.asarray(labels)
+        reviews = np.asarray(reviews)
         super().post_load(reviews, labels)
         print(Counter(ratings))
         print(Counter(genders))
