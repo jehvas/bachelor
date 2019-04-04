@@ -10,8 +10,9 @@ If len(vector) < size, the vector is repeated until it matches the desired size.
 
 
 def size_control(vector, size):
+    vector = list(vector)
     if len(vector) < size:
-        vector *= math.ceil(size / len(vector))
+        vector = vector * math.ceil(size / len(vector))
     return vector[:size]
 
 def multi_size_control(vectors, size):

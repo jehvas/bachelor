@@ -1,13 +1,12 @@
 import os
-import re
+from typing import List
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
-from utility import utility
 
 
 class Spamassassin(AbstractDataset):
-    def load(self, load_filtered_data=False):
+    def load(self, load_filtered_data: bool=False) -> (List[List[str]], List[int]):
         if load_filtered_data:
             load_check_result = super().pre_load()
             if load_check_result is not None:
@@ -15,15 +14,15 @@ class Spamassassin(AbstractDataset):
 
         direcs = [ROOTPATH + "/data/SpamAssassin/easy_ham/", ROOTPATH + "/data/SpamAssassin/spam_2/"]
 
-        words = []
-        labels = []
+        words: List[List[str]] = []
+        labels: List[int] = []
 
         regex = r"/(<([^>]+)>)/"
         for direc in direcs:
             files = os.listdir(direc)
 
-            emails = [direc + email for email in files]
-            ec = len(emails)
+            emails: List[str] = [direc + email for email in files]
+            ec: int = len(emails)
             for email in emails:
                 if "ham" in direc:
                     labels.append(0)
@@ -37,7 +36,7 @@ class Spamassassin(AbstractDataset):
                 ec = ec - 1
                 f = open(email, encoding="latin-1")
                 text = f.read()
-                #text_without_html = re.sub(regex, "", text)
+                # text_without_html = re.sub(regex, "", text)
                 f.close()
 
                 words.append(self.process_single_mail(text))

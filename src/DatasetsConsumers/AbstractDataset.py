@@ -3,6 +3,7 @@ import abc
 import time
 
 import itertools
+from typing import List, Dict
 
 import numpy as np
 
@@ -13,17 +14,17 @@ from nltk.corpus import stopwords
 
 class AbstractDataset(abc.ABC):
     stop_words = set(stopwords.words("english"))
-    vocabulary = {}
-    word_count_list = []
+    vocabulary: dict = {}
+    word_count_list: List = []
 
     @abc.abstractmethod
-    def load(self, load_filtered_data=False):
+    def load(self, load_filtered_data: bool = False) -> (List[List[str]], List[int]):
         pass
 
-    def get_name(self):
+    def get_name(self) -> str:
         return type(self).__name__
 
-    def pre_load(self):
+    def pre_load(self) -> (List[List[str]], List[int]):
         caller_name = type(self).__name__
         print("Being loading dataset:", caller_name)
         if file_exists(caller_name + "_saved_mails") and file_exists(caller_name + "_saved_labels"):
@@ -36,7 +37,7 @@ class AbstractDataset(abc.ABC):
             print("Saved mails and labels not found... Creating them\n")
             return None
 
-    def post_load(self, emails, labels):
+    def post_load(self, emails: np.ndarray, labels: np.ndarray) -> None:
         caller_name = type(self).__name__
         if type(emails) is not np.ndarray or type(labels) is not np.ndarray:
             raise Exception("Dataset must return numpy arrays!")
@@ -45,19 +46,19 @@ class AbstractDataset(abc.ABC):
         save(emails, caller_name + "_saved_mails")
         save(labels, caller_name + "_saved_labels")
 
-    def finalize(self, name, emails, labels):
+    def finalize(self, name: str, emails: np.ndarray, labels: np.ndarray):
         if len(emails) != len(labels):
             raise Exception("length of emails & labels should match!!")
 
         print("Finished loading dataset:", name, "\t\t", "Size: ", len(emails), ",", len(labels))
 
-    def process_single_mail(self, text):
+    def process_single_mail(self, text: str) -> List[str]:
         text_tokenized = word_tokenize(text.lower())
         sentence_no_stop_words = self.filter_stop_words(text_tokenized)
         email_words = [w for w in sentence_no_stop_words if w.isalpha()]
         return email_words
 
-    def setVocabulary(self, emails):
+    def setVocabulary(self, emails: np.ndarray) -> None:
         start_time2 = time.time()
         self.vocabulary = {}
         self.word_count_list = []
@@ -68,13 +69,13 @@ class AbstractDataset(abc.ABC):
                 self.vocabulary[word] = idx
                 idx += 1
         for mail in emails:
-            mail_dict = {}
+            mail_dict: Dict = {}
             for word in mail:
                 mail_dict[word] = mail_dict.get(word, 0) + 1
             self.word_count_list.append(mail_dict)
         print("Finished generating vocabulary in --- %s seconds ---" % (time.time() - start_time2))
 
-    def filter_stop_words(self, text_tokenized):
+    def filter_stop_words(self, text_tokenized: List[str]) -> List[str]:
         filtered_sentence = []
         for w in text_tokenized:
             if w not in self.stop_words:

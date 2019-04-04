@@ -1,9 +1,12 @@
+from typing import Dict
+
 import numpy as np
 import os
 
 import time
 import torch
 
+from DatasetsConsumers.AbstractDataset import AbstractDataset
 from utility.TFIDF import compute_tfidf
 from utility.utility import print_progress, file_exists, load, save, get_file_path
 from sklearn import preprocessing
@@ -19,19 +22,19 @@ class GloVe:
     glove_file = ''
     model = {}
 
-    def __init__(self, dimension_count):
+    def __init__(self, dimension_count: int) -> None:
         self.dimensionCount = dimension_count
         self.glove_file = "glove.6B." + str(dimension_count) + "d.txt"
 
     # Load model
-    def load_glove_model(self):
+    def load_glove_model(self) -> None:
         glove_model_file_name = "glove_model_" + self.glove_file
         if file_exists(glove_model_file_name):
             self.model = load(glove_model_file_name)
         else:
             self.load_word_embeddings(self.glove_file, glove_model_file_name)
 
-    def load_word_embeddings(self, glove_file, save_name):
+    def load_word_embeddings(self, glove_file: str, save_name: str) -> None:
         print("Loading Glove word embeddings")
         with open(GLOVE_DIR + glove_file, 'r+', encoding="utf8") as f:
             for line in f:
@@ -42,7 +45,7 @@ class GloVe:
             save(self.model, save_name)
             print("Done.", len(self.model), " words of loaded!")
 
-    def get_weights_matrix(self, vocabulary):
+    def get_weights_matrix(self, vocabulary: Dict) -> torch.Tensor:
         if file_exists("wm"):
             return load("wm")
         else:
@@ -60,7 +63,7 @@ class GloVe:
             return weights_matrix
 
     # Check if features exist
-    def get_features(self, emails, dataset):
+    def get_features(self, emails: np.array, dataset: AbstractDataset) -> np.array:
         print("Loading embedding features")
         dataset_name = type(dataset).__name__
         feature_file_name = dataset_name + '_features_' + str(self.dimensionCount)

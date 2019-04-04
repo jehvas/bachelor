@@ -148,13 +148,10 @@ def run_train(dataset, features, labels, parameters):
         plot_labels.append(t_labels)
         plot_emails.append(t_email)
 
-    labs = dataset.get_subdirectories(ROOTPATH + "/data/20Newsgroups/")
-    plot_confusion_matrix(y_test, all_predictions, labs)
-
-    return [
-        PlotClass([(iteration_list, loss_list)], "Number of epochs", "Loss", parameters, dataset, "RNN"),
-        PlotClass([(iteration_list, min_accuracy_list), (iteration_list, avg_accuracy_list),
-                   (iteration_list, max_accuracy_list)], "Number of epochs", "Accuracy",
-                  parameters, dataset,
-                  "RNN", ticks=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
-    ]
+    return ([
+                PlotClass([(iteration_list, loss_list)], "Number of epochs", "Loss", parameters, dataset, "RNN"),
+                PlotClass([(iteration_list, min_accuracy_list), (iteration_list, avg_accuracy_list),
+                           (iteration_list, max_accuracy_list)], "Number of epochs", "Accuracy",
+                          parameters, dataset,
+                          "RNN", ticks=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
+            ], y_test, all_predictions)

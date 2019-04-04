@@ -1,13 +1,13 @@
 import os
 
-import numpy
+import numpy as np
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 
 
 class SpamHam(AbstractDataset):
-    def load(self, load_filtered_data=False):
+    def load(self, load_filtered_data=False) -> (np.ndarray, np.ndarray):
         if load_filtered_data:
             load_check_result = super().pre_load()
             if load_check_result is not None:
@@ -36,6 +36,6 @@ class SpamHam(AbstractDataset):
             f.close()
 
             words.append(self.process_single_mail(text))
-        words, labels = numpy.asarray(words), numpy.asarray(labels)
+        words, labels = np.asarray(words), np.asarray(labels)
         super().post_load(words, labels)
         return words, labels
