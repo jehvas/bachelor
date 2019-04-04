@@ -38,7 +38,12 @@ class AbstractDataset(abc.ABC):
 
     def post_load(self, emails, labels):
         caller_name = type(self).__name__
-        if type(emails) is not np.ndarray or type(labels) is not np.ndarray:
+
+        if type(labels) == tuple:
+            lb1, lb2 = labels
+            if type(emails) is not np.ndarray or type(lb1) is not np.ndarray or type(lb2) is not np.ndarray:
+                raise Exception("Dataset must return numpy arrays!")
+        elif type(emails) is not np.ndarray or type(labels) is not np.ndarray:
             raise Exception("Dataset must return numpy arrays!")
         self.finalize(caller_name, emails, labels)
         self.setVocabulary(emails)
@@ -46,7 +51,11 @@ class AbstractDataset(abc.ABC):
         save(labels, caller_name + "_saved_labels")
 
     def finalize(self, name, emails, labels):
-        if len(emails) != len(labels):
+        if type(labels) == tuple:
+            lb1, lb2 = labels
+            if len(emails) != len(lb1) and len(emails) != len(lb2):
+                raise Exception("length of emails & labels should match!!")
+        elif len(emails) != len(labels):
             raise Exception("length of emails & labels should match!!")
 
         print("Finished loading dataset:", name, "\t\t", "Size: ", len(emails), ",", len(labels))

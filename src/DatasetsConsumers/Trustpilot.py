@@ -23,20 +23,20 @@ class Trustpilot(AbstractDataset):
             load_check_result = super().pre_load()
             if load_check_result is not None:
                 reviews, labels = load_check_result
-                labels = list((list(zip(*labels)))[label_idx])
+                ratings, genders = labels
                 if label_idx == 1:
-                    return reviews, self.filter_gender(labels)
-                return reviews, labels
+                    return self.filter_gender(reviews, genders)
+                return reviews, ratings
 
-        direc = ROOTPATH + "/data/Trustpilot/denmark.auto-adjusted_gender.NUTS-regions.jsonl.tmp"
+        direc = ROOTPATH + "/data/Trustpilot/united_states.auto-adjusted_gender.geocoded.jsonl.tmp"
 
         with open(direc, 'r', encoding='UTF8') as f:
             small_file = []
             for i, l in enumerate(f):
                 small_file.append(l)
-                #if len(small_file) == 2500:
-                    #break
-            val = Parallel(n_jobs=-1)(delayed(self.process_user_object)(i, line) for i, line in enumerate(small_file))
+                if len(small_file) == 2000:
+                    break
+            val = Parallel(n_jobs=1)(delayed(self.process_user_object)(i, line) for i, line in enumerate(small_file))
             reviews = []
             ratings = []
             num_empty_reviews = 0
@@ -46,36 +46,36 @@ class Trustpilot(AbstractDataset):
                 _reviews, _ratings, _num_empty_reviews, _gender = data
 
                 for i, rating in enumerate(_ratings):
-                    try:
-                        if num_in_class[rating-1] <= 10000:
-                            num_in_class[rating-1] += 1
-                            reviews.append(_reviews[i])
-                            ratings.append(_ratings[i]-1) # to make sure ratings match index starting from 0
-                            genders.append(_gender)
-                    except:
-                        print(rating)
+                    rating_num = int(rating)-1 # to make sure ratings match index starting from 0 and to accommodate that rating might be a string.
+
+                    if num_in_class[rating_num] < 100:
+                        num_in_class[rating_num] += 1
+                        reviews.append(_reviews[i])
+                        ratings.append(rating_num)
+                        genders.append(_gender)
 
                 num_empty_reviews += _num_empty_reviews
 
 
-        labels = list(zip(ratings, genders))
-        labels = np.asarray(labels)
-        reviews = np.asarray(reviews)
-        super().post_load(reviews, labels)
+
+        ratings = np.array(ratings)
+        genders = np.array(genders)
+        reviews = np.array(reviews)
+        super().post_load(reviews, (ratings, genders))
+
         print(Counter(ratings))
         print(Counter(genders))
         print("Empty reviews: ", num_empty_reviews)
-        labels = list((list(zip(*labels)))[label_idx])
+        #labels = list((list(zip(*labels)))[label_idx])
         if label_idx == 1:
-            print(len(reviews), " , ", len(genders))
             return self.filter_genders(reviews, genders)
-        print(len(reviews), " , ", len(labels))
-        return reviews, labels
+
+        return reviews, ratings
 
     def filter_genders(self, reviews, genders):
         idx_to_delete = []
         for i, gender in enumerate(genders):
-            if gender == "U":
+            if gender == 2:
                 idx_to_delete += i
         for i in reversed(idx_to_delete):
             genders.pop(i)
@@ -100,9 +100,12 @@ class Trustpilot(AbstractDataset):
                     ratings.append(rating)
                     if "gender" in user_json_object and (
                             user_json_object["gender"] == "M" or user_json_object["gender"] == "F"):
-                        gender = user_json_object["gender"]
+                        if user_json_object["gender"] == "M":
+                            gender = 0
+                        elif user_json_object["gender"] == "F":
+                            gender = 1
                     else:
-                        gender = "U"
+                        gender = 2
                 else:
                     num_empty_review += 1
         return reviews, ratings, num_empty_review, gender
