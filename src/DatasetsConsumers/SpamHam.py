@@ -8,6 +8,8 @@ from rootfile import ROOTPATH
 
 class SpamHam(AbstractDataset):
     def load(self, load_filtered_data=False) -> (np.ndarray, np.ndarray):
+        self.classes = ['Ham', 'Spam']
+
         if load_filtered_data:
             load_check_result = super().pre_load()
             if load_check_result is not None:

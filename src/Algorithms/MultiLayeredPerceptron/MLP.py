@@ -8,13 +8,6 @@ from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import train_test_split as tts
 from torch import optim
 
-from DatasetsConsumers.SpamHam import SpamHam
-from DatasetsConsumers.Newsgroups import Newsgroups
-from DatasetsConsumers.Spamassassin import Spamassassin
-from DatasetsConsumers.Trustpilot import Trustpilot
-from Glove.glovemodel import GloVe
-from rootfile import ROOTPATH
-from utility.confusmatrix import plot_confusion_matrix
 from utility.plotter import PlotClass
 
 
@@ -38,6 +31,14 @@ class Net(nn.Module):
         return x
 
 
+def get_name():
+    return 'MLP'
+
+
+def uniqiueapsodjaapskdj():
+    pass
+
+
 def run_train(dataset, features, labels, parameters):
     batch_size = parameters['batch_size']
     num_epochs = parameters['num_epochs']
@@ -48,22 +49,19 @@ def run_train(dataset, features, labels, parameters):
     input_dim = parameters['input_dim']
 
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
-    n_inputs = x_train
 
-    zippedtrain = list(zip(x_train, y_train))
-    zippedtest = list(zip(x_test, y_test))
-
+    zippedtrain = list(zip(x_train, torch.Tensor(y_train).long()))
+    zippedtest = list(zip(x_test, torch.Tensor(y_test).long()))
 
     trainloader = torch.utils.data.DataLoader(zippedtrain, batch_size=batch_size,
-                                              shuffle=False, num_workers=4)
+                                              shuffle=False)
     testloader = torch.utils.data.DataLoader(zippedtest, batch_size=batch_size,
-                                             shuffle=False, num_workers=4)
-
+                                             shuffle=False)
 
     model = Net(input_dim, hidden_dim, layer_dim, output_dim)
 
-    #criterion = nn.CrossEntropyLoss()
-    criterion = nn.NLLLoss()
+    criterion = nn.CrossEntropyLoss(weight=parameters['class_weights'])
+    # criterion = nn.NLLLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     loss_list = []
@@ -97,7 +95,6 @@ def run_train(dataset, features, labels, parameters):
 
             all_predictions = np.concatenate([all_predictions, predicted.numpy()])
 
-
         precision, recall, fbeta_score, support = precision_recall_fscore_support(y_test, all_predictions)
         accuracy = sum(fbeta_score) / len(fbeta_score)  # 100 * correct / float(total)
 
@@ -110,7 +107,6 @@ def run_train(dataset, features, labels, parameters):
         print(
             'Epoch: {} \t {:.2f}s Loss: {:.5f}  Accuracy: {:.9f} %'.format(epoch, time.time() - start_time, loss.item(),
                                                                            accuracy))
-
 
     plot_emails = []
     plot_labels = []
@@ -125,14 +121,10 @@ def run_train(dataset, features, labels, parameters):
         plot_labels.append(inputs)
         plot_emails.append(labels)
 
-
-    #labs = dataset.get_subdirectories(ROOTPATH + "/data/20Newsgroups/")
-    plot_confusion_matrix(y_test, all_predictions, [0, 1, 2, 3, 4])
-
-    return [
-        PlotClass([(iteration_list, loss_list)], "Number of epochs", "Loss", parameters, dataset, "RNN"),
-        PlotClass([(iteration_list, min_accuracy_list), (iteration_list, avg_accuracy_list),
-                   (iteration_list, max_accuracy_list)], "Number of epochs", "Accuracy",
-                  parameters, dataset,
-                  "RNN", ticks=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
-    ]
+    return ([
+                PlotClass([(iteration_list, loss_list)], "Number of epochs", "Loss", parameters, dataset, "MLP"),
+                PlotClass([(iteration_list, min_accuracy_list), (iteration_list, avg_accuracy_list),
+                           (iteration_list, max_accuracy_list)], "Number of epochs", "Accuracy",
+                          parameters, dataset,
+                          "MLP", ticks=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
+            ], y_test, all_predictions)

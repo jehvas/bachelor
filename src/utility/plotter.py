@@ -40,5 +40,5 @@ def plot_data(plot_class, save=True):
     plt.grid(True)
     # plt.subplots_adjust(right=0.8)
     if save:
-        plt.savefig(title + '.png')
+        plt.savefig('imgs/' + title + '.png')
     plt.show()

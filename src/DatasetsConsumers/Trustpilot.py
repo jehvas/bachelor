@@ -1,22 +1,18 @@
-import os
+import ast
 from collections import Counter
-import json
+from typing import List
 import numpy as np
-from flashtext.keyword import KeywordProcessor
-from flask import Flask
 from joblib import Parallel, delayed
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
-import ast
 
 
 class Trustpilot(AbstractDataset):
     num_no_gender_specified = 0
     num_json_parse_errors = 0
-    gender_list = []
+    gender_list: List = []
     num_line = 0
-    keyword_processor = KeywordProcessor()
 
     def load(self, load_filtered_data=False, label_idx=0):
         if load_filtered_data:
@@ -46,7 +42,8 @@ class Trustpilot(AbstractDataset):
                 _reviews, _ratings, _num_empty_reviews, _gender = data
 
                 for i, rating in enumerate(_ratings):
-                    rating_num = int(rating)-1 # to make sure ratings match index starting from 0 and to accommodate that rating might be a string.
+                    rating_num = int(
+                        rating) - 1  # to make sure ratings match index starting from 0 and to accommodate that rating might be a string.
 
                     if num_in_class[rating_num] < 100:
                         num_in_class[rating_num] += 1
@@ -56,8 +53,6 @@ class Trustpilot(AbstractDataset):
 
                 num_empty_reviews += _num_empty_reviews
 
-
-
         ratings = np.array(ratings)
         genders = np.array(genders)
         reviews = np.array(reviews)
@@ -66,13 +61,13 @@ class Trustpilot(AbstractDataset):
         print(Counter(ratings))
         print(Counter(genders))
         print("Empty reviews: ", num_empty_reviews)
-        #labels = list((list(zip(*labels)))[label_idx])
+        # labels = list((list(zip(*labels)))[label_idx])
         if label_idx == 1:
             return self.filter_genders(reviews, genders)
 
         return reviews, ratings
 
-    def filter_genders(self, reviews, genders):
+    def filter_genders(self, reviews: np.array, genders: np.array) -> (np.array, np.array):
         idx_to_delete = []
         for i, gender in enumerate(genders):
             if gender == 2:

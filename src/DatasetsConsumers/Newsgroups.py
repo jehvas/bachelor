@@ -16,13 +16,16 @@ class Newsgroups(AbstractDataset):
     label_names = []
 
     def load(self, load_filtered_data=False):
+        direc = ROOTPATH + "/data/20Newsgroups/"
+        subdirecs = self.get_subdirectories(direc)
+        self.classes = subdirecs
+
         if load_filtered_data:
             load_check_result = super().pre_load()
             if load_check_result is not None:
                 return load_check_result
 
-        direc = ROOTPATH + "/data/20Newsgroups/"
-        subdirecs = self.get_subdirectories(direc)
+
         emails = []
         labels = []
         start_time = time.time()

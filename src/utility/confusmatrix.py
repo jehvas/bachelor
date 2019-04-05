@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 
 
-def plot_confusion_matrix(y_true, y_pred, classes,
+def plot_confusion_matrix(y_true, y_pred, dataset, algorithm,
                           normalize=False,
                           title=None,
                           cmap=plt.cm.Blues):
@@ -21,7 +21,7 @@ def plot_confusion_matrix(y_true, y_pred, classes,
     # Compute confusion matrix
     cm = confusion_matrix(y_true, y_pred)
     # Only use the labels that appear in the data
-    classes = classes
+    classes = dataset.classes
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
         print("Normalized confusion matrix")
@@ -56,4 +56,6 @@ def plot_confusion_matrix(y_true, y_pred, classes,
 
     np.set_printoptions(precision=2)
     plt.grid(True)
+    title = "{} - {}".format(algorithm, type(dataset).__name__)
+    plt.savefig('imgs/' + title + '.png')
     plt.show()

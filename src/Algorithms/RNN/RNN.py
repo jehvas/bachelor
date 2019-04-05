@@ -1,15 +1,13 @@
-import numpy as np
 import time
+
+import numpy as np
 import torch
+import torch.utils.data
 from sklearn.metrics import precision_recall_fscore_support
+from sklearn.model_selection import train_test_split as tts
 from torch import nn
 from torch.autograd import Variable
-import torch.utils.data
 
-from sklearn.model_selection import train_test_split as tts
-
-from rootfile import ROOTPATH
-from utility.confusmatrix import plot_confusion_matrix
 from utility.plotter import PlotClass
 
 
@@ -39,9 +37,11 @@ class RNNModel(nn.Module):
         return out
 
 
-def run_train(dataset, features, labels, parameters):
-    print("Running algorithm: Algorithms.RNN")
+def get_name():
+    return 'RNN'
 
+
+def run_train(dataset, features, labels, parameters):
     batch_size = parameters['batch_size']
     num_epochs = parameters['num_epochs']
     hidden_dim = parameters['hidden_dim']
@@ -85,40 +85,20 @@ def run_train(dataset, features, labels, parameters):
         for i, (tr_email, tr_labels) in enumerate(train_loader):
             train = tr_email.view(-1, tr_email.size()[0], input_dim).float().cuda()
             tr_labels = tr_labels.cuda()
-
-            # Clear gradients
             optimizer.zero_grad()
-
-            # Forward propagation
             outputs = model(train)
-
-            # Calculate softmax and ross entropy loss
             loss = error(outputs, tr_labels)
-
-            # Calculating gradients
             loss.backward()
-
-            # Update parameters
             optimizer.step()
 
-        # Calculate Accuracy
-        # correct = 0
-        # total = 0
-        # Iterate through test dataset
         all_predictions = []
         for t_email, t_labels in test_loader:
             train = t_email.view(-1, t_email.size()[0], input_dim).float().cuda()
 
-            # Forward propagation
             outputs = model(train)
 
-            # Get predictions from the maximum value
             predicted = torch.max(outputs.data, 1)[1]
             all_predictions = np.concatenate([all_predictions, predicted.cpu().numpy()])
-            # Total number of labels
-            # total += t_labels.size(0)
-
-            # correct += (predicted == t_labels).sum()
 
         precision, recall, fbeta_score, support = precision_recall_fscore_support(y_test, all_predictions)
         accuracy = sum(fbeta_score) / len(fbeta_score)  # 100 * correct / float(total)
