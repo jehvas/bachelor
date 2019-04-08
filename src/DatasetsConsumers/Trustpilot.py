@@ -5,7 +5,6 @@ import numpy as np
 from joblib import Parallel, delayed
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
-from rootfile import ROOTPATH
 
 
 class Trustpilot(AbstractDataset):
@@ -25,7 +24,7 @@ class Trustpilot(AbstractDataset):
                 self.classes = [0, 1, 2, 3, 4]
                 return reviews, ratings
 
-        direc = ROOTPATH + "/data/Trustpilot/united_states.auto-adjusted_gender.geocoded.jsonl.tmp"
+        direc = "../../data/Trustpilot/united_states.auto-adjusted_gender.geocoded.jsonl.tmp"
 
         with open(direc, 'r', encoding='UTF8') as f:
             val = Parallel(n_jobs=-1)(delayed(self.process_user_object)(i, line) for i, line in enumerate(f))

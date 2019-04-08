@@ -11,10 +11,9 @@ from utility.TFIDF import compute_tfidf
 from utility.utility import print_progress, file_exists, load, save, get_file_path
 from sklearn import preprocessing
 
-from rootfile import ROOTPATH
 from utility.utility import file_exists, load, save
 
-GLOVE_DIR = ROOTPATH + "/data/GloveWordEmbeddings/"
+GLOVE_DIR = "../../data/GloveWordEmbeddings/"
 
 
 class GloVe:

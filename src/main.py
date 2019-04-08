@@ -16,7 +16,7 @@ from utility.plotter import plot_data
 def run_all():
     # Load dataset
     datasets = [Trustpilot(), SpamHam(), Newsgroups(), Spamassassin()]
-    algorithms = [MLP_tensorflow]
+    algorithms = [RNN]
 
     for dataset_consumer in datasets:
         for algorithm in algorithms:

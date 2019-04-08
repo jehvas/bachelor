@@ -8,7 +8,6 @@ from joblib import Parallel, delayed
 import nltk
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
-from rootfile import ROOTPATH
 from utility import utility
 
 
@@ -16,7 +15,7 @@ class Newsgroups(AbstractDataset):
     label_names = []
 
     def load(self, load_filtered_data=False):
-        direc = ROOTPATH + "/data/20Newsgroups/"
+        direc = "../../data/20Newsgroups/"
         subdirecs = self.get_subdirectories(direc)
         self.classes = subdirecs
 
