@@ -11,6 +11,8 @@ from tensorflow.python.keras import Input, Model, Sequential
 from tensorflow.python.keras.callbacks import EarlyStopping
 from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional
 from tensorflow.python.keras.optimizers import RMSprop
+import matplotlib.pyplot as plt
+
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -35,7 +37,7 @@ def run_train(dataset, emails, labels, parameters) -> (List, List, List):
     def RNN():
         inputs = Input(name='inputs', shape=[max_len])
         layer = Embedding(max_words, input_dim, input_length=max_len)(inputs)
-        layer = LSTM(64)(layer)
+        layer = Bidirectional(LSTM(64))(layer)
         layer = Dense(256, name='FC1')(layer)
         layer = Activation('relu')(layer)
         layer = Dropout(0.5)(layer)
@@ -49,11 +51,27 @@ def run_train(dataset, emails, labels, parameters) -> (List, List, List):
     model.compile(loss='sparse_categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
 
     #model.fit(x_train, np.asarray(y_train), epochs=20)
-    history = model.fit(sequences_matrix, y_train, batch_size=128, epochs=5,
+    history = model.fit(sequences_matrix, y_train, batch_size=128, epochs=10,
               validation_split=0.2)
 
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+    # summarize history for loss
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
 
-    predictions = model.predict(x_test)
+
+    # predictions = model.predict(x_test)
     # predictions = [np.argmax(x) for x in predictions]
 
     test_sequences = tok.texts_to_sequences(x_test)
