@@ -16,7 +16,7 @@ class AbstractDataset(abc.ABC):
     stop_words = set(stopwords.words("english"))
     vocabulary: dict = {}
     word_count_list: List = []
-    classes = []
+    classes: List = []
 
     @abc.abstractmethod
     def load(self, load_filtered_data: bool = False) -> (List[List[str]], List[int]):

@@ -70,8 +70,7 @@ class GloVe:
         if file_exists(feature_file_name):
             return load(feature_file_name)
         self.load_glove_model()
-        tfidf = compute_tfidf(dataset.word_count_list, emails)
-        sum_vectors_array = self.sum_vectors(emails, tfidf)
+        sum_vectors_array = self.sum_vectors(emails)
         features = preprocessing.scale(sum_vectors_array)
         save(features, feature_file_name)
         return features
@@ -89,15 +88,16 @@ class GloVe:
             all_vector_sum.append(vector_sum)
         return all_vector_sum
 
-    def sum_vectors(self, words_in_emails, tfidf):
+    def sum_vectors(self, words_in_emails):
         all_vector_sum = []
         for i in range(len(words_in_emails)):
             words = words_in_emails[i]
+            if (len(words) == 0):
+                print("WHAaaa")
             vector_sum = np.zeros(self.dimensionCount)
             for word in words:
                 if word in self.model:
                     word_vector = self.model[word].numpy()
-                    # word_vector *= tfidf[i][word]
                     vector_sum += word_vector
             vector_sum = vector_sum/len(words)
             all_vector_sum.append(vector_sum)

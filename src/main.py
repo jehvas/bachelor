@@ -15,12 +15,12 @@ from utility.plotter import plot_data
 
 def run_all():
     # Load dataset
-    datasets = [SpamHam(), Newsgroups(), Spamassassin(), Trustpilot()]
-    algorithms = [MLP, RNN]
+    datasets = [Trustpilot(), SpamHam(), Newsgroups(), Spamassassin()]
+    algorithms = [MLP_tensorflow]
 
     for dataset_consumer in datasets:
         for algorithm in algorithms:
-            emails, labels = dataset_consumer.load(True)
+            emails, labels = dataset_consumer.load(False)
             glove = GloVe(200)
             features = glove.get_features(emails, dataset_consumer)
             print("Running algorithm:", algorithm.get_name())
