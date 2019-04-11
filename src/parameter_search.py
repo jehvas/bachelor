@@ -45,7 +45,7 @@ def pick_hidden_layers(num_layers, dim):
                        tf.keras.layers.ELU(dim),
                        tf.keras.layers.ReLU(random.randint(1, 100) / 100, random.randint(1, 100) / 100,
                                             random.randint(1, 50)),
-                       tf.keras.layers.Softmax(random.randint(-2, 2)),
+                       #tf.keras.layers.Softmax(random.randint(-2, 2)),
                        tf.keras.layers.Dense(dim, activation=pick_activation_function())
                        ]
     return [possible_layers[random.randint(0, len(possible_layers) - 1)] for _ in range(num_layers)]
