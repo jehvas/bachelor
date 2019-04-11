@@ -5,7 +5,7 @@ import tensorflow as tf
 import numpy as np
 from sklearn.model_selection import train_test_split as tts
 from tensorflow.python.keras import Input, Model
-from tensorflow.python.keras.layers import Flatten, Dense, Activation, Dropout, Embedding
+from tensorflow.python.keras.layers import Flatten, Dense, Activation, Dropout, Embedding, ELU, PReLU, ReLU, Softmax
 from tensorflow.python.keras.optimizers import Adam
 
 from utility.plotter import PlotClass
@@ -30,25 +30,21 @@ def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, e
     dropout = parameters['dropout']
     num_epochs = parameters['num_epochs']
     batch_size = parameters['batch_size']
+    input_layer = parameters['input_layer']
+    hidden_layers = parameters['hidden_layers']
+    output_layer = parameters['output_layer']
 
     def MLP():
-        model = tf.keras.Sequential([
-            tf.keras.layers.Dense(input_dim, activation=tf.nn.relu),
+        layers = [input_layer] + hidden_layers + [output_layer]
+        model = tf.keras.Sequential(layers)
+
+        '''model = tf.keras.Sequential([
+            tf.keras.layers.Dense(hidden_dim, activation=tf.nn.softplus),
             tf.keras.layers.Dropout(dropout),
-            tf.keras.layers.Dense(hidden_dim, activation=tf.nn.relu),
-            tf.keras.layers.Dense(output_dim, activation=tf.nn.softmax)
-        ])
-        """
-        inputs = Input(name='inputs', shape=[max_len])
-        # layer = Embedding(len(matrix), input_dim, weights=[matrix], trainable=False, input_length=max_len)(inputs)
-        # layer = Flatten()(layer)
-        layer = Dense(hidden_dim, name='FC1')(inputs)
-        layer = Activation('relu')(layer)
-        layer = Dropout(dropout)(layer)
-        layer = Dense(output_dim, name='out_layer')(layer)
-        layer = Activation('sigmoid')(layer)
-        model = Model(inputs=inputs, outputs=layer)
-        """
+            tf.keras.layers.Dense(hidden_dim, activation=tf.nn.softsign),
+            tf.keras.layers.Dense(output_dim, activation=tf.nn.tanh)
+        ])'''
+
         return model
 
     mlp_model = MLP()

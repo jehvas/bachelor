@@ -1,11 +1,8 @@
 import os
 import time
 
-import itertools
-
 import numpy
 from joblib import Parallel, delayed
-import nltk
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
@@ -23,7 +20,7 @@ class Newsgroups(AbstractDataset):
             if load_check_result is not None:
                 return load_check_result
         direc = ROOTPATH + "data/20Newsgroups/"
-        subdirecs = self.get_subdirectories(direc)
+        #subdirecs = self.get_subdirectories(direc)
 
         emails = []
         labels = []

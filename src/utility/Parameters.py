@@ -18,10 +18,10 @@ def get_params(algorithm, dataset) -> Dict:
     if algorithm == 'RNN':
         pass
     elif algorithm == 'MLP_Tensorflow':
-        # re_dict['hidden_dim'] = 8192
+        re_dict['num_epochs'] = 30
         pass
     elif algorithm == 'MLP':
-        re_dict['num_epochs'] = 1
+        re_dict['num_epochs'] = 20
         if dsname == 'SpamHam':
             re_dict['class_weights'] = torch.FloatTensor([1, 2])
         elif dsname == 'Spamassassin':
