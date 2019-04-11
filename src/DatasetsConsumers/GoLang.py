@@ -1,4 +1,5 @@
 from DatasetsConsumers.CommonDevConsumer import CommonDevConsumer
+from rootfile import ROOTPATH
 
 
 class GoLang(CommonDevConsumer):
@@ -10,8 +11,8 @@ class GoLang(CommonDevConsumer):
             load_check_result = super().pre_load()
             if load_check_result is not None:
                 return load_check_result
-        words, labels = self.common_load('../data/Go-nuts/golang-nuts.json/golang-nuts.json',
-                                         '../data/Go-nuts/golang-nuts/',
+        words, labels = self.common_load(ROOTPATH + 'data/Go-nuts/golang-nuts.json/golang-nuts.json',
+                                         ROOTPATH + 'data/Go-nuts/golang-nuts/',
                                          load_filtered_data)
         super().post_load(words, labels)
         return words, labels

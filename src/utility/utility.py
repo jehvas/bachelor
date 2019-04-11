@@ -2,8 +2,9 @@ import pickle as p
 
 import os
 
+from rootfile import ROOTPATH
 
-output_path = "../output/"
+output_path = ROOTPATH + "output/"
 
 
 def save(object_to_save, file_name):

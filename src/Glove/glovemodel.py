@@ -5,9 +5,10 @@ from keras_preprocessing.text import Tokenizer
 from sklearn import preprocessing
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
+from rootfile import ROOTPATH
 from utility.utility import file_exists, load, save
 
-GLOVE_DIR = "../data/GloveWordEmbeddings/"
+GLOVE_DIR = ROOTPATH + "data/GloveWordEmbeddings/"
 
 
 class GloVe:

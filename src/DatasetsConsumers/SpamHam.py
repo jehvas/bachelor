@@ -3,6 +3,7 @@ import os
 import numpy as np
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
+from rootfile import ROOTPATH
 
 
 class SpamHam(AbstractDataset):
@@ -14,7 +15,7 @@ class SpamHam(AbstractDataset):
             if load_check_result is not None:
                 return load_check_result
 
-        direc = "../data/emails/"
+        direc = ROOTPATH + "data/emails/"
         files = os.listdir(direc)
 
         emails = [direc + email for email in files]

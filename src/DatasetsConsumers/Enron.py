@@ -4,9 +4,10 @@ import os
 import sys
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
+from rootfile import ROOTPATH
 from utility.utility import print_progress
 
-ENRON_FILE_PATH = "../data/Enron/emails.csv"
+ENRON_FILE_PATH = ROOTPATH + "data/Enron/emails.csv"
 ENRON_ROW_COUNT = 517401
 csv.field_size_limit(1_000_000)
 
