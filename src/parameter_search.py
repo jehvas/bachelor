@@ -15,7 +15,7 @@ import os
 log_file = ROOTPATH + 'Results/resultsfile.csv'
 
 if not os.path.isfile(log_file):
-    header_info = ['Avg FScore', 'Num Epochs', 'Hidden Dim', 'Layer Dim', 'Learning Rate', 'Input Layer',
+    header_info = ['Avg FScore', 'Num Epochs', 'Hidden Dim', 'Layer Dim', 'Dropout Rate', 'Learning Rate', 'Input Layer',
                    'Hidden Layers', 'Output Layer', 'Precision', 'Recall', 'FScore', 'Timestamp']
     with open(log_file, 'w+') as f:
         f.write(','.join(header_info) + '\n')
@@ -28,10 +28,11 @@ def log_to_file(parameters, precision, recall, fscore):
         str(parameters['num_epochs']),
         str(parameters['hidden_dim']),
         str(parameters['layer_dim']),
+        str(parameters['dropout']) if parameters['use_dropout'] else 'None',
         str(parameters['learning_rate']),
-        str(parameters['input_layer'].name),
+        str(parameters['input_function']),
         ';'.join([i.name for i in parameters['hidden_layers']]),
-        str(parameters['output_layer'].name),
+        str(parameters['output_function']),
         np.array2string(precision, separator=';', max_line_width=500),
         np.array2string(recall, separator=';', max_line_width=500),
         np.array2string(fscore, separator=';', max_line_width=500),
@@ -76,14 +77,15 @@ while True:
         'hidden_dim': hiddendim,
         'layer_dim': layerdim,
         'learning_rate': random.randint(1, 200) / 1000,
-        'input_layer': tf.keras.layers.Dense(features.shape[1], activation=pick_activation_function()),
+        'input_function': pick_activation_function(),
         'hidden_layers': pick_hidden_layers(layerdim, hiddendim),
-        'output_layer': tf.keras.layers.Dense(output_dim, activation=pick_activation_function()),
+        'output_function': pick_activation_function(),
         # 'class_weights': None,
-        'dropout': random.randint(1, 50) / 100,
+        'dropout': random.randint(1, 80) / 100,
         # 'max_len': 1024,
         'output_dim': output_dim,
-        'input_dim': features.shape[1]
+        'input_dim': features.shape[1],
+        'use_dropout': True if random.randint(1, 2) == 1 else False
     }
     print("\n#### STARTING RUN NUMBER {} #####\n".format(counter))
 

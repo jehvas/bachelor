@@ -30,12 +30,17 @@ def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, e
     dropout = parameters['dropout']
     num_epochs = parameters['num_epochs']
     batch_size = parameters['batch_size']
-    input_layer = parameters['input_layer']
+    input_function = parameters['input_function']
     hidden_layers = parameters['hidden_layers']
-    output_layer = parameters['output_layer']
+    output_function = parameters['output_function']
+    use_dropout = parameters['use_dropout']
 
     def MLP():
-        layers = [input_layer] + hidden_layers + [output_layer]
+
+        layers = [tf.keras.layers.Dense(features.shape[1], activation=input_function)] + \
+                 ([tf.keras.layers.Dropout(dropout)] if use_dropout else []) + \
+                 hidden_layers + \
+                 [tf.keras.layers.Dense(output_dim, activation=output_function)]
         model = tf.keras.Sequential(layers)
 
         '''model = tf.keras.Sequential([
