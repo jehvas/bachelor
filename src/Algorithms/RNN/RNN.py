@@ -65,8 +65,8 @@ def run_train(dataset, features, labels, parameters):
     test = torch.utils.data.TensorDataset(features_test, targets_test)
 
     # data loader
-    train_loader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=False)
-    test_loader = torch.utils.data.DataLoader(test, batch_size=batch_size, shuffle=False)
+    train_loader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=False, num_workers=0)
+    test_loader = torch.utils.data.DataLoader(test, batch_size=batch_size, shuffle=False, num_workers=0)
 
     model = RNNModel(input_dim, hidden_dim, layer_dim, output_dim).cuda()
     # Cross Entropy Loss

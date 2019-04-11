@@ -4,8 +4,6 @@ from typing import List
 import numpy as np
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
-from rootfile import ROOTPATH
-
 
 class Spamassassin(AbstractDataset):
     def load(self, load_filtered_data: bool=False) -> (List[List[str]], List[int]):
@@ -16,7 +14,7 @@ class Spamassassin(AbstractDataset):
             if load_check_result is not None:
                 return load_check_result
 
-        direcs = [ROOTPATH + "/data/SpamAssassin/easy_ham/", ROOTPATH + "/data/SpamAssassin/spam_2/"]
+        direcs = ["../../data/SpamAssassin/easy_ham/", "../../data/SpamAssassin/spam_2/"]
 
         words: List[List[str]] = []
         labels: List[int] = []
