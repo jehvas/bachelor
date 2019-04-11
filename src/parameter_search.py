@@ -23,15 +23,15 @@ if not os.path.isfile(log_file):
 
 def log_to_file(parameters, precision, recall, fscore):
     avg = sum(fscore) / len(fscore)
-    log_string = "{},{},{},{},{},{},{},{},{},{}".format(
+    log_string = "{},{},{},{},{},{},{},{},{},{},{},{}".format(
         avg,
         str(parameters['num_epochs']),
         str(parameters['hidden_dim']),
         str(parameters['layer_dim']),
         str(parameters['learning_rate']),
-        str(parameters['input_layer']),
-        str(parameters['hidden_layers']),
-        str(parameters['output_layer']),
+        str(parameters['input_layer'].name),
+        str([i.name for i in parameters['hidden_layers']]),
+        str(parameters['output_layer'].name),
         np.array2string(precision, separator=';', max_line_width=500),
         np.array2string(recall, separator=';', max_line_width=500),
         np.array2string(fscore, separator=';', max_line_width=500),
@@ -52,8 +52,8 @@ def pick_hidden_layers(num_layers, dim):
 
 
 def pick_activation_function():
-    possible_activations = [tf.nn.relu, tf.nn.softmax, tf.nn.sigmoid, tf.nn.elu, tf.nn.selu, tf.nn.softplus,
-                            tf.nn.softsign, tf.nn.tanh]
+    possible_activations = ["relu", "softmax", "sigmoid", "elu", "selu", "softplus",
+                            "softsign", "tanh"]
     return possible_activations[random.randint(0, len(possible_activations) - 1)]
 
 
