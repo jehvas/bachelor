@@ -16,15 +16,14 @@ class Newsgroups(AbstractDataset):
     label_names = []
 
     def load(self, load_filtered_data=False):
-        direc = ROOTPATH + "data/20Newsgroups/"
-        subdirecs = self.get_subdirectories(direc)
-        self.classes = subdirecs
+        self.classes = ['alt.atheism', 'comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware', 'comp.windows.x', 'misc.forsale', 'rec.autos', 'rec.motorcycles', 'rec.sport.baseball', 'rec.sport.hockey', 'sci.crypt', 'sci.electronics', 'sci.med', 'sci.space', 'soc.religion.christian', 'talk.politics.guns', 'talk.politics.mideast', 'talk.politics.misc', 'talk.religion.misc']
 
         if load_filtered_data:
             load_check_result = super().pre_load()
             if load_check_result is not None:
                 return load_check_result
-
+        direc = ROOTPATH + "data/20Newsgroups/"
+        subdirecs = self.get_subdirectories(direc)
 
         emails = []
         labels = []
