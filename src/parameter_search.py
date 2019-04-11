@@ -1,3 +1,4 @@
+import random
 import time
 
 import datetime
@@ -15,7 +16,7 @@ from utility.Parameters import get_params
 
 def log_to_file(idx, parameters, precision, recall, fscore):
     avg = sum(fscore) / len(fscore)
-    log_string = "{}\t{}\t{}\t{}\t{}\t{}\t{},".format(idx,
+    log_string = "{},{},{},{},{},{},{}".format(idx,
                                                       avg,
                                                       parameters,
                                                       np.array2string(precision, separator=';', max_line_width=500),
@@ -37,13 +38,13 @@ print("Running algorithm:", algorithm.get_name())
 while True:
     parameters = {
         'batch_size': 128,
-        'num_epochs': 1,
-        'hidden_dim': 128,
+        'num_epochs': 50,
+        'hidden_dim': random.randint(10, 500),
         'layer_dim': 1,
-        'learning_rate': 0.01,
-        'class_weights': None,
-        'dropout': 0.5,
-        'max_len': 1024,
+        'learning_rate': random.randint(1, 200) / 1000,
+        # 'class_weights': None,
+        'dropout': random.randint(1, 100) / 100,
+        # 'max_len': 1024,
         'output_dim': len(set(labels)),
         'input_dim': features.shape[1]
     }

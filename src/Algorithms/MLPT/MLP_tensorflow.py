@@ -26,7 +26,7 @@ def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, e
     output_dim = parameters['output_dim']
     hidden_dim = parameters['hidden_dim']
     input_dim = parameters['input_dim']
-    max_len = parameters['max_len']
+    # max_len = parameters['max_len']
     dropout = parameters['dropout']
     num_epochs = parameters['num_epochs']
     batch_size = parameters['batch_size']
