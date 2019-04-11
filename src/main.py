@@ -44,7 +44,7 @@ def run_all():
 
             dataset_consumer.setVocabulary(emails)
 
-            matrix = glove.get_weights_matrix(dataset_consumer.vocabulary, tok)
+            matrix = glove.get_weights_matrix(tok)
 
             data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset_consumer, matrix, sequences_matrix,
                                                                             emails, labels, parameters)

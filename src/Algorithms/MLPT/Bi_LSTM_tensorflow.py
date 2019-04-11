@@ -11,7 +11,6 @@ from utility.plotter import PlotClass
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-
 def get_name():
     return 'Bi-LSTM_Tensorflow'
 

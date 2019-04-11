@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 from sklearn.model_selection import train_test_split as tts
 from tensorflow.python.keras import Input, Model
-from tensorflow.python.keras.layers import Dense, Activation, Dropout, Embedding, Bidirectional, LSTM
+from tensorflow.python.keras.layers import Flatten, Dense, Activation, Dropout, Embedding, Bidirectional, LSTM
 from tensorflow.python.keras.optimizers import RMSprop, Adam
 
 from utility.plotter import PlotClass
@@ -27,6 +27,7 @@ def run_train(dataset, matrix, sequences_matrix, emails, labels, parameters) -> 
     def MLP():
         inputs = Input(name='inputs', shape=[max_len])
         layer = Embedding(len(matrix), input_dim, weights=[matrix], trainable=False, input_length=max_len)(inputs)
+        layer = Flatten()(layer)
         layer = Dense(hidden_dim, name='FC1')(layer)
         layer = Activation('relu')(layer)
         layer = Dropout(dropout)(layer)
@@ -39,7 +40,7 @@ def run_train(dataset, matrix, sequences_matrix, emails, labels, parameters) -> 
     mlp_model.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(), metrics=['accuracy'])
 
     history = mlp_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
-                            validation_data=(x_test, y_test))
+                            validation_data=(x_test, y_test), workers=4)
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 
@@ -49,7 +50,7 @@ def run_train(dataset, matrix, sequences_matrix, emails, labels, parameters) -> 
     accr = mlp_model.evaluate(x_test, y_test)
     print('Test set\n  Loss: {:0.3f}\n  Accuracy: {:0.3f}'.format(accr[0], accr[1]))
     return ([
-        PlotClass([(iteration_list, history.history['val_acc'])], "Epoch", "Accuracy", parameters, dataset, "MLP",
+        PlotClass([(iteration_list, history.history['val_accuracy'])], "Epoch", "Accuracy", parameters, dataset, "MLP",
                   legend=(['train', 'test'], 'upper left')),
         PlotClass([(iteration_list, history.history['val_loss'])], "Epoch", "Loss", parameters, dataset, "MLP",
                   legend=(['train', 'test'], 'upper left'))

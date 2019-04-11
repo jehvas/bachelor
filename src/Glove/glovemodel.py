@@ -38,11 +38,11 @@ class GloVe:
             save(self.model, save_name)
             print("Done.", len(self.model), " words of loaded!")
 
-    def get_weights_matrix(self, vocabulary: Dict, tokenizer: Tokenizer) -> np.array:
+    def get_weights_matrix(self, tokenizer: Tokenizer) -> np.array:
         if file_exists("wm"):
             return load("wm")
         else:
-            weights_matrix = np.zeros((len(vocabulary), self.dimensionCount))
+            weights_matrix = np.zeros((tokenizer.num_words, self.dimensionCount))
             for word, i in tokenizer.word_index.items():
                 try:
                     embedding_vector = self.model.get(word)

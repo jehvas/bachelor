@@ -18,7 +18,7 @@ def get_params(algorithm, dataset) -> Dict:
     if algorithm == 'RNN':
         pass
     elif algorithm == 'MLP_Tensorflow':
-        re_dict['num_epochs'] = 1
+        # re_dict['hidden_dim'] = 8192
         pass
     elif algorithm == 'MLP':
         re_dict['num_epochs'] = 1
@@ -32,7 +32,7 @@ def get_params(algorithm, dataset) -> Dict:
         elif dsname == 'Spamassassin':
             re_dict['class_weights'] = {0: 1, 1: 2}
     elif algorithm == 'Bi-LSTM_Tensorflow':
-        re_dict['num_epochs'] = 1
+        re_dict['num_epochs'] = 10
     elif algorithm == 'RNN_Tensorflow':
         re_dict['num_epochs'] = 1
     return re_dict
