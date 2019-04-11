@@ -15,7 +15,7 @@ class Newsgroups(AbstractDataset):
     label_names = []
 
     def load(self, load_filtered_data=False):
-        direc = "../../data/20Newsgroups/"
+        direc = "../data/20Newsgroups/"
         subdirecs = self.get_subdirectories(direc)
         self.classes = subdirecs
 

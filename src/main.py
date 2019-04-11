@@ -43,6 +43,7 @@ def run_all():
             sequences_matrix = sequence.pad_sequences(sequences, maxlen=max_len)
 
             dataset_consumer.setVocabulary(emails)
+
             matrix = glove.get_weights_matrix(dataset_consumer.vocabulary, tok)
 
             data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset_consumer, matrix, sequences_matrix,

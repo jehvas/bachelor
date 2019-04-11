@@ -3,7 +3,7 @@ import pickle as p
 import os
 
 
-output_path = "../../output/"
+output_path = "../output/"
 
 
 def save(object_to_save, file_name):

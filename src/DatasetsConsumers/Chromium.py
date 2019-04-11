@@ -1,7 +1,7 @@
 from DatasetsConsumers.CommonDevConsumer import CommonDevConsumer
 
-JSON_PATH = '../../data/Chromium/chromium-dev.json/chromium-dev.json'
-DATA_PATH = '../../data/Chromium/chromium-dev/'
+JSON_PATH = '../data/Chromium/chromium-dev.json/chromium-dev.json'
+DATA_PATH = '../data/Chromium/chromium-dev/'
 
 
 class Chromium(CommonDevConsumer):

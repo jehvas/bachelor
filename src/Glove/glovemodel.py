@@ -1,21 +1,13 @@
 from typing import Dict
 
 import numpy as np
-import os
-
-import time
-import torch
 from keras_preprocessing.text import Tokenizer
-from tensorflow import zeros
-
-from DatasetsConsumers.AbstractDataset import AbstractDataset
-from utility.TFIDF import compute_tfidf
-from utility.utility import print_progress, file_exists, load, save, get_file_path
 from sklearn import preprocessing
 
+from DatasetsConsumers.AbstractDataset import AbstractDataset
 from utility.utility import file_exists, load, save
 
-GLOVE_DIR = "../../data/GloveWordEmbeddings/"
+GLOVE_DIR = "../data/GloveWordEmbeddings/"
 
 
 class GloVe:
@@ -41,26 +33,25 @@ class GloVe:
             for line in f:
                 split_line = line.split()
                 word = split_line[0]
-                embedding = torch.from_numpy(np.array([float(val) for val in split_line[1:]]))
+                embedding = np.array([float(val) for val in split_line[1:]])
                 self.model[word] = embedding
             save(self.model, save_name)
             print("Done.", len(self.model), " words of loaded!")
 
-    def get_weights_matrix(self, vocabulary: Dict, tokenizer: Tokenizer) -> torch.Tensor:
+    def get_weights_matrix(self, vocabulary: Dict, tokenizer: Tokenizer) -> np.array:
         if file_exists("wm"):
             return load("wm")
         else:
-            weights_matrix = zeros((len(vocabulary), 100))
+            weights_matrix = np.zeros((len(vocabulary), self.dimensionCount))
             for word, i in tokenizer.word_index.items():
                 try:
                     embedding_vector = self.model.get(word)
                     if embedding_vector is not None:
                         weights_matrix[i] = embedding_vector
                 except KeyError:
-                    weights_matrix[i] = torch.from_numpy(np.random.normal(scale=0.6, size=(self.dimensionCount,)))
+                    weights_matrix[i] = np.random.normal(scale=0.6, size=(self.dimensionCount,))
             save(weights_matrix, "wm")
             return weights_matrix
-
 
             '''matrix_len = len(vocabulary)
             weights_matrix = torch.zeros((matrix_len, self.dimensionCount))
@@ -112,6 +103,6 @@ class GloVe:
                 if word in self.model:
                     word_vector = self.model[word].numpy()
                     vector_sum += word_vector
-            vector_sum = vector_sum/len(words)
+            vector_sum = vector_sum / len(words)
             all_vector_sum.append(vector_sum)
         return all_vector_sum

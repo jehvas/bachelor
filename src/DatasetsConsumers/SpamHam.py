@@ -14,7 +14,7 @@ class SpamHam(AbstractDataset):
             if load_check_result is not None:
                 return load_check_result
 
-        direc = "../../data/emails/"
+        direc = "../data/emails/"
         files = os.listdir(direc)
 
         emails = [direc + email for email in files]

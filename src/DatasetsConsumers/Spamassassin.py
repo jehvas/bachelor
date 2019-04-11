@@ -14,7 +14,7 @@ class Spamassassin(AbstractDataset):
             if load_check_result is not None:
                 return load_check_result
 
-        direcs = ["../../data/SpamAssassin/easy_ham/", "../../data/SpamAssassin/spam_2/"]
+        direcs = ["../data/SpamAssassin/easy_ham/", "../data/SpamAssassin/spam_2/"]
 
         words: List[List[str]] = []
         labels: List[int] = []
