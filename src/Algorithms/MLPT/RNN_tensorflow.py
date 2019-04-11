@@ -22,7 +22,7 @@ def get_name():
     return 'RNN_Tensorflow'
 
 
-def run_train(dataset, matrix, sequences_matrix, emails, labels, parameters) -> (List, List, List):
+def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, emails) -> (List, List, List):
     x_train, x_test, y_train, y_test = tts(sequences_matrix, labels, test_size=0.2, random_state=1, stratify=labels)
 
     output_dim = parameters['output_dim']

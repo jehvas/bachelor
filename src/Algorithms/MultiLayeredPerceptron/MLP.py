@@ -39,7 +39,7 @@ def uniqiueapsodjaapskdj():
     pass
 
 
-def run_train(dataset, features, sequences_matrix, emails, labels, parameters):
+def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, emails):
     batch_size = parameters['batch_size']
     num_epochs = parameters['num_epochs']
     hidden_dim = parameters['hidden_dim']

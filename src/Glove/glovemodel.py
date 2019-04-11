@@ -39,6 +39,7 @@ class GloVe:
             print("Done.", len(self.model), " words of loaded!")
 
     def get_weights_matrix(self, tokenizer: Tokenizer) -> np.array:
+        print(tokenizer.num_words)
         if file_exists("wm"):
             return load("wm")
         else:

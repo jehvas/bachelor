@@ -13,7 +13,7 @@ def get_params(algorithm, dataset) -> Dict:
         'learning_rate': 0.01,
         'class_weights': None,
         'dropout': 0.5,
-        'max_len': 128
+        'max_len': 1024
     }
     if algorithm == 'RNN':
         pass

@@ -1,10 +1,12 @@
 from typing import List
 
+import keras
+import tensorflow as tf
 import numpy as np
 from sklearn.model_selection import train_test_split as tts
 from tensorflow.python.keras import Input, Model
-from tensorflow.python.keras.layers import Flatten, Dense, Activation, Dropout, Embedding, Bidirectional, LSTM
-from tensorflow.python.keras.optimizers import RMSprop, Adam
+from tensorflow.python.keras.layers import Flatten, Dense, Activation, Dropout, Embedding
+from tensorflow.python.keras.optimizers import Adam
 
 from utility.plotter import PlotClass
 
@@ -13,8 +15,13 @@ def get_name():
     return 'MLP_Tensorflow'
 
 
-def run_train(dataset, matrix, sequences_matrix, emails, labels, parameters) -> (List, List, List):
-    x_train, x_test, y_train, y_test = tts(sequences_matrix, labels, test_size=0.2, random_state=1, stratify=labels)
+def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, emails) -> (List, List, List):
+    data = None
+    if features is not None:
+        data = features
+    elif matrix is not None:
+        data = matrix
+    x_train, x_test, y_train, y_test = tts(data, labels, test_size=0.2, random_state=1, stratify=labels)
 
     output_dim = parameters['output_dim']
     hidden_dim = parameters['hidden_dim']
@@ -25,15 +32,23 @@ def run_train(dataset, matrix, sequences_matrix, emails, labels, parameters) -> 
     batch_size = parameters['batch_size']
 
     def MLP():
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(input_dim, activation=tf.nn.relu),
+            tf.keras.layers.Dropout(dropout),
+            tf.keras.layers.Dense(hidden_dim, activation=tf.nn.relu),
+            tf.keras.layers.Dense(output_dim, activation=tf.nn.softmax)
+        ])
+        """
         inputs = Input(name='inputs', shape=[max_len])
-        layer = Embedding(len(matrix), input_dim, weights=[matrix], trainable=False, input_length=max_len)(inputs)
-        layer = Flatten()(layer)
-        layer = Dense(hidden_dim, name='FC1')(layer)
+        # layer = Embedding(len(matrix), input_dim, weights=[matrix], trainable=False, input_length=max_len)(inputs)
+        # layer = Flatten()(layer)
+        layer = Dense(hidden_dim, name='FC1')(inputs)
         layer = Activation('relu')(layer)
         layer = Dropout(dropout)(layer)
         layer = Dense(output_dim, name='out_layer')(layer)
         layer = Activation('sigmoid')(layer)
         model = Model(inputs=inputs, outputs=layer)
+        """
         return model
 
     mlp_model = MLP()

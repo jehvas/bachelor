@@ -45,12 +45,12 @@ def plot_confusion_matrix(y_true, y_pred, dataset, algorithm,
              rotation_mode="anchor")
 
     # Loop over data dimensions and create text annotations.
-    fmt = '.1f' if normalize else 'd'
+    fmt = '.2f' if normalize else 'd'
     thresh = cm.max() / 2.
     for i in range(cm.shape[0]):
         for j in range(cm.shape[1]):
             ax.text(j, i, format(cm[i, j], fmt),
-                    ha="center", va="center",
+                    ha="center", va="center", fontsize=8,
                     color="white" if cm[i, j] > thresh else "black")
     fig.tight_layout()
 
