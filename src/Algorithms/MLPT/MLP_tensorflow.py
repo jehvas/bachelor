@@ -55,7 +55,7 @@ def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, e
     mlp_model.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(), metrics=['accuracy'])
 
     history = mlp_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
-                            validation_data=(x_test, y_test), workers=4)
+                            validation_data=(x_test, y_test), workers=4, verbose=0)
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 
