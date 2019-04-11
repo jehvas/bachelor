@@ -30,7 +30,7 @@ def log_to_file(parameters, precision, recall, fscore):
         str(parameters['layer_dim']),
         str(parameters['learning_rate']),
         str(parameters['input_layer'].name),
-        str([i.name for i in parameters['hidden_layers']]),
+        str([i.name for i in parameters['hidden_layers']]).replace(", ", " - "),
         str(parameters['output_layer'].name),
         np.array2string(precision, separator=';', max_line_width=500),
         np.array2string(recall, separator=';', max_line_width=500),
