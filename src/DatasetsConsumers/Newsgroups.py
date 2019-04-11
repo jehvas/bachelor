@@ -20,7 +20,7 @@ class Newsgroups(AbstractDataset):
             if load_check_result is not None:
                 return load_check_result
         direc = ROOTPATH + "data/20Newsgroups/"
-        #subdirecs = self.get_subdirectories(direc)
+        subdirecs = self.get_subdirectories(direc)
 
         emails = []
         labels = []

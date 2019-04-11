@@ -30,7 +30,7 @@ def log_to_file(parameters, precision, recall, fscore):
         str(parameters['layer_dim']),
         str(parameters['learning_rate']),
         str(parameters['input_layer'].name),
-        str([i.name for i in parameters['hidden_layers']]).replace(", ", " - "),
+        ';'.join([i.name for i in parameters['hidden_layers']]),
         str(parameters['output_layer'].name),
         np.array2string(precision, separator=';', max_line_width=500),
         np.array2string(recall, separator=';', max_line_width=500),
@@ -43,7 +43,8 @@ def log_to_file(parameters, precision, recall, fscore):
 def pick_hidden_layers(num_layers, dim):
     possible_layers = [tf.keras.layers.LeakyReLU(dim),
                        tf.keras.layers.ELU(dim),
-                       tf.keras.layers.ReLU(random.randint(1, 100) / 100, random.randint(1, 100) / 100,
+                       tf.keras.layers.ReLU(random.randint(1, 100) / 100,
+                                            random.randint(1, 100) / 100,
                                             random.randint(1, 50)),
                        #tf.keras.layers.Softmax(random.randint(-2, 2)),
                        tf.keras.layers.Dense(dim, activation=pick_activation_function())
@@ -66,8 +67,9 @@ glove = GloVe(200)
 features = glove.get_features(emails, dataset_consumer)
 print("Running algorithm:", algorithm.get_name())
 while True:
-    layerdim = random.randint(1, 5)
+    layerdim = random.randint(1, 1)
     hiddendim = random.randint(10, 500)
+    output_dim = len(set(labels))
     parameters = {
         'batch_size': 128,
         'num_epochs': 50,
@@ -76,11 +78,11 @@ while True:
         'learning_rate': random.randint(1, 200) / 1000,
         'input_layer': tf.keras.layers.Dense(features.shape[1], activation=pick_activation_function()),
         'hidden_layers': pick_hidden_layers(layerdim, hiddendim),
-        'output_layer': tf.keras.layers.Dense(len(set(labels)), activation=pick_activation_function()),
+        'output_layer': tf.keras.layers.Dense(output_dim, activation=pick_activation_function()),
         # 'class_weights': None,
         'dropout': random.randint(1, 50) / 100,
         # 'max_len': 1024,
-        'output_dim': len(set(labels)),
+        'output_dim': output_dim,
         'input_dim': features.shape[1]
     }
     print("\n#### STARTING RUN NUMBER {} #####\n".format(counter))
@@ -90,10 +92,10 @@ while True:
                                                                     emails)
 
     precision, recall, fscore, support = precision_recall_fscore_support(y_test, rounded_predictions)
-    print("\nPrecision: ", precision)
-    print("\nRecall: ", recall)
-    print("\nFscore: ", fscore)
-    print("\n")
+    # print("\nPrecision: ", precision)
+    # print("\nRecall: ", recall)
+    # print("\nFscore: ", fscore)
+    # print("\n")
     print("Avg fScore:", (sum(fscore) / len(fscore)))
 
     log_to_file(parameters, precision, recall, fscore)
