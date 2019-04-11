@@ -9,8 +9,9 @@ class PlotClass:
     dataset = None
     algorithm = None
     ticks = None
+    legend = None
 
-    def __init__(self, data, x_label, y_label, parameters, dataset, algorithm, ticks=None):
+    def __init__(self, data, x_label, y_label, parameters, dataset, algorithm, ticks=None, legend=None):
         self.data = data
         self.x_label = x_label
         self.y_label = y_label
@@ -18,6 +19,7 @@ class PlotClass:
         self.dataset = dataset
         self.algorithm = algorithm
         self.ticks = ticks
+        self.legend = legend
 
 
 def plot_data(plot_class, save=True):
@@ -41,4 +43,6 @@ def plot_data(plot_class, save=True):
     # plt.subplots_adjust(right=0.8)
     if save:
         plt.savefig('imgs/' + title + '.png')
+    if plot_class.legend is not None:
+        plt.legend(plot_class.legend[0], loc=plot_class.legend[1])
     plt.show()

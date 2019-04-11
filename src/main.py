@@ -1,4 +1,10 @@
-from Algorithms.MLPT import MLP_tensorflow
+import numpy as np
+
+from keras_preprocessing import sequence
+from keras_preprocessing.text import Tokenizer
+from sklearn.metrics import precision_recall_fscore_support
+
+from Algorithms.MLPT import MLP_tensorflow, Bi_LSTM_tensorflow, RNN_tensorflow
 from Algorithms.Perceptron import Perceptron
 from Algorithms.RNN import RNN
 from Algorithms.SVM import SVM
@@ -15,8 +21,8 @@ from utility.plotter import plot_data
 
 def run_all():
     # Load dataset
-    datasets = [SpamHam(), Newsgroups(), Spamassassin(), Trustpilot()]
-    algorithms = [MLP, RNN]
+    datasets = [Newsgroups()]
+    algorithms = [MLP_tensorflow]
 
     for dataset_consumer in datasets:
         for algorithm in algorithms:
@@ -29,11 +35,29 @@ def run_all():
             parameters['output_dim'] = len(set(labels))
             parameters['input_dim'] = features.shape[1]
 
-            data_to_plot, y_test, predictions = algorithm.run_train(dataset_consumer, features, labels, parameters)
+            max_words = 1000
+            max_len = 128
+            tok = Tokenizer(num_words=max_words)
+            tok.fit_on_texts(emails)
+            sequences = tok.texts_to_sequences(emails)
+            sequences_matrix = sequence.pad_sequences(sequences, maxlen=max_len)
+
+            dataset_consumer.setVocabulary(emails)
+            matrix = glove.get_weights_matrix(dataset_consumer.vocabulary, tok)
+
+            data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset_consumer, matrix, sequences_matrix,
+                                                                            emails, labels, parameters)
+
             for plotClass in data_to_plot:
                 plot_data(plotClass, True)
 
-            plot_confusion_matrix(y_test, predictions, dataset_consumer, algorithm.get_name())
+            precision, recall, fscore, support = precision_recall_fscore_support(y_test, rounded_predictions)
+            print("\nPrecision: ", precision)
+            print("\nRecall: ", recall)
+            print("\nFscore: ", fscore)
+            print("\n")
+
+            plot_confusion_matrix(y_test, rounded_predictions, dataset_consumer, algorithm.get_name(), normalize=True)
 
 
 run_all()

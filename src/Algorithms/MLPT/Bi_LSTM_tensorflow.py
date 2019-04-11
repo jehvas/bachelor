@@ -2,15 +2,9 @@ import os
 from typing import List
 
 import numpy as np
-import tensorflow as tf
-from keras_preprocessing import sequence
-from keras_preprocessing.text import Tokenizer
 from sklearn.model_selection import train_test_split as tts
-from tensorflow import keras
-from tensorflow.python.keras import Input, Model, Sequential
-from tensorflow.python.keras.callbacks import EarlyStopping
-from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional, RNN, \
-    SimpleRNNCell
+from tensorflow.python.keras import Input, Model
+from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional
 from tensorflow.python.keras.optimizers import RMSprop
 
 from utility.plotter import PlotClass
@@ -19,7 +13,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
 def get_name():
-    return 'RNN_Tensorflow'
+    return 'Bi-LSTM_Tensorflow'
 
 
 def run_train(dataset, matrix, sequences_matrix, emails, labels, parameters) -> (List, List, List):
@@ -33,11 +27,10 @@ def run_train(dataset, matrix, sequences_matrix, emails, labels, parameters) -> 
     num_epochs = parameters['num_epochs']
     batch_size = parameters['batch_size']
 
-    def RNN_model():
+    def Bi_LSTM():
         inputs = Input(name='inputs', shape=[max_len])
         layer = Embedding(len(matrix), input_dim, weights=[matrix], trainable=False, input_length=max_len)(inputs)
-        cell = SimpleRNNCell(hidden_dim)
-        layer = RNN(cell)(layer)
+        layer = Bidirectional(LSTM(hidden_dim))(layer)
         layer = Dense(hidden_dim, name='FC1')(layer)
         layer = Activation('relu')(layer)
         layer = Dropout(dropout)(layer)
@@ -46,22 +39,22 @@ def run_train(dataset, matrix, sequences_matrix, emails, labels, parameters) -> 
         model = Model(inputs=inputs, outputs=layer)
         return model
 
-    rnn_model = RNN_model()
-    rnn_model.compile(loss='sparse_categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
+    bi_lstm_model = Bi_LSTM()
+    bi_lstm_model.compile(loss='sparse_categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
 
-    history = rnn_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
-                            validation_data=(x_test, y_test))
+    history = bi_lstm_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
+                                validation_data=(x_test, y_test), workers=4)
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 
-    predictions = rnn_model.predict(x_test)
+    predictions = bi_lstm_model.predict(x_test)
     rounded_predictions = [np.argmax(x) for x in predictions]
 
-    accr = rnn_model.evaluate(x_test, y_test)
+    accr = bi_lstm_model.evaluate(x_test, y_test)
     print('Test set\n  Loss: {:0.3f}\n  Accuracy: {:0.3f}'.format(accr[0], accr[1]))
     return ([
-        PlotClass([(iteration_list, history.history['val_acc'])], "Epoch", "Accuracy", parameters, dataset, "RNN",
+        PlotClass([(iteration_list, history.history['val_acc'])], "Epoch", "Accuracy", parameters, dataset, "Bi-LSTM",
                   legend=(['train', 'test'], 'upper left')),
-        PlotClass([(iteration_list, history.history['val_loss'])], "Epoch", "Loss", parameters, dataset, "RNN",
+        PlotClass([(iteration_list, history.history['val_loss'])], "Epoch", "Loss", parameters, dataset, "Bi-LSTM",
                   legend=(['train', 'test'], 'upper left'))
     ]), y_test, rounded_predictions

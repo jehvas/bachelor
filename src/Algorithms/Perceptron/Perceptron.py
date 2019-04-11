@@ -1,12 +1,5 @@
 from sklearn.linear_model import Perceptron
-from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import train_test_split as tts
-from sklearn.svm import SVC, LinearSVC
-
-from DatasetsConsumers.Chromium import Chromium
-from DatasetsConsumers.Newsgroups import Newsgroups
-from DatasetsConsumers.SpamHam import SpamHam
-from Glove.glovemodel import GloVe
 
 
 def get_name():

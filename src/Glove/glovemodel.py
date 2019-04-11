@@ -5,6 +5,8 @@ import os
 
 import time
 import torch
+from keras_preprocessing.text import Tokenizer
+from tensorflow import zeros
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from utility.TFIDF import compute_tfidf
@@ -45,11 +47,23 @@ class GloVe:
             save(self.model, save_name)
             print("Done.", len(self.model), " words of loaded!")
 
-    def get_weights_matrix(self, vocabulary: Dict) -> torch.Tensor:
+    def get_weights_matrix(self, vocabulary: Dict, tokenizer: Tokenizer) -> torch.Tensor:
         if file_exists("wm"):
             return load("wm")
         else:
-            matrix_len = len(vocabulary)
+            weights_matrix = zeros((len(vocabulary), 100))
+            for word, i in tokenizer.word_index.items():
+                try:
+                    embedding_vector = self.model.get(word)
+                    if embedding_vector is not None:
+                        weights_matrix[i] = embedding_vector
+                except KeyError:
+                    weights_matrix[i] = torch.from_numpy(np.random.normal(scale=0.6, size=(self.dimensionCount,)))
+            save(weights_matrix, "wm")
+            return weights_matrix
+
+
+            '''matrix_len = len(vocabulary)
             weights_matrix = torch.zeros((matrix_len, self.dimensionCount))
             words_found = 0
 
@@ -60,7 +74,7 @@ class GloVe:
                 except KeyError:
                     weights_matrix[i] = torch.from_numpy(np.random.normal(scale=0.6, size=(self.dimensionCount,)))
             save(weights_matrix, "wm")
-            return weights_matrix
+            return weights_matrix'''
 
     # Check if features exist
     def get_features(self, emails: np.array, dataset: AbstractDataset) -> np.array:
