@@ -6,39 +6,15 @@ import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
 import tensorflow as tf
 from Algorithms.MLPT import MLP_tensorflow
+from Algorithms.Perceptron import Perceptron
+from Algorithms.SVM import SVM
 from DatasetsConsumers.Newsgroups import Newsgroups
 # Load dataset
 from Glove.glovemodel import GloVe
 from rootfile import ROOTPATH
 import os
 
-log_file = ROOTPATH + 'Results/resultsfile.csv'
-
-if not os.path.isfile(log_file):
-    header_info = ['Avg FScore', 'Num Epochs', 'Hidden Dim', 'Layer Dim', 'Dropout Rate', 'Learning Rate', 'Input Layer',
-                   'Hidden Layers', 'Output Layer', 'Precision', 'Recall', 'FScore', 'Timestamp']
-    with open(log_file, 'w+') as f:
-        f.write(','.join(header_info) + '\n')
-
-
-def log_to_file(parameters, precision, recall, fscore):
-    avg = sum(fscore) / len(fscore)
-    log_string = "{},{},{},{},{},{},{},{},{},{},{},{}".format(
-        avg,
-        str(parameters['num_epochs']),
-        str(parameters['hidden_dim']),
-        str(parameters['layer_dim']),
-        str(parameters['dropout']) if parameters['use_dropout'] else 'None',
-        str(parameters['learning_rate']),
-        str(parameters['input_function']),
-        ';'.join([i.name for i in parameters['hidden_layers']]),
-        str(parameters['output_function']),
-        np.array2string(precision, separator=';', max_line_width=500),
-        np.array2string(recall, separator=';', max_line_width=500),
-        np.array2string(fscore, separator=';', max_line_width=500),
-        datetime.datetime.now())
-    with open(log_file, 'a+') as f:
-        f.write(log_string + '\n')
+from utility import Random_Parameters, utility
 
 
 def pick_hidden_layers(num_layers, dim):
@@ -61,32 +37,15 @@ def pick_activation_function():
 
 counter = 1
 dataset_consumer = Newsgroups()
-algorithm = MLP_tensorflow
+algorithm = Perceptron
 
 emails, labels = dataset_consumer.load(True)
 glove = GloVe(200)
 features = glove.get_features(emails, dataset_consumer)
 print("Running algorithm:", algorithm.get_name())
 while True:
-    layerdim = random.randint(1, 1)
-    hiddendim = random.randint(10, 500)
-    output_dim = len(set(labels))
-    parameters = {
-        'batch_size': 128,
-        'num_epochs': 50,
-        'hidden_dim': hiddendim,
-        'layer_dim': layerdim,
-        'learning_rate': random.randint(1, 200) / 1000,
-        'input_function': pick_activation_function(),
-        'hidden_layers': pick_hidden_layers(layerdim, hiddendim),
-        'output_function': pick_activation_function(),
-        # 'class_weights': None,
-        'dropout': random.randint(1, 80) / 100,
-        # 'max_len': 1024,
-        'output_dim': output_dim,
-        'input_dim': features.shape[1],
-        'use_dropout': True if random.randint(1, 2) == 1 else False
-    }
+    parameters = Random_Parameters.get_random_params(algorithm.get_name(), features.shape[1], len(set(labels)))
+
     print("\n#### STARTING RUN NUMBER {} #####\n".format(counter))
 
     data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset_consumer, features, labels,
@@ -99,6 +58,6 @@ while True:
     # print("\nFscore: ", fscore)
     # print("\n")
     print("Avg fScore:", (sum(fscore) / len(fscore)))
-
-    log_to_file(parameters, precision, recall, fscore)
+    log_file = ROOTPATH + 'Results/' + algorithm.get_name() + '_resultsfile.csv'
+    utility.log_to_file(parameters, precision, recall, fscore, log_file)
     counter += 1

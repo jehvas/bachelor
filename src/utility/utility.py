@@ -1,3 +1,5 @@
+import datetime
+import numpy as np
 import pickle as p
 
 import os
@@ -32,3 +34,29 @@ def load(file_name):
 
 def print_progress(progress, total):
     print("{:.2f}".format(progress / total * 100), "%")
+
+
+def log_to_file(parameters, precision, recall, fscore, file_path):
+    create_file_is_not_exists(file_path, parameters)
+    avg = sum(fscore) / len(fscore)
+    with open(file_path, 'a+') as f:
+        f.write(str(avg) + ", ")
+        for key, value in parameters.items():
+            if isinstance(value, (np.ndarray, np.generic)):
+                f.write(np.array2string(value, separator=';', max_line_width=500) + ", ")
+            elif type(value) is dict:
+                f.write(';'.join([str(k2)+":"+str(v2) for k2, v2 in value.items()]))
+            else:
+                f.write(str(value) + ", ")
+        f.write("\n")
+
+
+def create_file_is_not_exists(file_path, parameters):
+    if not os.path.isfile(file_path):
+        header_info = ["avg"]
+        for key, value in parameters.items():
+            header_info += [key]
+        with open(file_path, 'w+') as f:
+            f.write(','.join(header_info) + '\n')
+
+
