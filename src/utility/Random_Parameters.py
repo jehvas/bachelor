@@ -31,7 +31,7 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
     elif algorithm == 'SVM':
         return {
             'loss': ["hinge", "squared_hinge"][random.randint(0, 1)],
-            'class_weights': {0: 1, 1: 2}
+            'class_weights': {0: random.randint(1, 100), 1: random.randint(1, 100)}
         }
     elif algorithm == 'Perceptron':
         return {
