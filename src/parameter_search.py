@@ -38,7 +38,7 @@ def pick_activation_function():
 
 counter = 1
 dataset_consumer = Newsgroups()
-algorithm = Bi_LSTM_tensorflow
+algorithm = SVM
 
 emails, labels = dataset_consumer.load(True)
 glove = GloVe(200)
