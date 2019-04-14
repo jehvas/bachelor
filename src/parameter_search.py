@@ -1,6 +1,7 @@
 import datetime
 import logging
 import random
+import time
 
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
@@ -37,7 +38,7 @@ def pick_activation_function():
 
 counter = 1
 dataset_consumer = Newsgroups()
-algorithm = Perceptron
+algorithm = MLP_tensorflow
 
 emails, labels = dataset_consumer.load(True)
 glove = GloVe(200)
@@ -47,11 +48,12 @@ while True:
     parameters = Random_Parameters.get_random_params(algorithm.get_name(), features.shape[1], len(set(labels)))
 
     print("\n#### STARTING RUN NUMBER {} #####\n".format(counter))
-
+    start_time = time.time()
     data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset_consumer, features, labels,
                                                                     parameters, None, None,
                                                                     emails)
-
+    end_time = time.time()
+    time_taken = end_time - start_time
     precision, recall, fscore, support = precision_recall_fscore_support(y_test, rounded_predictions)
     # print("\nPrecision: ", precision)
     # print("\nRecall: ", recall)
@@ -59,5 +61,5 @@ while True:
     # print("\n")
     print("Avg fScore:", (sum(fscore) / len(fscore)))
     log_file = ROOTPATH + 'Results/' + algorithm.get_name() + '_resultsfile.csv'
-    utility.log_to_file(parameters, precision, recall, fscore, log_file)
+    utility.log_to_file(parameters, precision, recall, fscore, log_file, time_taken)
     counter += 1

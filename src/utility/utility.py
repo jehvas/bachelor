@@ -4,6 +4,8 @@ import pickle as p
 
 import os
 
+from keras.optimizers import Optimizer
+
 from rootfile import ROOTPATH
 
 output_path = ROOTPATH + "output/"
@@ -36,7 +38,7 @@ def print_progress(progress, total):
     print("{:.2f}".format(progress / total * 100), "%")
 
 
-def log_to_file(parameters, precision, recall, fscore, file_path):
+def log_to_file(parameters, precision, recall, fscore, file_path, time_taken):
     create_file_is_not_exists(file_path, parameters)
     avg = sum(fscore) / len(fscore)
     with open(file_path, 'a+') as f:
@@ -46,8 +48,11 @@ def log_to_file(parameters, precision, recall, fscore, file_path):
                 f.write(np.array2string(value, separator=';', max_line_width=500) + ", ")
             elif type(value) is dict:
                 f.write(';'.join([str(k2)+":"+str(v2) for k2, v2 in value.items()]))
+            elif isinstance(value, Optimizer):
+                f.write(value.lr.name[:-5] + ", ")
             else:
                 f.write(str(value) + ", ")
+        f.write(str(time_taken))
         f.write("\n")
 
 
@@ -56,7 +61,9 @@ def create_file_is_not_exists(file_path, parameters):
         header_info = ["avg"]
         for key, value in parameters.items():
             header_info += [key]
+        header_info += ["time_taken"]
         with open(file_path, 'w+') as f:
             f.write(','.join(header_info) + '\n')
+
 
 
