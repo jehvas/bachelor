@@ -7,6 +7,7 @@ import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
 import tensorflow as tf
 from Algorithms.MLPT import MLP_tensorflow
+from Algorithms.Bi_LSTM_tensorflow import Bi_LSTM_tensorflow
 from Algorithms.Perceptron import Perceptron
 from Algorithms.SVM import SVM
 from DatasetsConsumers.Newsgroups import Newsgroups
@@ -38,7 +39,7 @@ def pick_activation_function():
 
 counter = 1
 dataset_consumer = Newsgroups()
-algorithm = MLP_tensorflow
+algorithm = Bi_LSTM_tensorflow
 
 emails, labels = dataset_consumer.load(True)
 glove = GloVe(200)
