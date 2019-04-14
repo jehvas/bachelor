@@ -6,7 +6,7 @@ def get_name():
     return 'SVM'
 
 
-def run_train(dataset, features, labels, parameters):
+def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, emails):
     print("Running algorithm: Algorithms.SVM")
     # Create training data
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1)
@@ -21,3 +21,5 @@ def run_train(dataset, features, labels, parameters):
     predictions = svm_classifier.predict(x_test)
 
     return [], y_test, predictions
+
+    parameters
