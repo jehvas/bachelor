@@ -13,6 +13,7 @@ from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, D
     SimpleRNNCell
 from tensorflow.python.keras.optimizers import RMSprop
 
+from utility.model_factory import generate_model
 from utility.plotter import PlotClass
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -22,9 +23,10 @@ def get_name():
     return 'RNN_Tensorflow'
 
 
-def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, emails) -> (List, List, List):
-    x_train, x_test, y_train, y_test = tts(sequences_matrix, labels, test_size=0.2, random_state=1, stratify=labels)
+def run_train(dataset, features, labels, parameters, emails) -> (List, List, List):
+    x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
 
+    '''
     output_dim = parameters['output_dim']
     hidden_dim = parameters['hidden_dim']
     input_dim = parameters['input_dim']
@@ -32,18 +34,33 @@ def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, e
     dropout = parameters['dropout']
     num_epochs = parameters['num_epochs']
     batch_size = parameters['batch_size']
+    '''
+
+    output_dim = parameters['output_dim']
+    hidden_dim = parameters['hidden_dim']
+    input_dim = parameters['input_dim']
+    # max_len = parameters['max_len']
+    num_epochs = parameters['num_epochs']
+    batch_size = parameters['batch_size']
+    input_function = parameters['input_function']
+    middle_layers = parameters['middle_layers']
+    output_function = parameters['output_function']
 
     def RNN_model():
-        inputs = Input(name='inputs', shape=[max_len])
-        layer = Embedding(len(matrix), input_dim, weights=[matrix], trainable=False, input_length=max_len)(inputs)
+        # model = generate_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function,
+        #                       isRNN=True)
+
+        inputs = Input(name='inputs', shape=[input_dim])
+        # layer = Embedding(len(matrix), input_dim, weights=[matrix], trainable=False, input_length=max_len)(inputs)
         cell = SimpleRNNCell(hidden_dim)
-        layer = RNN(cell)(layer)
+        layer = RNN(cell)(inputs)
         layer = Dense(hidden_dim, name='FC1')(layer)
         layer = Activation('relu')(layer)
-        layer = Dropout(dropout)(layer)
+        layer = Dropout(0.5)(layer)
         layer = Dense(output_dim, name='out_layer')(layer)
         layer = Activation('sigmoid')(layer)
         model = Model(inputs=inputs, outputs=layer)
+
         return model
 
     rnn_model = RNN_model()

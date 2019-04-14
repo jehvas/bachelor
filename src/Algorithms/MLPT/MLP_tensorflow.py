@@ -8,6 +8,7 @@ from tensorflow.python.keras import Input, Model
 from tensorflow.python.keras.layers import Flatten, Dense, Activation, Dropout, Embedding, ELU, PReLU, ReLU, Softmax
 from tensorflow.python.keras.optimizers import Adam
 
+from utility.model_factory import generate_model
 from utility.plotter import PlotClass
 
 
@@ -15,41 +16,29 @@ def get_name():
     return 'MLP_Tensorflow'
 
 
-def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, emails) -> (List, List, List):
-    data = None
-    if features is not None:
-        data = features
-    elif matrix is not None:
-        data = matrix
-    x_train, x_test, y_train, y_test = tts(data, labels, test_size=0.2, random_state=1, stratify=labels)
+def run_train(dataset, features, labels, parameters, emails) -> (List, List, List):
+    x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
 
     output_dim = parameters['output_dim']
     hidden_dim = parameters['hidden_dim']
     input_dim = parameters['input_dim']
     # max_len = parameters['max_len']
-    dropout = parameters['dropout']
     num_epochs = parameters['num_epochs']
     batch_size = parameters['batch_size']
     input_function = parameters['input_function']
-    hidden_layers = parameters['hidden_layers']
+    middle_layers = parameters['middle_layers']
     output_function = parameters['output_function']
-    use_dropout = parameters['use_dropout']
 
     def MLP():
-
-        layers = [tf.keras.layers.Dense(features.shape[1], activation=input_function)] + \
-                 ([tf.keras.layers.Dropout(dropout)] if use_dropout else []) + \
-                 hidden_layers + \
-                 [tf.keras.layers.Dense(output_dim, activation=output_function)]
-        model = tf.keras.Sequential(layers)
-
-        '''model = tf.keras.Sequential([
-            tf.keras.layers.Dense(hidden_dim, activation=tf.nn.softplus),
+        model = generate_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function)
+        '''
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(input_dim, activation=tf.nn.softplus),
             tf.keras.layers.Dropout(dropout),
             tf.keras.layers.Dense(hidden_dim, activation=tf.nn.softsign),
             tf.keras.layers.Dense(output_dim, activation=tf.nn.tanh)
-        ])'''
-
+        ])
+        '''
         return model
 
     mlp_model = MLP()

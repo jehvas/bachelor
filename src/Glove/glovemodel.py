@@ -98,8 +98,6 @@ class GloVe:
         all_vector_sum = []
         for i in range(len(words_in_emails)):
             words = words_in_emails[i]
-            if len(words) == 0:
-                print("WHAaaa")
             vector_sum = np.zeros(self.dimensionCount)
             for word in words:
                 if word in self.model:

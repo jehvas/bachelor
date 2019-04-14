@@ -12,13 +12,12 @@ def get_params(algorithm, dataset) -> Dict:
         'layer_dim': 1,
         'learning_rate': 0.01,
         'class_weights': None,
-        'dropout': 0.5,
+        'dropout': 0,
         'max_len': 1024
     }
     if algorithm == 'RNN':
         pass
     elif algorithm == 'MLP_Tensorflow':
-        re_dict['num_epochs'] = 30
         pass
     elif algorithm == 'MLP':
         re_dict['num_epochs'] = 20
