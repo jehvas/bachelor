@@ -6,8 +6,7 @@ import time
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
 import tensorflow as tf
-from Algorithms.MLPT import MLP_tensorflow
-from Algorithms.Bi_LSTM_tensorflow import Bi_LSTM_tensorflow
+from Algorithms.MLPT import MLP_tensorflow, Bi_LSTM_tensorflow
 from Algorithms.Perceptron import Perceptron
 from Algorithms.SVM import SVM
 from DatasetsConsumers.Newsgroups import Newsgroups
