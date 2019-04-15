@@ -7,7 +7,9 @@ from sklearn.metrics import confusion_matrix
 def plot_confusion_matrix(y_true, y_pred, dataset, algorithm,
                           normalize=False,
                           title=None,
-                          cmap=plt.cm.Blues):
+                          cmap=plt.cm.Blues,
+                          show=False,
+                          save_path=""):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -57,5 +59,10 @@ def plot_confusion_matrix(y_true, y_pred, dataset, algorithm,
     np.set_printoptions(precision=2)
     plt.grid(True)
     title = "{} - {}".format(algorithm, type(dataset).__name__)
-    plt.savefig('imgs/' + title + '.png')
-    plt.show()
+    if save_path != "":
+        plt.savefig(save_path)
+    else:
+        plt.savefig('imgs/' + title + '.png')
+    if show:
+        plt.show()
+    plt.close("all")

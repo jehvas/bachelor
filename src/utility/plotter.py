@@ -22,7 +22,7 @@ class PlotClass:
         self.legend = legend
 
 
-def plot_data(plot_class, save=True):
+def plot_data(plot_class, save_file_path="", save=True, show=False):
     # visualization loss
     for plotTuple in plot_class.data:
         x_data, y_data = plotTuple
@@ -41,8 +41,12 @@ def plot_data(plot_class, save=True):
     plt.text(1.025, 1., params_text, fontsize=14, verticalalignment='top', bbox=props)
     plt.grid(True)
     # plt.subplots_adjust(right=0.8)
-    if save:
+    if save_file_path != "":
+        plt.savefig(save_file_path)
+    elif save:
         plt.savefig('imgs/' + title + '.png')
     if plot_class.legend is not None:
         plt.legend(plot_class.legend[0], loc=plot_class.legend[1])
-    plt.show()
+    if show:
+        plt.show()
+    plt.close("all")
