@@ -38,7 +38,7 @@ def print_progress(progress, total):
     print("{:.2f}".format(progress / total * 100), "%")
 
 
-def log_to_file(parameters, precision, recall, fscore, file_path, time_taken):
+def log_to_file(parameters, fscore, file_path, time_taken):
     create_file_is_not_exists(file_path, parameters)
     avg = sum(fscore) / len(fscore)
     with open(file_path, 'a+') as f:
@@ -47,21 +47,23 @@ def log_to_file(parameters, precision, recall, fscore, file_path, time_taken):
             if isinstance(value, (np.ndarray, np.generic)):
                 f.write(np.array2string(value, separator=';', max_line_width=500) + ", ")
             elif type(value) is dict:
-                f.write(';'.join([str(k2)+":"+str(v2) for k2, v2 in value.items()]))
+                f.write(';'.join([str(k2)+":"+str(v2) for k2, v2 in value.items()]) + ", ")
             elif isinstance(value, Optimizer):
                 f.write(value.lr.name[:-5] + ", ")
             else:
                 f.write(str(value) + ", ")
-        f.write(str(time_taken))
+        f.write(np.array2string(fscore, separator=';', max_line_width=500) + ", ")
+        f.write(str(time_taken) + ",")
         f.write("\n")
 
 
 def create_file_is_not_exists(file_path, parameters):
     if not os.path.isfile(file_path):
-        header_info = ["avg"]
+        header_info = ["Avg_Fscore"]
         for key, value in parameters.items():
             header_info += [key]
-        header_info += ["time_taken"]
+        header_info += ["Fscore"]
+        header_info += ["Time_taken"]
         with open(file_path, 'w+') as f:
             f.write(','.join(header_info) + '\n')
 

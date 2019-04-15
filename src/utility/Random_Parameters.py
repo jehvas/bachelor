@@ -7,7 +7,7 @@ from keras.optimizers import Adam, Adamax, Nadam, SGD, Adagrad, RMSprop, Adadelt
 
 def get_random_params(algorithm, input_dim, output_dim) -> Dict:
     if algorithm == 'RNN_tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi_LSTM_tensorflow':
-        layer_dim = random.randint(1, 1)
+        layer_dim = 1  # 4 - int(math.log10(random.randint(10, 9000)))
         hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()
         return {
@@ -31,7 +31,7 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
     elif algorithm == 'SVM':
         return {
             'loss': ["hinge", "squared_hinge"][random.randint(0, 1)],
-            'class_weights': {0: random.randint(1, 100), 1: random.randint(1, 100)}
+            'class_weights': pick_random_class_weights(output_dim)
         }
     elif algorithm == 'Perceptron':
         return {
@@ -65,3 +65,11 @@ def pick_optimizer():
     if "Adadelta" in optimizer_to_return.lr.name:
         return optimizer_to_return, "None"
     return optimizer_to_return, str(random_lr)
+
+
+def pick_random_class_weights(num_labels):
+    classes = [i for i in range(num_labels)]
+    class_weight_dic = {}
+    for i in classes:
+        class_weight_dic[i] =  random.randint(1, 100)
+    return class_weight_dic

@@ -1,44 +1,14 @@
-import datetime
-import logging
-
-import math
 import random
+import time
 
-import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
-import tensorflow as tf
-from Algorithms.MLPT import MLP_tensorflow, RNN_tensorflow, Bi_LSTM_tensorflow
+from Algorithms.SVM import SVM
 from DatasetsConsumers.Newsgroups import Newsgroups
-# Load dataset
+from DatasetsConsumers.Spamassassin import Spamassassin
 from Glove.glovemodel import GloVe
 from rootfile import ROOTPATH
-import os
-
-log_file = ROOTPATH + 'Results/resultsfile.csv'
-
-if not os.path.isfile(log_file):
-    header_info = ['Avg FScore', 'Num Epochs', 'Hidden Dim', 'Learning Rate', 'Input Layer',
-                   'Middle Layers', 'Output Layer', 'Precision', 'Recall', 'FScore', 'Timestamp']
-    with open(log_file, 'w+') as f:
-        f.write(','.join(header_info) + '\n')
-
-
-def log_to_file(parameters, precision, recall, fscore):
-    avg = sum(fscore) / len(fscore)
-    log_string = "{},{},{},{},{},{},{},{},{},{},{}".format(
-        avg,
-        str(parameters['num_epochs']),
-        str(parameters['hidden_dim']),
-        str(parameters['learning_rate']),
-        str(parameters['input_function']),
-        ";".join("(%s;%s)" % tup for tup in parameters['middle_layers']),
-        str(parameters['output_function']),
-        np.array2string(precision, separator=';', max_line_width=500),
-        np.array2string(recall, separator=';', max_line_width=500),
-        np.array2string(fscore, separator=';', max_line_width=500),
-        datetime.datetime.now())
-    with open(log_file, 'a+') as f:
-        f.write(log_string + '\n')
+from utility.Random_Parameters import get_random_params
+from utility.utility import log_to_file
 
 
 def generate_middle_layers(num_layers):
@@ -76,40 +46,28 @@ def pick_random_activation_function():
 
 counter = 1
 dataset_consumer = Newsgroups()
-algorithm = Bi_LSTM_tensorflow
+algorithm = SVM
 
 emails, labels = dataset_consumer.load(True)
 glove = GloVe(200)
 features = glove.get_features(emails, dataset_consumer)
 print("Running algorithm:", algorithm.get_name())
 while True:
-    n_hidden = 1 # 4 - int(math.log10(random.randint(10, 9000)))
-    hiddendim = random.randint(10, 500)
     output_dim = len(set(labels))
-    parameters = {
-        'batch_size': 128,
-        'num_epochs': 1,
-        'hidden_dim': hiddendim,
-        'learning_rate': random.randint(1, 200) / 1000,
-        'input_function': pick_random_activation_function(),
-        'middle_layers': generate_middle_layers(n_hidden),
-        'output_function': pick_random_activation_function(),
-        'output_dim': output_dim,
-        'input_dim': features.shape[1],
-    }
-    # 'class_weights': None,
-    # 'max_len': 1024,
+    parameters = get_random_params(algorithm.get_name(), features.shape[1], output_dim)
+
     print("\n#### STARTING RUN NUMBER {} #####\n".format(counter))
     print(str(parameters))
+    start_time = time.time()
     data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset_consumer, features, labels,
-                                                                    parameters, emails)
-
+                                                                    parameters)
+    time_taken = time.time() - start_time
     precision, recall, fscore, support = precision_recall_fscore_support(y_test, rounded_predictions)
     # print("\nPrecision: ", precision)
     # print("\nRecall: ", recall)
     # print("\nFscore: ", fscore)
     # print("\n")
     print("Avg fScore:", (sum(fscore) / len(fscore)))
-
-    log_to_file(parameters, precision, recall, fscore)
+    file_path = ROOTPATH + "Results/" + algorithm.get_name() + "_" + dataset_consumer.get_name() + "_resultsfile.csv"
+    log_to_file(parameters, fscore, file_path, time_taken)
     counter += 1
