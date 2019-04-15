@@ -16,7 +16,7 @@ def get_name():
     return 'MLP_Tensorflow'
 
 
-def run_train(dataset, features, labels, parameters, emails) -> (List, List, List):
+def run_train(dataset, features, labels, parameters) -> (List, List, List):
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
 
     output_dim = parameters['output_dim']
@@ -26,11 +26,11 @@ def run_train(dataset, features, labels, parameters, emails) -> (List, List, Lis
     num_epochs = parameters['num_epochs']
     batch_size = parameters['batch_size']
     input_function = parameters['input_function']
-    middle_layers = parameters['middle_layers']
+    hidden_layers = parameters['hidden_layers']
     output_function = parameters['output_function']
 
     def MLP():
-        model = generate_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function)
+        model = generate_model(input_dim, hidden_dim, hidden_layers, output_dim, input_function, output_function)
         '''
         model = tf.keras.Sequential([
             tf.keras.layers.Dense(input_dim, activation=tf.nn.softplus),

@@ -1,52 +1,32 @@
+import os
 import random
 import time
 
 from sklearn.metrics import precision_recall_fscore_support
+
+from Algorithms.MLPT import MLP_tensorflow
+from Algorithms.Perceptron import Perceptron
 from Algorithms.SVM import SVM
 from DatasetsConsumers.Newsgroups import Newsgroups
 from DatasetsConsumers.Spamassassin import Spamassassin
 from Glove.glovemodel import GloVe
 from rootfile import ROOTPATH
+from utility import confusmatrix
 from utility.Random_Parameters import get_random_params
-from utility.utility import log_to_file
+from utility.confusmatrix import plot_confusion_matrix
+from utility.plotter import plot_data
+from utility.utility import log_to_file, setup_result_folder
 
 
-def generate_middle_layers(num_layers):
-    """
-    Generate layers that are randomly filled with dropout layers.
-    Returns: List of tuple (layer_type, parameter)
-    Parameter is ether an activation function for the hidden layer, or a dropout percentage for the dropout layer
-    """
-    layers = []
-    for i in range(num_layers):
-        dropout_chance = int(random.randint(1, 2) / 2) * random.randint(1, 80) / 100  # 50% chance to be 0
-        if dropout_chance > 0:
-            layers.append(('dropout', dropout_chance))
-        layers.append(('hidden', pick_random_activation_function()))
-    dropout_chance = int(random.randint(1, 2) / 2) * random.randint(1, 80) / 100  # 50% chance to be 0
-    if dropout_chance > 0:
-        layers.append(('dropout', dropout_chance))
-    return layers
-    '''possible_layers = [tf.keras.layers.LeakyReLU(dim),
-                       tf.keras.layers.ELU(dim),
-                       tf.keras.layers.ReLU(random.randint(1, 100) / 100,
-                                            random.randint(1, 100) / 100,
-                                            random.randint(1, 50)),
-                       # tf.keras.layers.Softmax(random.randint(-2, 2)),
-                       tf.keras.layers.Dense(dim, activation=pick_activation_function())
-                       ]
-    return [possible_layers[random.randint(0, len(possible_layers) - 1)] for _ in range(num_layers)]'''
 
 
-def pick_random_activation_function():
-    possible_activations = ["relu", "softmax", "sigmoid", "elu", "selu", "softplus",
-                            "softsign", "tanh"]
-    return possible_activations[random.randint(0, len(possible_activations) - 1)]
 
-
+best_fscore = 0.0
 counter = 1
 dataset_consumer = Newsgroups()
-algorithm = SVM
+algorithm = MLP_tensorflow
+
+setup_result_folder(algorithm.get_name(), dataset_consumer.get_name())
 
 emails, labels = dataset_consumer.load(True)
 glove = GloVe(200)
@@ -67,7 +47,18 @@ while True:
     # print("\nRecall: ", recall)
     # print("\nFscore: ", fscore)
     # print("\n")
-    print("Avg fScore:", (sum(fscore) / len(fscore)))
-    file_path = ROOTPATH + "Results/" + algorithm.get_name() + "_" + dataset_consumer.get_name() + "_resultsfile.csv"
-    log_to_file(parameters, fscore, file_path, time_taken)
+    avg_fscore = (sum(fscore) / len(fscore))
+    print("Avg fScore:", avg_fscore)
+    file_path = ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset_consumer.get_name() + "/"
+    log_to_file(parameters, fscore, file_path + "resultsfile.csv", time_taken)
+
+    if avg_fscore >= best_fscore:
+        best_fscore = avg_fscore
+        os.mkdir(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset_consumer.get_name() + "/" + str(counter))
+        if len(data_to_plot) != 0:
+            plot_data(data_to_plot[0], file_path + "/" + str(counter) + "/plot_val_acc_" + str(counter) + ".png")
+            plot_data(data_to_plot[1], file_path + "/" + str(counter) + "/plot_val_loss_" + str(counter) + ".png")
+        plot_confusion_matrix(y_test, rounded_predictions, dataset_consumer, algorithm, normalize=True,
+                              save_path=file_path + "/" + str(counter) + "/confusmatrix_" + str(counter) + ".png")
+
     counter += 1

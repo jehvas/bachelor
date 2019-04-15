@@ -6,12 +6,11 @@ def get_name():
     return 'Perceptron'
 
 
-def run_train(dataset, features, labels, parameters, matrix, sequences_matrix, emails):
+def run_train(dataset, features, labels, parameters):
     # Create training data
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2)
 
-    model = Perceptron()
-
+    model = Perceptron(alpha=parameters['alpha'])
     print("\nStarting fitting")
     model.fit(x_train, y_train)
 

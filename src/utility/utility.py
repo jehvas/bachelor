@@ -68,4 +68,8 @@ def create_file_is_not_exists(file_path, parameters):
             f.write(','.join(header_info) + '\n')
 
 
-
+def setup_result_folder(algorithm_name, dataset_name,):
+    if not os.path.exists(ROOTPATH + "Results/" + algorithm_name):
+        os.mkdir(ROOTPATH + "Results/" + algorithm_name)
+    if not os.path.exists(ROOTPATH + "Results/" + algorithm_name + "/" + dataset_name):
+        os.mkdir(ROOTPATH + "Results/" + algorithm_name + "/" + dataset_name)

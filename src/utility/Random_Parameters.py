@@ -15,9 +15,9 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
             'num_epochs': 50,
             'hidden_dim': hidden_dim,
             'layer_dim': layer_dim,
-            'input_function': pick_activation_function(),
-            'hidden_layers': pick_hidden_layers(layer_dim, hidden_dim),
-            'output_function': pick_activation_function(),
+            'input_function': pick_random_activation_function(),
+            'hidden_layers': generate_middle_layers(layer_dim),
+            'output_function': pick_random_activation_function(),
             'optimizer': optimizer,
             'learning_rate': lr,
             # 'class_weights': None,
@@ -39,19 +39,7 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
         }
 
 
-def pick_hidden_layers(num_layers, dim):
-    possible_layers = [tf.keras.layers.LeakyReLU(dim),
-                       tf.keras.layers.ELU(dim),
-                       tf.keras.layers.ReLU(random.randint(1, 100) / 100,
-                                            random.randint(1, 100) / 100,
-                                            random.randint(1, 50)),
-                       # tf.keras.layers.Softmax(random.randint(-2, 2)),
-                       tf.keras.layers.Dense(dim, activation=pick_activation_function())
-                       ]
-    return [possible_layers[random.randint(0, len(possible_layers) - 1)] for _ in range(num_layers)]
-
-
-def pick_activation_function():
+def pick_random_activation_function():
     possible_activations = ["relu", "softmax", "sigmoid", "elu", "selu", "softplus",
                             "softsign", "tanh"]
     return possible_activations[random.randint(0, len(possible_activations) - 1)]
@@ -73,3 +61,30 @@ def pick_random_class_weights(num_labels):
     for i in classes:
         class_weight_dic[i] =  random.randint(1, 100)
     return class_weight_dic
+
+
+def generate_middle_layers(num_layers):
+    """
+    Generate layers that are randomly filled with dropout layers.
+    Returns: List of tuple (layer_type, parameter)
+    Parameter is ether an activation function for the hidden layer, or a dropout percentage for the dropout layer
+    """
+    layers = []
+    for i in range(num_layers):
+        dropout_chance = int(random.randint(1, 2) / 2) * random.randint(1, 80) / 100  # 50% chance to be 0
+        if dropout_chance > 0:
+            layers.append(('dropout', dropout_chance))
+        layers.append(('hidden', pick_random_activation_function()))
+    dropout_chance = int(random.randint(1, 2) / 2) * random.randint(1, 80) / 100  # 50% chance to be 0
+    if dropout_chance > 0:
+        layers.append(('dropout', dropout_chance))
+    return layers
+    '''possible_layers = [tf.keras.layers.LeakyReLU(dim),
+                       tf.keras.layers.ELU(dim),
+                       tf.keras.layers.ReLU(random.randint(1, 100) / 100,
+                                            random.randint(1, 100) / 100,
+                                            random.randint(1, 50)),
+                       # tf.keras.layers.Softmax(random.randint(-2, 2)),
+                       tf.keras.layers.Dense(dim, activation=pick_activation_function())
+                       ]
+    return [possible_layers[random.randint(0, len(possible_layers) - 1)] for _ in range(num_layers)]'''
