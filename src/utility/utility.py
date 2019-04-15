@@ -50,6 +50,11 @@ def log_to_file(parameters, fscore, file_path, time_taken):
                 f.write(';'.join([str(k2)+":"+str(v2) for k2, v2 in value.items()]) + ", ")
             elif isinstance(value, Optimizer):
                 f.write(value.lr.name[:-5] + ", ")
+            elif type(value) is list:
+                if type(value[0]) is tuple:
+                    f.write(";".join("(%s;%s)" % tup for tup in value) + ", ")
+                else:
+                    f.write(';'.join([str(v) for v in value]) + ", ")
             else:
                 f.write(str(value) + ", ")
         f.write(np.array2string(fscore, separator=';', max_line_width=500) + ", ")
