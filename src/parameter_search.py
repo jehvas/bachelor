@@ -4,7 +4,7 @@ import time
 
 from sklearn.metrics import precision_recall_fscore_support
 
-from Algorithms.MLPT import MLP_tensorflow
+from Algorithms.MLPT import MLP_tensorflow, RNN_tensorflow
 from Algorithms.Perceptron import Perceptron
 from Algorithms.SVM import SVM
 from DatasetsConsumers.Newsgroups import Newsgroups
@@ -17,14 +17,10 @@ from utility.confusmatrix import plot_confusion_matrix
 from utility.plotter import plot_data
 from utility.utility import log_to_file, setup_result_folder
 
-
-
-
-
 best_fscore = 0.0
 counter = 1
 dataset_consumer = Newsgroups()
-algorithm = Perceptron
+algorithm = RNN_tensorflow
 
 setup_result_folder(algorithm.get_name(), dataset_consumer.get_name())
 
@@ -34,7 +30,7 @@ glove = GloVe(200)
 
 matrix, features = glove.get_weights_matrix(emails)
 
-#features = glove.get_weights_matrix(emails)
+# features = glove.get_weights_matrix(emails)
 print("Running algorithm:", algorithm.get_name())
 while True:
     output_dim = len(set(labels))
@@ -44,7 +40,7 @@ while True:
     print(str(parameters))
     start_time = time.time()
     data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset_consumer, features, labels,
-                                                                    parameters)
+                                                                    parameters, embedding=matrix)
     time_taken = time.time() - start_time
     precision, recall, fscore, support = precision_recall_fscore_support(y_test, rounded_predictions)
     # print("\nPrecision: ", precision)
@@ -58,7 +54,8 @@ while True:
 
     if avg_fscore >= best_fscore:
         best_fscore = avg_fscore
-        if not os.path.exists(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset_consumer.get_name() + "/plots"):
+        if not os.path.exists(
+                ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset_consumer.get_name() + "/plots"):
             os.mkdir(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset_consumer.get_name() + "/plots")
         if len(data_to_plot) != 0:
             plot_data(data_to_plot[0], file_path + "/plots/" + str(counter) + "_plot_val_acc_.png")

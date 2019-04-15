@@ -6,7 +6,7 @@ from keras.optimizers import Adam, Adamax, Nadam, SGD, Adagrad, RMSprop, Adadelt
 
 
 def get_random_params(algorithm, input_dim, output_dim) -> Dict:
-    if algorithm == 'RNN_tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi_LSTM_tensorflow':
+    if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi_LSTM_Tensorflow':
         layer_dim = 1  # 4 - int(math.log10(random.randint(10, 9000)))
         hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()

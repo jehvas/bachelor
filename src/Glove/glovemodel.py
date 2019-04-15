@@ -41,9 +41,6 @@ class GloVe:
             print("Done.", len(self.model), " words of loaded!")
 
     def get_weights_matrix(self, emails: List[List[str]]) -> np.array:
-        if len(self.model) is 0:
-            self.load_glove_model()
-
         tokenizer = Tokenizer(num_words=100000)
         tokenizer.fit_on_texts(emails)
         sequences = tokenizer.texts_to_sequences(emails)
@@ -51,6 +48,8 @@ class GloVe:
         if file_exists("wm"):
             return load("wm"), sequences_matrix
         else:
+            if len(self.model) is 0:
+                self.load_glove_model()
             weights_matrix = np.zeros((tokenizer.num_words, self.dimensionCount))
             for word, i in tokenizer.word_index.items():
                 try:

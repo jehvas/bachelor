@@ -44,7 +44,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     # batch_size = parameters['batch_size']
     batch_size = 1200
     input_function = parameters['input_function']
-    middle_layers = parameters['middle_layers']
+    hidden_layers = parameters['hidden_layers']
     output_function = parameters['output_function']
     rnn_units = 2
 
@@ -60,6 +60,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
             rnn(rnn_units,
                 recurrent_initializer='glorot_uniform',
                 stateful=True),
+            Dropout(0.5),
             Dense(output_dim)
         ])
         '''
