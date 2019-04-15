@@ -31,7 +31,8 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
     elif algorithm == 'SVM':
         return {
             'loss': random.choice(["hinge", "squared_hinge"]),
-            'class_weights': pick_random_class_weights(output_dim)
+            'class_weights': pick_random_class_weights(output_dim),
+            'penalty': random.choice(["l2", "l1", "elasticnet"])
         }
     elif algorithm == 'Perceptron':
         return {
