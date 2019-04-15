@@ -14,8 +14,6 @@ from tensorflow.python.keras.optimizers import RMSprop
 from utility.model_factory import generate_model
 from utility.plotter import PlotClass
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
 
 def get_name():
     return 'RNN_Tensorflow'
@@ -25,16 +23,6 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     features = features[:18000]
     labels = labels[:18000]
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
-
-    '''
-    output_dim = parameters['output_dim']
-    hidden_dim = parameters['hidden_dim']
-    input_dim = parameters['input_dim']
-    max_len = parameters['max_len']
-    dropout = parameters['dropout']
-    num_epochs = parameters['num_epochs']
-    batch_size = parameters['batch_size']
-    '''
 
     output_dim = parameters['output_dim']
     hidden_dim = parameters['hidden_dim']
@@ -56,7 +44,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
             rnn = functools.partial(GRU, recurrent_activation='sigmoid')
 
         model = Sequential([
-            Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, 256]),
+            Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, 256], weights=embedding),
             rnn(rnn_units,
                 recurrent_initializer='glorot_uniform',
                 stateful=True),

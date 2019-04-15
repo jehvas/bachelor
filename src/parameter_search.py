@@ -43,10 +43,7 @@ while True:
                                                                     parameters, embedding=matrix)
     time_taken = time.time() - start_time
     precision, recall, fscore, support = precision_recall_fscore_support(y_test, rounded_predictions)
-    # print("\nPrecision: ", precision)
-    # print("\nRecall: ", recall)
-    # print("\nFscore: ", fscore)
-    # print("\n")
+
     avg_fscore = (sum(fscore) / len(fscore))
     print("Avg fScore:", avg_fscore)
     file_path = ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset_consumer.get_name() + "/"
