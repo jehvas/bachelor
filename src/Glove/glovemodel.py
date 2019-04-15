@@ -1,6 +1,7 @@
-from typing import Dict
+from typing import Dict, List
 
 import numpy as np
+from keras_preprocessing import sequence
 from keras_preprocessing.text import Tokenizer
 from sklearn import preprocessing
 
@@ -39,10 +40,16 @@ class GloVe:
             save(self.model, save_name)
             print("Done.", len(self.model), " words of loaded!")
 
-    def get_weights_matrix(self, tokenizer: Tokenizer) -> np.array:
-        print(tokenizer.num_words)
+    def get_weights_matrix(self, emails: List[List[str]]) -> np.array:
+        if len(self.model) is 0:
+            self.load_glove_model()
+
+        tokenizer = Tokenizer(num_words=100000)
+        tokenizer.fit_on_texts(emails)
+        sequences = tokenizer.texts_to_sequences(emails)
+        sequences_matrix = sequence.pad_sequences(sequences, maxlen=256)
         if file_exists("wm"):
-            return load("wm")
+            return load("wm"), sequences_matrix
         else:
             weights_matrix = np.zeros((tokenizer.num_words, self.dimensionCount))
             for word, i in tokenizer.word_index.items():
@@ -53,20 +60,7 @@ class GloVe:
                 except KeyError:
                     weights_matrix[i] = np.random.normal(scale=0.6, size=(self.dimensionCount,))
             save(weights_matrix, "wm")
-            return weights_matrix
-
-            '''matrix_len = len(vocabulary)
-            weights_matrix = torch.zeros((matrix_len, self.dimensionCount))
-            words_found = 0
-
-            for i, word in enumerate(vocabulary):
-                try:
-                    weights_matrix[i] = self.model[word]
-                    words_found += 1
-                except KeyError:
-                    weights_matrix[i] = torch.from_numpy(np.random.normal(scale=0.6, size=(self.dimensionCount,)))
-            save(weights_matrix, "wm")
-            return weights_matrix'''
+            return weights_matrix, sequences_matrix
 
     # Check if features exist
     def get_features(self, emails: np.array, dataset: AbstractDataset) -> np.array:

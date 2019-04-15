@@ -4,13 +4,11 @@ from typing import List
 import numpy as np
 import tensorflow as tf
 from keras_preprocessing import sequence
-from keras_preprocessing.text import Tokenizer
 from sklearn.model_selection import train_test_split as tts
 from tensorflow import keras
 from tensorflow.python.keras import Input, Model, Sequential
 from tensorflow.python.keras.callbacks import EarlyStopping
-from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional, RNN, \
-    SimpleRNNCell
+from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional, CuDNNGRU, GRU
 from tensorflow.python.keras.optimizers import RMSprop
 
 from utility.model_factory import generate_model
@@ -23,7 +21,9 @@ def get_name():
     return 'RNN_Tensorflow'
 
 
-def run_train(dataset, features, labels, parameters, emails) -> (List, List, List):
+def run_train(dataset, features, labels, parameters, embedding=None) -> (List, List, List):
+    features = features[:18000]
+    labels = labels[:18000]
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
 
     '''
@@ -41,15 +41,30 @@ def run_train(dataset, features, labels, parameters, emails) -> (List, List, Lis
     input_dim = parameters['input_dim']
     # max_len = parameters['max_len']
     num_epochs = parameters['num_epochs']
-    batch_size = parameters['batch_size']
+    # batch_size = parameters['batch_size']
+    batch_size = 1200
     input_function = parameters['input_function']
     middle_layers = parameters['middle_layers']
     output_function = parameters['output_function']
+    rnn_units = 2
 
     def RNN_model():
-        # model = generate_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function,
-        #                       isRNN=True)
+        if tf.test.is_gpu_available():
+            rnn = CuDNNGRU
+        else:
+            import functools
+            rnn = functools.partial(GRU, recurrent_activation='sigmoid')
 
+        model = Sequential([
+            Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, 256]),
+            rnn(rnn_units,
+                recurrent_initializer='glorot_uniform',
+                stateful=True),
+            Dense(output_dim)
+        ])
+        '''
+        model = generate_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function,
+                               isRNN=True)
         inputs = Input(name='inputs', shape=[input_dim])
         # layer = Embedding(len(matrix), input_dim, weights=[matrix], trainable=False, input_length=max_len)(inputs)
         cell = SimpleRNNCell(hidden_dim)
@@ -60,12 +75,12 @@ def run_train(dataset, features, labels, parameters, emails) -> (List, List, Lis
         layer = Dense(output_dim, name='out_layer')(layer)
         layer = Activation('sigmoid')(layer)
         model = Model(inputs=inputs, outputs=layer)
-
+        '''
         return model
 
     rnn_model = RNN_model()
     rnn_model.compile(loss='sparse_categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
-
+    rnn_model.summary()
     history = rnn_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
                             validation_data=(x_test, y_test))
 
@@ -77,7 +92,7 @@ def run_train(dataset, features, labels, parameters, emails) -> (List, List, Lis
     accr = rnn_model.evaluate(x_test, y_test)
     print('Test set\n  Loss: {:0.3f}\n  Accuracy: {:0.3f}'.format(accr[0], accr[1]))
     return ([
-        PlotClass([(iteration_list, history.history['val_acc'])], "Epoch", "Accuracy", parameters, dataset, "RNN",
+        PlotClass([(iteration_list, history.history['val_accuracy'])], "Epoch", "Accuracy", parameters, dataset, "RNN",
                   legend=(['train', 'test'], 'upper left')),
         PlotClass([(iteration_list, history.history['val_loss'])], "Epoch", "Loss", parameters, dataset, "RNN",
                   legend=(['train', 'test'], 'upper left'))

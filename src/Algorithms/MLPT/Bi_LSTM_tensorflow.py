@@ -5,27 +5,25 @@ import tensorflow as tf
 import numpy as np
 from sklearn.model_selection import train_test_split as tts
 from tensorflow.python.keras import Input, Model
-from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional
+from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional, LSTMCell
 from tensorflow.python.keras.optimizers import RMSprop
 
 from utility.model_factory import generate_model
 from utility.plotter import PlotClass
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-
-def get_name():
+def get_name() -> str:
     return 'Bi-LSTM_Tensorflow'
 
 
 def run_train(dataset, features, labels, parameters, emails) -> (List, List, List):
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
 
-    x_train = tf.reshape(x_train, [x_train.shape[0], x_train.shape[1], 1])
+    # x_train = tf.reshape(x_train, [x_train.shape[0], x_train.shape[1], 1])
     # y_train = tf.reshape(y_train, [1, y_train.shape[0]])
-    y_train = tf.convert_to_tensor(y_train, np.float32)
-    x_test = tf.reshape(x_test, [x_test.shape[0], x_test.shape[1], 1])
-    y_test = tf.convert_to_tensor(y_test, np.float32)
+    # y_train = tf.convert_to_tensor(y_train, np.float32)
+    # x_test = tf.reshape(x_test, [x_test.shape[0], x_test.shape[1], 1])
+    # y_test = tf.convert_to_tensor(y_test, np.float32)
     # y_test = tf.reshape(y_test, [1, y_test.shape[0]])
 
     '''
@@ -49,26 +47,30 @@ def run_train(dataset, features, labels, parameters, emails) -> (List, List, Lis
     output_function = parameters['output_function']
 
     def Bi_LSTM():
+        max_len = 200
+        '''
         model = generate_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function,
                                isLSTM=True)
-        '''
         inputs = Input(name='inputs', shape=[max_len])
-        layer = Embedding(len(matrix), input_dim, weights=[matrix], trainable=False, input_length=max_len)(inputs)
-        layer = Bidirectional(LSTM(hidden_dim))(layer)
+        # layer = Embedding(len(features), input_dim, weights=[features], trainable=False, input_length=max_len)(inputs)
+        layer = LSTM(max_len)(inputs)
+        layer = Bidirectional(layer)
         layer = Dense(hidden_dim, name='FC1')(layer)
         layer = Activation('relu')(layer)
-        layer = Dropout(dropout)(layer)
+        layer = Dropout(0.5)(layer)
         layer = Dense(output_dim, name='out_layer')(layer)
         layer = Activation('sigmoid')(layer)
         model = Model(inputs=inputs, outputs=layer)
+        
         '''
+
+        model = LSTMCell(max_len)
         return model
 
     bi_lstm_model = Bi_LSTM()
-    bi_lstm_model.compile(loss='sparse_categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
+    # bi_lstm_model.compile(loss='sparse_categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
 
-    history = bi_lstm_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
-                                validation_data=(x_test, y_test), workers=4)
+    # history = bi_lstm_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs, validation_data=(x_test, y_test), workers=4)
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 

@@ -76,11 +76,15 @@ def pick_random_activation_function():
 
 counter = 1
 dataset_consumer = Newsgroups()
-algorithm = Bi_LSTM_tensorflow
+algorithm = RNN_tensorflow
 
 emails, labels = dataset_consumer.load(True)
 glove = GloVe(200)
-features = glove.get_features(emails, dataset_consumer)
+# features = glove.get_features(emails, dataset_consumer)
+
+matrix, features = glove.get_weights_matrix(emails)
+
+#features = glove.get_weights_matrix(emails)
 print("Running algorithm:", algorithm.get_name())
 while True:
     n_hidden = 1 # 4 - int(math.log10(random.randint(10, 9000)))
@@ -102,7 +106,7 @@ while True:
     print("\n#### STARTING RUN NUMBER {} #####\n".format(counter))
     print(str(parameters))
     data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset_consumer, features, labels,
-                                                                    parameters, emails)
+                                                                    parameters, embedding=matrix)
 
     precision, recall, fscore, support = precision_recall_fscore_support(y_test, rounded_predictions)
     # print("\nPrecision: ", precision)
