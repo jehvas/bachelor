@@ -30,26 +30,28 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
 
     elif algorithm == 'SVM':
         return {
-            'loss': ["hinge", "squared_hinge"][random.randint(0, 1)],
+            'loss': random.choice(["hinge", "squared_hinge"]),
             'class_weights': pick_random_class_weights(output_dim)
         }
     elif algorithm == 'Perceptron':
         return {
-            'alpha': random.randint(1, 100) / 1000
+            'alpha': random.randint(1, 100) / 1000,
+            'class_weights': random.choice([pick_random_class_weights(output_dim), "balanced"]),
+            'penalty': random.choice([None, "l2", "l1", "elasticnet"])
         }
 
 
 def pick_random_activation_function():
     possible_activations = ["relu", "softmax", "sigmoid", "elu", "selu", "softplus",
                             "softsign", "tanh"]
-    return possible_activations[random.randint(0, len(possible_activations) - 1)]
+    return random.choice(possible_activations)
 
 
 def pick_optimizer():
     random_lr = random.randint(1, 200) / 1000
     possible_optimizers = [Adam(lr=random_lr), RMSprop(lr=random_lr), Adadelta(), Adagrad(lr=random_lr),
                            Adamax(lr=random_lr), Nadam(lr=random_lr), SGD(lr=random_lr)]
-    optimizer_to_return = possible_optimizers[random.randint(0, len(possible_optimizers)-1)]
+    optimizer_to_return = random.choice(possible_optimizers)
     if "Adadelta" in optimizer_to_return.lr.name:
         return optimizer_to_return, "None"
     return optimizer_to_return, str(random_lr)

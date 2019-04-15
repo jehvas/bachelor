@@ -24,7 +24,7 @@ from utility.utility import log_to_file, setup_result_folder
 best_fscore = 0.0
 counter = 1
 dataset_consumer = Newsgroups()
-algorithm = MLP_tensorflow
+algorithm = Perceptron
 
 setup_result_folder(algorithm.get_name(), dataset_consumer.get_name())
 
@@ -54,11 +54,12 @@ while True:
 
     if avg_fscore >= best_fscore:
         best_fscore = avg_fscore
-        os.mkdir(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset_consumer.get_name() + "/" + str(counter))
+        if not os.path.exists(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset_consumer.get_name() + "/plots"):
+            os.mkdir(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset_consumer.get_name() + "/plots")
         if len(data_to_plot) != 0:
-            plot_data(data_to_plot[0], file_path + "/" + str(counter) + "/plot_val_acc_" + str(counter) + ".png")
-            plot_data(data_to_plot[1], file_path + "/" + str(counter) + "/plot_val_loss_" + str(counter) + ".png")
+            plot_data(data_to_plot[0], file_path + "/plots/" + str(counter) + "_plot_val_acc_.png")
+            plot_data(data_to_plot[1], file_path + "/plots/" + str(counter) + "_plot_val_loss_.png")
         plot_confusion_matrix(y_test, rounded_predictions, dataset_consumer, algorithm, normalize=True,
-                              save_path=file_path + "/" + str(counter) + "/confusmatrix_" + str(counter) + ".png")
+                              save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_.png")
 
     counter += 1
