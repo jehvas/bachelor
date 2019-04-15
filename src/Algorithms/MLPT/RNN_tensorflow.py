@@ -34,7 +34,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     input_function = parameters['input_function']
     hidden_layers = parameters['hidden_layers']
     output_function = parameters['output_function']
-    rnn_units = 2
+    rnn_units = 32
 
     def RNN_model():
         if tf.test.is_gpu_available():
