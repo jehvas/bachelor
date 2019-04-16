@@ -30,7 +30,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     # max_len = parameters['max_len']
     num_epochs = parameters['num_epochs']
     # batch_size = parameters['batch_size']
-    batch_size = 3600
+    batch_size = 400
     input_function = parameters['input_function']
     hidden_layers = parameters['hidden_layers']
     output_function = parameters['output_function']
@@ -46,8 +46,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
         model = Sequential([
             Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, 256], weights=embedding),
             rnn(rnn_units,
-                recurrent_initializer='glorot_uniform',
-                stateful=True),
+                recurrent_initializer='glorot_uniform'),
             Dropout(0.3),
             Dense(output_dim)
         ])
