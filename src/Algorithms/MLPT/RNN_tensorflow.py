@@ -34,7 +34,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     input_function = parameters['input_function']
     hidden_layers = parameters['hidden_layers']
     output_function = parameters['output_function']
-    rnn_units = 64
+    rnn_units = 32
 
     def RNN_model():
         if tf.test.is_gpu_available():
@@ -48,7 +48,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
             rnn(rnn_units,
                 recurrent_initializer='glorot_uniform',
                 stateful=True),
-            Dropout(0.5),
+            Dropout(0.3),
             Dense(output_dim)
         ])
         '''
@@ -71,7 +71,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     rnn_model.compile(loss='sparse_categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
     rnn_model.summary()
     history = rnn_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
-                            validation_data=(x_test, y_test))
+                            validation_data=(x_test, y_test), workers=12)
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 
