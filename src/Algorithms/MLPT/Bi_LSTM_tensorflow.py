@@ -44,9 +44,6 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     output_function = parameters['output_function']
 
     def Bi_LSTM():
-
-
-
         model = generate_bi_lstm_model(input_dim, hidden_dim, hidden_layers, output_dim, input_function, output_function, embedding)
         return model
 
