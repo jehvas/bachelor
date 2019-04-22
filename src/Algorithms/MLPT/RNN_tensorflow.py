@@ -7,7 +7,7 @@ from keras_preprocessing import sequence
 from sklearn.model_selection import train_test_split as tts
 from tensorflow import keras
 from tensorflow.python.keras import Input, Model, Sequential
-from tensorflow.python.keras.callbacks import EarlyStopping
+from tensorflow.python.keras.callbacks import EarlyStopping, LearningRateScheduler
 from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional, CuDNNGRU, GRU, \
     RNN, SimpleRNNCell
 from tensorflow.python.keras.optimizers import RMSprop
@@ -16,14 +16,14 @@ from tensorflow.python.ops.rnn_cell_impl import RNNCell
 from utility.model_factory import generate_model
 from utility.plotter import PlotClass
 
+def learning_rate_function(epoch, learning_rate):
+    return learning_rate * 0.99
 
 def get_name():
     return 'RNN_Tensorflow'
 
 
 def run_train(dataset, features, labels, parameters, embedding=None) -> (List, List, List):
-    features = features[:3900]
-    labels = labels[:3900]
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
 
     output_dim = parameters['output_dim']
@@ -45,8 +45,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
             rnn = functools.partial(GRU, recurrent_activation='sigmoid')
 
         model = Sequential([
-            Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, input_dim],
-                      weights=embedding),
+            Embedding(embedding.shape[0], embedding.shape[1], weights=embedding),
             Dropout(0.5),
             RNN(SimpleRNNCell(hidden_dim)),
             # Dense(hidden_dim, name='FC1', activation=input_function),
@@ -73,7 +72,11 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     rnn_model.compile(loss=loss_function, optimizer=optimizer, metrics=['accuracy'])
     rnn_model.summary()
     history = rnn_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
-                            validation_data=(x_test, y_test), workers=12)
+                            validation_data=(x_test, y_test), workers=12,
+                            callbacks=[LearningRateScheduler(learning_rate_function, verbose=1),
+                                       EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1, mode='auto',
+                                                     restore_best_weights=True)
+                                       ])
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 
