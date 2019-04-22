@@ -28,8 +28,12 @@ def get_params(algorithm, dataset) -> Dict:
     elif algorithm == 'SVM':
         if dsname == 'SpamHam':
             re_dict['class_weights'] = {0: 1, 1: 2}
+            re_dict['loss'] = "squared_hinge"
+            re_dict['penalty'] = "l2"
         elif dsname == 'Spamassassin':
             re_dict['class_weights'] = {0: 1, 1: 2}
+            re_dict['loss'] = "squared_hinge"
+            re_dict['penalty'] = "l2"
     elif algorithm == 'Bi-LSTM_Tensorflow':
         re_dict['num_epochs'] = 10
     elif algorithm == 'RNN_Tensorflow':

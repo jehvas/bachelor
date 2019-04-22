@@ -41,7 +41,9 @@ datasets_to_use = [Spamassassin()]
 algorithms_to_use = [RNN_tensorflow]
 amount = 99999
 # Check arguments
-if len(sys.argv) != 4:
+if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithms and sys.argv[2].lower() in datasets):
+    print("")
+    print("There was an error in the program arguments")
     print("There must be 3 arguments: an algorithm, a dataset and a count for how many times it should run")
     print("Possible algorithms:")
     for x in algorithms.keys():
@@ -51,8 +53,8 @@ if len(sys.argv) != 4:
         print("\t" + x)
     # exit()
 else:
-    algorithms_to_use = algorithms[sys.argv[1]]
-    datasets_to_use = datasets[sys.argv[2]]
+    algorithms_to_use = algorithms[sys.argv[1].lower()]
+    datasets_to_use = datasets[sys.argv[2].lower()]
     amount = int(sys.argv[3])
 
 for algorithm in algorithms_to_use:
