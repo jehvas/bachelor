@@ -1,14 +1,23 @@
-from typing import List
+import os
+from typing import List, Counter
 
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split as tts
-from tensorflow.python.keras import Sequential
-from tensorflow.python.keras.layers import Embedding, Dense, Dropout, CuDNNGRU, GRU, \
+from tensorflow import keras
+from tensorflow.python.keras import Input, Model, Sequential
+from tensorflow.python.keras.callbacks import EarlyStopping, LearningRateScheduler
+from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional, CuDNNGRU, GRU, \
     RNN, SimpleRNNCell
+from tensorflow.python.keras.optimizers import RMSprop
+from tensorflow.python.ops.rnn_cell_impl import RNNCell
 
 from utility.model_factory import generate_rnn_model, generate_model
 from utility.plotter import PlotClass
+
+
+def learning_rate_function(epoch, learning_rate):
+    return learning_rate * 0.99
 
 
 def get_name():
@@ -43,12 +52,17 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     rnn_model.compile(loss=loss_function, optimizer=optimizer, metrics=['accuracy'])
     rnn_model.summary()
     history = rnn_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
-                            validation_data=(x_test, y_test), workers=12)
+                            validation_data=(x_test, y_test), workers=12,
+                            callbacks=[LearningRateScheduler(learning_rate_function, verbose=1),
+                                       EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1,
+                                                     mode='auto',
+                                                     restore_best_weights=True)
+                                       ])
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 
     predictions = rnn_model.predict(x_test)
-    rounded_predictions = [np.argmax(x) for x in predictions]
+    predictions = [np.argmax(x) for x in predictions]
 
     accr = rnn_model.evaluate(x_test, y_test)
     print('Test set\n  Loss: {:0.3f}\n  Accuracy: {:0.3f}'.format(accr[0], accr[1]))
@@ -57,4 +71,4 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
                   legend=(['train', 'test'], 'upper left')),
         PlotClass([(iteration_list, history.history['val_loss'])], "Epoch", "Loss", parameters, dataset, "RNN",
                   legend=(['train', 'test'], 'upper left'))
-    ]), y_test, rounded_predictions
+    ]), y_test, predictions

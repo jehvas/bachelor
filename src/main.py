@@ -32,7 +32,7 @@ datasets = {
 }
 
 datasets_to_use = [Spamassassin()]
-algorithms_to_use = [MLP_tensorflow]
+algorithms_to_use = [RNN_tensorflow]
 # Check arguments
 if len(sys.argv) != 3 or not (sys.argv[1].lower() in algorithms and sys.argv[2].lower() in datasets):
     print("")
@@ -44,7 +44,7 @@ if len(sys.argv) != 3 or not (sys.argv[1].lower() in algorithms and sys.argv[2].
     print("Possible datasets:")
     for x in datasets.keys():
         print("\t" + x)
-    exit()
+    # exit()
 else:
     algorithms_to_use = algorithms[sys.argv[1].lower()]
     datasets_to_use = datasets[sys.argv[2].lower()]
@@ -53,36 +53,25 @@ for dataset_consumer in datasets_to_use:
     for algorithm in algorithms_to_use:
         emails, labels = dataset_consumer.load(True)
         glove = GloVe(200)
-        features = glove.get_features(emails, dataset_consumer)
+        # features = glove.get_features(emails, dataset_consumer)
+        matrix, features = glove.get_weights_matrix(emails, dataset_consumer)
         print("Running algorithm:", algorithm.get_name())
         parameters = get_params(algorithm.get_name(), dataset_consumer)
 
         parameters['output_dim'] = len(set(labels))
         parameters['input_dim'] = features.shape[1]
 
-        """
-        dataset_consumer.setVocabulary(emails)
-        max_words = 50000
-        max_len = parameters['max_len']
-        tok = Tokenizer(num_words=max_words)
-        tok.fit_on_texts(emails)
-        sequences = tok.texts_to_sequences(emails)
-        sequences_matrix = sequence.pad_sequences(sequences, maxlen=max_len)
-        
-        matrix = glove.get_weights_matrix(tok)
-        """
+        data_to_plot, y_test, predictions = algorithm.run_train(dataset_consumer, features, labels,
+                                                                parameters, embedding=matrix)
 
-        data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset_consumer, features, labels,
-                                                                        parameters)
+        # for plotClass in data_to_plot:
+        #    plot_data(plotClass, True)
 
-        for plotClass in data_to_plot:
-            plot_data(plotClass, True)
-
-        precision, recall, fscore, support = precision_recall_fscore_support(y_test, rounded_predictions)
+        precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)
         print("\nPrecision: ", precision)
         print("\nRecall: ", recall)
         print("\nFscore: ", fscore)
         print("\n")
         print("Avg fScore:", (sum(fscore)/len(fscore)))
 
-        plot_confusion_matrix(y_test, rounded_predictions, dataset_consumer, algorithm.get_name(), normalize=True)
+        plot_confusion_matrix(y_test, predictions, dataset_consumer, algorithm.get_name(), normalize=True)

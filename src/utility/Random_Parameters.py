@@ -11,8 +11,8 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
         hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()
         return {
-            'batch_size': 780,
-            'num_epochs': 2,
+            'batch_size': 128,
+            'num_epochs': 50,
             'hidden_dim': hidden_dim,
             'layer_dim': layer_dim,
             'input_function': pick_random_activation_function(),
