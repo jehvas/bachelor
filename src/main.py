@@ -34,7 +34,9 @@ datasets = {
 datasets_to_use = [Spamassassin()]
 algorithms_to_use = [MLP_tensorflow]
 # Check arguments
-if len(sys.argv) != 3:
+if len(sys.argv) != 3 or not (sys.argv[1].lower() in algorithms and sys.argv[2].lower() in datasets):
+    print("")
+    print("There was an error in the program arguments")
     print("There must be 2 arguments: an algorithm and a dataset.")
     print("Possible algorithms:")
     for x in algorithms.keys():
@@ -42,10 +44,10 @@ if len(sys.argv) != 3:
     print("Possible datasets:")
     for x in datasets.keys():
         print("\t" + x)
-    # exit()
+    exit()
 else:
-    algorithms_to_use = algorithms[sys.argv[1]]
-    datasets_to_use = datasets[sys.argv[2]]
+    algorithms_to_use = algorithms[sys.argv[1].lower()]
+    datasets_to_use = datasets[sys.argv[2].lower()]
 
 for dataset_consumer in datasets_to_use:
     for algorithm in algorithms_to_use:
