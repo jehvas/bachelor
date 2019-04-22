@@ -38,7 +38,7 @@ datasets = {
 }
 
 datasets_to_use = [Spamassassin()]
-algorithms_to_use = [MLP_tensorflow]
+algorithms_to_use = [RNN_tensorflow]
 amount = 99999
 # Check arguments
 if len(sys.argv) != 4:
@@ -59,14 +59,14 @@ for algorithm in algorithms_to_use:
     for dataset in datasets_to_use:
         best_fscore = 0
         setup_result_folder(algorithm.get_name(), dataset.get_name())
-        emails, labels = dataset.load()
+        emails, labels = dataset.load(True)
         glove = GloVe(200)
         # features = glove.get_weights_matrix(emails)
         print("Running algorithm:", algorithm.get_name())
         output_dim = len(set(labels))
 
         matrix, features = glove.get_weights_matrix(emails)
-        features = glove.get_features(emails, datasets_to_use)
+        # features = glove.get_features(emails, datasets_to_use)
         for counter in range(1, amount):
             parameters = get_random_params(algorithm.get_name(), features.shape[1], output_dim)
 

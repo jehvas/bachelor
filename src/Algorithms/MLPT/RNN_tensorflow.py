@@ -22,21 +22,20 @@ def get_name():
 
 
 def run_train(dataset, features, labels, parameters, embedding=None) -> (List, List, List):
-    features = features[:18000]
-    labels = labels[:18000]
+    features = features[:3900]
+    labels = labels[:3900]
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
 
     output_dim = parameters['output_dim']
     hidden_dim = parameters['hidden_dim']
     input_dim = parameters['input_dim']
-    # max_len = parameters['max_len']
     num_epochs = parameters['num_epochs']
-    # batch_size = parameters['batch_size']
-    batch_size = 400
+    batch_size = parameters['batch_size']
     input_function = parameters['input_function']
     hidden_layers = parameters['hidden_layers']
     output_function = parameters['output_function']
     optimizer = parameters['optimizer']
+    loss_function = parameters['loss_function']
 
     def RNN_model():
         if tf.test.is_gpu_available():
@@ -46,11 +45,12 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
             rnn = functools.partial(GRU, recurrent_activation='sigmoid')
 
         model = Sequential([
-            Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, input_dim], weights=embedding),
-            RNN(SimpleRNNCell(hidden_dim)),
-            Dense(hidden_dim, name='FC1', activation=input_function),
-            #rnn(rnn_units, recurrent_initializer='glorot_uniform'),
+            Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, input_dim],
+                      weights=embedding),
             Dropout(0.5),
+            RNN(SimpleRNNCell(hidden_dim)),
+            # Dense(hidden_dim, name='FC1', activation=input_function),
+            # rnn(rnn_units, recurrent_initializer='glorot_uniform'),
             Dense(output_dim, name='out_layer', activation=output_function),
         ])
 
@@ -70,7 +70,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
         return model
 
     rnn_model = RNN_model()
-    rnn_model.compile(loss='sparse_categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+    rnn_model.compile(loss=loss_function, optimizer=optimizer, metrics=['accuracy'])
     rnn_model.summary()
     history = rnn_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
                             validation_data=(x_test, y_test), workers=12)
