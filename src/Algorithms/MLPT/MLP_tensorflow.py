@@ -1,12 +1,9 @@
 from typing import List
-import tensorflow as tf
+
 import numpy as np
 from sklearn.model_selection import train_test_split as tts
-from tensorflow.python.keras import Input, Model
-from tensorflow.python.keras.layers import Flatten, Dense, Activation, Dropout, Embedding, ELU, PReLU, ReLU, Softmax
-from tensorflow.python.keras.optimizers import Adam
 
-from utility.model_factory import generate_model
+from utility.model_factory import generate_model, generate_mlp_model
 from utility.plotter import PlotClass
 
 
@@ -28,14 +25,14 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     output_function = parameters['output_function']
 
     def MLP():
-        model = generate_model(input_dim, hidden_dim, hidden_layers, output_dim, input_function, output_function)
+        model = generate_mlp_model(input_dim, hidden_dim, hidden_layers, output_dim, input_function, output_function)
         return model
 
     mlp_model = MLP()
     mlp_model.compile(loss='sparse_categorical_crossentropy', optimizer=parameters['optimizer'], metrics=['accuracy'])
-
+    mlp_model.summary()
     history = mlp_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
-                            validation_data=(x_test, y_test), workers=4, verbose=0)
+                            validation_data=(x_test, y_test), workers=4, verbose=1)
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 

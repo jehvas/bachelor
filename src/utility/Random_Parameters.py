@@ -6,13 +6,13 @@ from tensorflow.python.keras.optimizers import Adam, Adamax, Nadam, SGD, Adagrad
 
 
 def get_random_params(algorithm, input_dim, output_dim) -> Dict:
-    if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi_LSTM_Tensorflow':
+    if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi-LSTM_Tensorflow':
         layer_dim = 1  # 4 - int(math.log10(random.randint(10, 9000)))
         hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()
         return {
             'batch_size': 780,
-            'num_epochs': 50,
+            'num_epochs': 2,
             'hidden_dim': hidden_dim,
             'layer_dim': layer_dim,
             'input_function': pick_random_activation_function(),

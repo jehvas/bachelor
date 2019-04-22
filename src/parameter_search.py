@@ -1,4 +1,5 @@
 import os
+import random
 import sys
 import time
 
@@ -38,7 +39,7 @@ datasets = {
 }
 
 datasets_to_use = [Spamassassin()]
-algorithms_to_use = [RNN_tensorflow]
+algorithms_to_use = [Bi_LSTM_tensorflow]
 amount = 99999
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithms and sys.argv[2].lower() in datasets):
@@ -67,22 +68,28 @@ for algorithm in algorithms_to_use:
         print("Running algorithm:", algorithm.get_name())
         output_dim = len(set(labels))
 
-        matrix, features = glove.get_weights_matrix(emails, dataset)
-        # features = glove.get_features(emails, datasets_to_use)
+        matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
+        features_from_glove = glove.get_features(emails, datasets_to_use)
         for counter in range(1, amount):
+
+
+            features = features_from_glove if algorithm.get_name() == "MLP_Tensorflow" else features_from_matrix
+
             parameters = get_random_params(algorithm.get_name(), features.shape[1], output_dim)
 
             print("\n#### STARTING RUN NUMBER {} #####\n".format(counter))
             print(str(parameters))
             start_time = time.time()
-            data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset, features, labels,
-                                                                            parameters, embedding=matrix)
+            if algorithm.get_name() == "MLP_Tensorflow" :
+                data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset, features, labels,
+                                                                                parameters)
+            else:
+                data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset, features, labels,
+                                                                                parameters, embedding=matrix)
+
             time_taken = time.time() - start_time
             precision, recall, fscore, support = precision_recall_fscore_support(y_test, rounded_predictions)
-            # print("\nPrecision: ", precision)
-            # print("\nRecall: ", recall)
-            # print("\nFscore: ", fscore)
-            # print("\n")
+
             avg_fscore = (sum(fscore) / len(fscore))
             print("Avg fScore:", avg_fscore)
             file_path = ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/"

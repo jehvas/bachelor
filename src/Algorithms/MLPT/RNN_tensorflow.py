@@ -1,19 +1,13 @@
-import os
 from typing import List
 
 import numpy as np
 import tensorflow as tf
-from keras_preprocessing import sequence
 from sklearn.model_selection import train_test_split as tts
-from tensorflow import keras
-from tensorflow.python.keras import Input, Model, Sequential
-from tensorflow.python.keras.callbacks import EarlyStopping
-from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional, CuDNNGRU, GRU, \
+from tensorflow.python.keras import Sequential
+from tensorflow.python.keras.layers import Embedding, Dense, Dropout, CuDNNGRU, GRU, \
     RNN, SimpleRNNCell
-from tensorflow.python.keras.optimizers import RMSprop
-from tensorflow.python.ops.rnn_cell_impl import RNNCell
 
-from utility.model_factory import generate_model
+from utility.model_factory import generate_rnn_model, generate_model
 from utility.plotter import PlotClass
 
 
@@ -22,8 +16,6 @@ def get_name():
 
 
 def run_train(dataset, features, labels, parameters, embedding=None) -> (List, List, List):
-    features = features[:3900]
-    labels = labels[:3900]
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
 
     output_dim = parameters['output_dim']
@@ -44,29 +36,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
             import functools
             rnn = functools.partial(GRU, recurrent_activation='sigmoid')
 
-        model = Sequential([
-            Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, input_dim],
-                      weights=embedding),
-            Dropout(0.5),
-            RNN(SimpleRNNCell(hidden_dim)),
-            # Dense(hidden_dim, name='FC1', activation=input_function),
-            # rnn(rnn_units, recurrent_initializer='glorot_uniform'),
-            Dense(output_dim, name='out_layer', activation=output_function),
-        ])
-
-        '''
-        # model = generate_model(input_dim, hidden_dim, hidden_layers, output_dim, input_function, output_function, isRNN=True)
-        inputs = Input(name='inputs', shape=[input_dim])
-        layer = Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, 256], weights=embedding)(inputs),
-        cell = SimpleRNNCell(hidden_dim)
-        layer = RNN(cell)(layer)
-        layer = Dense(hidden_dim, name='FC1')(layer)
-        layer = Activation('relu')(layer)
-        layer = Dropout(0.5)(layer)
-        layer = Dense(output_dim, name='out_layer')(layer)
-        layer = Activation('sigmoid')(layer)
-        model = Model(inputs=inputs, outputs=layer)
-        '''
+        model = generate_rnn_model(input_dim, hidden_dim, hidden_layers, output_dim, input_function, output_function, embedding)
         return model
 
     rnn_model = RNN_model()
