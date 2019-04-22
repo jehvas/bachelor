@@ -8,8 +8,10 @@ from sklearn.model_selection import train_test_split as tts
 from tensorflow import keras
 from tensorflow.python.keras import Input, Model, Sequential
 from tensorflow.python.keras.callbacks import EarlyStopping
-from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional, CuDNNGRU, GRU
+from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional, CuDNNGRU, GRU, \
+    RNN, SimpleRNNCell
 from tensorflow.python.keras.optimizers import RMSprop
+from tensorflow.python.ops.rnn_cell_impl import RNNCell
 
 from utility.model_factory import generate_model
 from utility.plotter import PlotClass
@@ -34,7 +36,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     input_function = parameters['input_function']
     hidden_layers = parameters['hidden_layers']
     output_function = parameters['output_function']
-    rnn_units = 128
+    optimizer = parameters['optimizer']
 
     def RNN_model():
         if tf.test.is_gpu_available():
@@ -44,19 +46,20 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
             rnn = functools.partial(GRU, recurrent_activation='sigmoid')
 
         model = Sequential([
-            Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, 256], weights=embedding),
-            rnn(rnn_units,
-                recurrent_initializer='glorot_uniform'),
-            Dropout(0.3),
-            Dense(output_dim)
+            Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, input_dim], weights=embedding),
+            RNN(SimpleRNNCell(hidden_dim)),
+            Dense(hidden_dim, name='FC1', activation=input_function),
+            #rnn(rnn_units, recurrent_initializer='glorot_uniform'),
+            Dropout(0.5),
+            Dense(output_dim, name='out_layer', activation=output_function),
         ])
+
         '''
-        model = generate_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function,
-                               isRNN=True)
+        # model = generate_model(input_dim, hidden_dim, hidden_layers, output_dim, input_function, output_function, isRNN=True)
         inputs = Input(name='inputs', shape=[input_dim])
-        # layer = Embedding(len(matrix), input_dim, weights=[matrix], trainable=False, input_length=max_len)(inputs)
+        layer = Embedding(embedding.shape[0], embedding.shape[1], batch_input_shape=[batch_size, 256], weights=embedding)(inputs),
         cell = SimpleRNNCell(hidden_dim)
-        layer = RNN(cell)(inputs)
+        layer = RNN(cell)(layer)
         layer = Dense(hidden_dim, name='FC1')(layer)
         layer = Activation('relu')(layer)
         layer = Dropout(0.5)(layer)
@@ -67,7 +70,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
         return model
 
     rnn_model = RNN_model()
-    rnn_model.compile(loss='sparse_categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
+    rnn_model.compile(loss='sparse_categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     rnn_model.summary()
     history = rnn_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
                             validation_data=(x_test, y_test), workers=12)
