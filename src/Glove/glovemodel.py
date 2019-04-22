@@ -40,13 +40,16 @@ class GloVe:
             save(self.model, save_name)
             print("Done.", len(self.model), " words of loaded!")
 
-    def get_weights_matrix(self, emails: List[List[str]]) -> np.array:
+    def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset) -> np.array:
+        dataset_name = type(dataset).__name__
+        wm_file_name = "weights_matrix_{}_{}".format(dataset_name, self.dimensionCount)
+
         tokenizer = Tokenizer(num_words=100000)
         tokenizer.fit_on_texts(emails)
         sequences = tokenizer.texts_to_sequences(emails)
         sequences_matrix = sequence.pad_sequences(sequences, maxlen=256)
-        if file_exists("wm"):
-            return load("wm"), sequences_matrix
+        if file_exists(wm_file_name):
+            return load(wm_file_name), sequences_matrix
         else:
             if len(self.model) is 0:
                 self.load_glove_model()
@@ -58,7 +61,7 @@ class GloVe:
                         weights_matrix[i] = embedding_vector
                 except KeyError:
                     weights_matrix[i] = np.random.normal(scale=0.6, size=(self.dimensionCount,))
-            save(weights_matrix, "wm")
+            save(weights_matrix, wm_file_name)
             return weights_matrix, sequences_matrix
 
     # Check if features exist

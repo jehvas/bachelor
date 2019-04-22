@@ -67,7 +67,7 @@ for algorithm in algorithms_to_use:
         print("Running algorithm:", algorithm.get_name())
         output_dim = len(set(labels))
 
-        matrix, features = glove.get_weights_matrix(emails)
+        matrix, features = glove.get_weights_matrix(emails, dataset)
         # features = glove.get_features(emails, datasets_to_use)
         for counter in range(1, amount):
             parameters = get_random_params(algorithm.get_name(), features.shape[1], output_dim)
