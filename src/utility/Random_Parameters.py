@@ -2,7 +2,7 @@ import random
 import tensorflow as tf
 from typing import Dict
 
-from keras.optimizers import Adam, Adamax, Nadam, SGD, Adagrad, RMSprop, Adadelta
+from tensorflow.python.keras.optimizers import Adam, Adamax, Nadam, SGD, Adagrad, RMSprop, Adadelta
 
 
 def get_random_params(algorithm, input_dim, output_dim) -> Dict:
@@ -32,7 +32,7 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
         return {
             'loss': random.choice(["hinge", "squared_hinge"]),
             'class_weights': pick_random_class_weights(output_dim),
-            'penalty': random.choice(["l2", "l1", "elasticnet"])
+            'penalty': random.choice(["l2"])
         }
     elif algorithm == 'Perceptron':
         return {
