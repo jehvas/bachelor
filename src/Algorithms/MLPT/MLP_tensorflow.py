@@ -1,6 +1,4 @@
 from typing import List
-
-import keras
 import tensorflow as tf
 import numpy as np
 from sklearn.model_selection import train_test_split as tts
@@ -16,7 +14,7 @@ def get_name():
     return 'MLP_Tensorflow'
 
 
-def run_train(dataset, features, labels, parameters) -> (List, List, List):
+def run_train(dataset, features, labels, parameters, embedding=None) -> (List, List, List):
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
 
     output_dim = parameters['output_dim']
@@ -31,18 +29,10 @@ def run_train(dataset, features, labels, parameters) -> (List, List, List):
 
     def MLP():
         model = generate_model(input_dim, hidden_dim, hidden_layers, output_dim, input_function, output_function)
-        '''
-        model = tf.keras.Sequential([
-            tf.keras.layers.Dense(input_dim, activation=tf.nn.softplus),
-            tf.keras.layers.Dropout(dropout),
-            tf.keras.layers.Dense(hidden_dim, activation=tf.nn.softsign),
-            tf.keras.layers.Dense(output_dim, activation=tf.nn.tanh)
-        ])
-        '''
         return model
 
     mlp_model = MLP()
-    mlp_model.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(), metrics=['accuracy'])
+    mlp_model.compile(loss='sparse_categorical_crossentropy', optimizer=parameters['optimizer'], metrics=['accuracy'])
 
     history = mlp_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
                             validation_data=(x_test, y_test), workers=4, verbose=0)

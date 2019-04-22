@@ -6,7 +6,7 @@ def get_name():
     return 'Perceptron'
 
 
-def run_train(dataset, features, labels, parameters):
+def run_train(dataset, features, labels, parameters, embedding=None):
     # Create training data
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2)
 
