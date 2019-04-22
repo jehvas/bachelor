@@ -93,8 +93,8 @@ for algorithm in algorithms_to_use:
                 if not os.path.exists(
                         ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots"):
                     os.mkdir(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
-                if len(data_to_plot) != 0:
-                    plot_data(data_to_plot[0], file_path + "/plots/" + str(counter) + "_plot_val_acc_.png")
-                    plot_data(data_to_plot[1], file_path + "/plots/" + str(counter) + "_plot_val_loss_.png")
+                #if len(data_to_plot) != 0:
+                #    plot_data(data_to_plot[0], file_path + "/plots/" + str(counter) + "_plot_val_acc_.png")
+                #    plot_data(data_to_plot[1], file_path + "/plots/" + str(counter) + "_plot_val_loss_.png")
                 plot_confusion_matrix(y_test, rounded_predictions, dataset, algorithm, normalize=True,
                                       save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_.png")

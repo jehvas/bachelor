@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Counter
 
 import numpy as np
 import tensorflow as tf
@@ -16,8 +16,10 @@ from tensorflow.python.ops.rnn_cell_impl import RNNCell
 from utility.model_factory import generate_model
 from utility.plotter import PlotClass
 
+
 def learning_rate_function(epoch, learning_rate):
     return learning_rate * 0.99
+
 
 def get_name():
     return 'RNN_Tensorflow'
@@ -74,14 +76,15 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     history = rnn_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
                             validation_data=(x_test, y_test), workers=12,
                             callbacks=[LearningRateScheduler(learning_rate_function, verbose=1),
-                                       EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1, mode='auto',
+                                       EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1,
+                                                     mode='auto',
                                                      restore_best_weights=True)
                                        ])
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 
     predictions = rnn_model.predict(x_test)
-    rounded_predictions = [np.argmax(x) for x in predictions]
+    predictions = [np.argmax(x) for x in predictions]
 
     accr = rnn_model.evaluate(x_test, y_test)
     print('Test set\n  Loss: {:0.3f}\n  Accuracy: {:0.3f}'.format(accr[0], accr[1]))
@@ -90,4 +93,4 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
                   legend=(['train', 'test'], 'upper left')),
         PlotClass([(iteration_list, history.history['val_loss'])], "Epoch", "Loss", parameters, dataset, "RNN",
                   legend=(['train', 'test'], 'upper left'))
-    ]), y_test, rounded_predictions
+    ]), y_test, predictions

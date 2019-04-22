@@ -17,7 +17,20 @@ def get_params(algorithm, dataset) -> Dict:
         'max_len': 1024
     }
     if algorithm == 'RNN_Tensorflow':
-        return {'batch_size': 780, 'num_epochs': 50, 'hidden_dim': 259, 'layer_dim': 1, 'input_function': 'selu', 'hidden_layers': [('dropout', 0.23), ('hidden', 'relu')], 'output_function': 'relu', 'optimizer': Adagrad(lr=0.0165), 'learning_rate': '0.0165', 'dropout': 0.11, 'output_dim': 2, 'input_dim': 256, 'use_dropout': True, 'loss_function': 'squared_hinge'}
+        return {'batch_size': 780,
+                'num_epochs': 50,
+                'hidden_dim': 259,
+                'layer_dim': 1,
+                'input_function': 'selu',
+                'hidden_layers': [('dropout', 0.23), ('hidden', 'relu')],
+                'output_function': 'relu',
+                'optimizer': Adagrad(lr=0.00165),
+                'learning_rate': '0.00165',
+                'dropout': 0.11,
+                'output_dim': 2,
+                'input_dim': 256,
+                'use_dropout': True,
+                'loss_function': 'squared_hinge'}
     elif algorithm == 'MLP_Tensorflow':
         pass
     elif algorithm == 'MLP':

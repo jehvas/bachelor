@@ -61,17 +61,17 @@ for dataset_consumer in datasets_to_use:
         parameters['output_dim'] = len(set(labels))
         parameters['input_dim'] = features.shape[1]
 
-        data_to_plot, y_test, rounded_predictions = algorithm.run_train(dataset_consumer, features, labels,
-                                                                        parameters, embedding=matrix)
+        data_to_plot, y_test, predictions = algorithm.run_train(dataset_consumer, features, labels,
+                                                                parameters, embedding=matrix)
 
-        for plotClass in data_to_plot:
-            plot_data(plotClass, True)
+        # for plotClass in data_to_plot:
+        #    plot_data(plotClass, True)
 
-        precision, recall, fscore, support = precision_recall_fscore_support(y_test, rounded_predictions)
+        precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)
         print("\nPrecision: ", precision)
         print("\nRecall: ", recall)
         print("\nFscore: ", fscore)
         print("\n")
         print("Avg fScore:", (sum(fscore)/len(fscore)))
 
-        plot_confusion_matrix(y_test, rounded_predictions, dataset_consumer, algorithm.get_name(), normalize=True)
+        plot_confusion_matrix(y_test, predictions, dataset_consumer, algorithm.get_name(), normalize=True)
