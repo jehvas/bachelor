@@ -26,6 +26,7 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
             'output_dim': output_dim,
             'input_dim': input_dim,
             'use_dropout': True if random.randint(1, 2) == 1 else False,
+            'loss_function': random.choice(loss_functions),
         }
 
     elif algorithm == 'SVM':
@@ -62,8 +63,25 @@ def pick_random_class_weights(num_labels):
     classes = [i for i in range(num_labels)]
     class_weight_dic = {}
     for i in classes:
-        class_weight_dic[i] =  random.randint(1, 100)
+        class_weight_dic[i] = random.randint(1, 100)
     return class_weight_dic
+
+
+loss_functions = [# 'mean_squared_error',
+                  'mean_absolute_error',
+                  'mean_absolute_percentage_error',
+                  'mean_squared_logarithmic_error',
+                  'squared_hinge',
+                  'hinge',
+                  'categorical_hinge',
+                  'logcosh',
+                  'categorical_crossentropy',
+                  'sparse_categorical_crossentropy',
+                  # 'binary_crossentropy',
+                  'kullback_leibler_divergence',
+                  'poisson',
+                  'cosine_proximity'
+                  ]
 
 
 def generate_middle_layers(num_layers):
