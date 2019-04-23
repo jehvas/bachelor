@@ -39,12 +39,6 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     loss_function = parameters['loss_function']
 
     def RNN_model():
-        if tf.test.is_gpu_available():
-            rnn = CuDNNGRU
-        else:
-            import functools
-            rnn = functools.partial(GRU, recurrent_activation='sigmoid')
-
         model = generate_rnn_model(input_dim, hidden_dim, hidden_layers, output_dim, input_function, output_function, embedding)
         return model
 

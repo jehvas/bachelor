@@ -1,3 +1,4 @@
+import math
 import random
 import tensorflow as tf
 from typing import Dict
@@ -7,7 +8,7 @@ from tensorflow.python.keras.optimizers import Adam, Adamax, Nadam, SGD, Adagrad
 
 def get_random_params(algorithm, input_dim, output_dim) -> Dict:
     if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi-LSTM_Tensorflow':
-        layer_dim = 1  # 4 - int(math.log10(random.randint(10, 9000)))
+        layer_dim = 4 - int(math.log10(random.randint(10, 9000)))
         hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()
         return {
@@ -16,7 +17,7 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
             'hidden_dim': hidden_dim,
             'layer_dim': layer_dim,
             'input_function': pick_random_activation_function(),
-            'hidden_layers': generate_middle_layers(layer_dim),
+            'hidden_layers': generate_middle_layers(layer_dim, algorithm),
             'output_function': pick_random_activation_function(),
             'optimizer': optimizer,
             'learning_rate': lr,
@@ -84,18 +85,26 @@ loss_functions = [# 'mean_squared_error',
                   ]
 
 
-def generate_middle_layers(num_layers):
+def generate_middle_layers(num_layers, algorithm):
     """
     Generate layers that are randomly filled with dropout layers.
     Returns: List of tuple (layer_type, parameter)
     Parameter is ether an activation function for the hidden layer, or a dropout percentage for the dropout layer
     """
     layers = []
-    for i in range(num_layers):
+    # Special networks must have their corresponding specific layer.
+    if algorithm == "RNN_Tensorflow":
+        layers.append(('rnn', ""))
+    elif algorithm == "Bi-LSTM_Tensorflow":
+        layers.append(("bi-lstm", ""))
+
+    for i in range(num_layers - len(layers)):
         dropout_chance = int(random.randint(1, 2) / 2) * random.randint(1, 80) / 100  # 50% chance to be 0
         if dropout_chance > 0:
             layers.append(('dropout', dropout_chance))
-        layers.append(('hidden', pick_random_activation_function()))
+        else:
+            layers.append(('hidden', pick_random_activation_function()))
+    random.shuffle(layers)
     dropout_chance = int(random.randint(1, 2) / 2) * random.randint(1, 80) / 100  # 50% chance to be 0
     if dropout_chance > 0:
         layers.append(('dropout', dropout_chance))
