@@ -20,28 +20,35 @@ class GloVe:
     def __init__(self, dimension_count: int) -> None:
         self.dimensionCount = dimension_count
         self.glove_file = "glove.6B." + str(dimension_count) + "d.txt"
+        #self.glove_file = 'glove.840B.300d.txt'
 
     # Load model
     def load_glove_model(self) -> None:
-        glove_model_file_name = "glove_model_" + self.glove_file
-        if file_exists(glove_model_file_name):
-            self.model = load(glove_model_file_name)
-        else:
-            self.load_word_embeddings(self.glove_file, glove_model_file_name)
-
-    def load_word_embeddings(self, glove_file: str, save_name: str) -> None:
+        if len(self.model) is not 0:
+            return
+        print('Features / Weights matrix not found.')
         print("Loading Glove word embeddings")
-        with open(GLOVE_DIR + glove_file, 'r+', encoding="utf8") as f:
+        num_lines = 0
+        line_counter = 0
+        with open(GLOVE_DIR + self.glove_file, 'r+', encoding="utf8") as f:
             for line in f:
+                num_lines += 1
+        with open(GLOVE_DIR + self.glove_file, 'r+', encoding="utf8") as f:
+            for line in f:
+                line_counter += 1
+                if line_counter % int(num_lines/10) == 0:
+                    print("{:.2f}%".format(line_counter/(int(num_lines/100)*100)*100))
                 split_line = line.split()
                 word = split_line[0]
+
+                if len(split_line) > self.dimensionCount + 1:
+                    continue
                 embedding = np.array([float(val) for val in split_line[1:]])
                 self.model[word] = embedding
-            save(self.model, save_name)
-            print("Done.", len(self.model), " words of loaded!")
+            print("Done.", len(self.model), " tokens loaded!")
 
     def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset) -> np.array:
-        wm_file_name = "weights_matrix_{}_{}".format(dataset.get_name(), self.dimensionCount)
+        wm_file_name = "{}_weights_matrix_{}".format(dataset.get_name(), self.dimensionCount)
 
         tokenizer = Tokenizer(num_words=100000)
         tokenizer.fit_on_texts(emails)
@@ -49,19 +56,18 @@ class GloVe:
         sequences_matrix = sequence.pad_sequences(sequences, maxlen=256)
         if file_exists(wm_file_name):
             return load(wm_file_name), sequences_matrix
-        else:
-            if len(self.model) is 0:
-                self.load_glove_model()
-            weights_matrix = np.zeros((tokenizer.num_words, self.dimensionCount))
-            for word, i in tokenizer.word_index.items():
-                try:
-                    embedding_vector = self.model.get(word)
-                    if embedding_vector is not None:
-                        weights_matrix[i] = embedding_vector
-                except KeyError:
-                    weights_matrix[i] = np.random.normal(scale=0.6, size=(self.dimensionCount,))
-            save(weights_matrix, wm_file_name)
-            return weights_matrix, sequences_matrix
+
+        self.load_glove_model()
+        weights_matrix = np.zeros((tokenizer.num_words, self.dimensionCount))
+        for word, i in tokenizer.word_index.items():
+            try:
+                embedding_vector = self.model.get(word)
+                if embedding_vector is not None:
+                    weights_matrix[i] = embedding_vector
+            except KeyError:
+                weights_matrix[i] = np.random.normal(scale=0.6, size=(self.dimensionCount,))
+        save(weights_matrix, wm_file_name)
+        return weights_matrix, sequences_matrix
 
     # Check if features exist
     def get_features(self, emails: np.array, dataset: AbstractDataset) -> np.array:
@@ -95,7 +101,7 @@ class GloVe:
             vector_sum = np.zeros(self.dimensionCount)
             for word in words:
                 if word in self.model:
-                    word_vector = self.model[word].numpy()
+                    word_vector = self.model[word]
                     vector_sum += word_vector
             vector_sum = vector_sum / len(words)
             all_vector_sum.append(vector_sum)

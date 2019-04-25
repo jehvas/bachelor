@@ -36,8 +36,7 @@ def generate_bi_lstm_model(input_dim, hidden_dim, middle_layers, output_dim, inp
 def generate_rnn_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function,
                        embedding):
     return Sequential(
-        [Embedding(embedding.shape[0], embedding.shape[1], weights=[embedding]),
-         Dense(input_dim, input_dim=input_dim, activation=input_function)] +
+        [Embedding(embedding.shape[0], embedding.shape[1], weights=[embedding])] +
         make_hidden_layers(hidden_dim, middle_layers) +
         [Dense(output_dim, name='out_layer', activation=output_function)]
     )
