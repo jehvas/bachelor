@@ -41,11 +41,13 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     history = bi_lstm_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
                                 validation_data=(x_test, y_test), workers=4,
                                 callbacks=[LearningRateScheduler(learning_rate_function, verbose=1),
-                                           EarlyStopping(monitor='val_loss', min_delta=0, patience=1, verbose=1,
+                                           EarlyStopping(monitor='val_loss', min_delta=0.0001, patience=1, verbose=1,
                                                          mode='auto',
                                                          restore_best_weights=True),
                                            TerminateOnNaN()
                                            ])
+    epochs_finished = len(history.history['val_accuracy'])
+    parameters['num_epochs'] = epochs_finished
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 

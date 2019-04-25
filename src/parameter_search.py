@@ -36,7 +36,7 @@ dataset_dict = {
 }
 
 datasets_to_use = [Newsgroups()]
-algorithms_to_use = [RNN_tensorflow]
+algorithms_to_use = [MLP_tensorflow]
 amount = 99999
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):
