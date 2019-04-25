@@ -16,17 +16,6 @@ def make_hidden_layers(hidden_dim, middle_layers):
     return layers
 
 
-def generate_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function,
-                   isLSTM=False, isRNN=False):
-    return Sequential(
-        [Dense(input_dim, input_dim=input_dim, activation=input_function)] + \
-        ([Bidirectional(LSTM(hidden_dim))] if isLSTM else []) + \
-        ([RNN(SimpleRNNCell(hidden_dim))] if isRNN else []) + \
-        make_hidden_layers(hidden_dim, middle_layers) + \
-        [Dense(output_dim, activation=output_function)]
-    )
-
-
 def generate_mlp_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function):
     return Sequential(
         [Dense(input_dim, input_dim=input_dim, activation=input_function)] +
