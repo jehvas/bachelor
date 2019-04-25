@@ -24,7 +24,7 @@ algorithms = {
 newsgroup = Newsgroups()
 datasets = {
     "all": [Newsgroups(), Spamassassin(), EnronEvidence(), EnronFinancial(), Trustpilot()],
-    "newgroups": [Newsgroups()],
+    "newsgroups": [Newsgroups()],
     "spamassassin": [Spamassassin()],
     "enronevidence": [EnronEvidence()],
     "enronfinancial": [EnronFinancial()],
@@ -54,15 +54,25 @@ for dataset_consumer in datasets_to_use:
         emails, labels = dataset_consumer.load(True)
         glove = GloVe(200)
         # features = glove.get_features(emails, dataset_consumer)
-        matrix, features = glove.get_weights_matrix(emails, dataset_consumer)
+        matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset_consumer)
+        features_from_glove = glove.get_features(emails, dataset_consumer)
+        needs_weight_matrix = (algorithm.get_name() == "RNN_Tensorflow" or
+                               algorithm.get_name() == "Bi-LSTM_Tensorflow")
+
+        features = features_from_matrix if needs_weight_matrix else features_from_glove
+
         print("Running algorithm:", algorithm.get_name())
         parameters = get_params(algorithm.get_name(), dataset_consumer)
 
         parameters['output_dim'] = len(set(labels))
         parameters['input_dim'] = features.shape[1]
 
-        data_to_plot, y_test, predictions = algorithm.run_train(dataset_consumer, features, labels,
-                                                                parameters, embedding=matrix)
+        if needs_weight_matrix:
+            data_to_plot, y_test, predictions = algorithm.run_train(dataset_consumer, features, labels,
+                                                                    parameters, embedding=matrix)
+        else:
+            data_to_plot, y_test, predictions = algorithm.run_train(dataset_consumer, features, labels,
+                                                                    parameters)
 
         # for plotClass in data_to_plot:
         #    plot_data(plotClass, True)
@@ -72,6 +82,6 @@ for dataset_consumer in datasets_to_use:
         print("\nRecall: ", recall)
         print("\nFscore: ", fscore)
         print("\n")
-        print("Avg fScore:", (sum(fscore)/len(fscore)))
+        print("Avg fScore:", (sum(fscore) / len(fscore)))
 
         plot_confusion_matrix(y_test, predictions, dataset_consumer, algorithm.get_name(), normalize=True)
