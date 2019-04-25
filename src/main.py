@@ -50,7 +50,7 @@ else:
 
 for dataset in datasets_to_use:
     emails, labels = dataset.load(True)
-    glove = GloVe(200)
+    glove = GloVe(50)
 
     weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
     features_from_glove = glove.get_features(emails, dataset)
@@ -59,13 +59,13 @@ for dataset in datasets_to_use:
         print("Running algorithm:", algorithm.get_name())
 
         parameters = get_params(algorithm.get_name(), dataset)
+        print(str(parameters))
         needs_weight_matrix = (algorithm.get_name() == "RNN_Tensorflow" or
                                algorithm.get_name() == "Bi-LSTM_Tensorflow")
 
         features = features_from_matrix if needs_weight_matrix else features_from_glove
         matrix = weights_matrix if needs_weight_matrix else None
         assert not np.any(np.isnan(features))
-        print(np.min(features), np.max(features))
 
         parameters['output_dim'] = len(set(labels))
         parameters['input_dim'] = features.shape[1]

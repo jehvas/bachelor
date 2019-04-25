@@ -14,7 +14,6 @@ from nltk.corpus import stopwords
 
 class AbstractDataset(abc.ABC):
     stop_words = set(stopwords.words("english"))
-    vocabulary: dict = {}
     word_count_list: List = []
     classes: List = []
 
@@ -31,7 +30,6 @@ class AbstractDataset(abc.ABC):
         if file_exists(caller_name + "_saved_mails") and file_exists(caller_name + "_saved_labels"):
             emails = load(caller_name + "_saved_mails")
             labels = load(caller_name + "_saved_labels")
-            self.setVocabulary(emails)
             self.check_lengths(emails, labels)
             return emails, labels
         else:
@@ -45,7 +43,6 @@ class AbstractDataset(abc.ABC):
 
         self.check_types(emails, labels)
         self.check_lengths(emails, labels)
-        self.setVocabulary(emails)
         print("Finished loading dataset:", caller_name, "\t\t", "Size: ", len(emails), ",", len(labels))
         save(emails, caller_name + "_saved_mails")
         save(labels, caller_name + "_saved_labels")
@@ -71,23 +68,6 @@ class AbstractDataset(abc.ABC):
         sentence_no_stop_words = self.filter_stop_words(text_tokenized)
         email_words = [w for w in sentence_no_stop_words if w.isalpha()]
         return email_words
-
-    def setVocabulary(self, emails: np.ndarray) -> None:
-        start_time2 = time.time()
-        self.vocabulary = {}
-        self.word_count_list = []
-        merged = list(itertools.chain(*emails))
-        idx = 0
-        for word in merged:
-            if word not in self.vocabulary:
-                self.vocabulary[word] = idx
-                idx += 1
-        for mail in emails:
-            mail_dict: Dict = {}
-            for word in mail:
-                mail_dict[word] = mail_dict.get(word, 0) + 1
-            self.word_count_list.append(mail_dict)
-        print("Finished generating vocabulary in --- %s seconds ---" % (time.time() - start_time2))
 
     def filter_stop_words(self, text_tokenized: List[str]) -> List[str]:
         filtered_sentence = []
