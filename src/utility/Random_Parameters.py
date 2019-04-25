@@ -1,6 +1,5 @@
 import math
 import random
-import tensorflow as tf
 from typing import Dict
 
 from tensorflow.python.keras.optimizers import Adam, Adamax, Nadam, SGD, Adagrad, RMSprop, Adadelta
@@ -21,12 +20,8 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
             'output_function': pick_random_activation_function(),
             'optimizer': optimizer,
             'learning_rate': lr,
-            # 'class_weights': None,
-            'dropout': random.randint(1, 80) / 100,
-            # 'max_len': 1024,
             'output_dim': output_dim,
             'input_dim': input_dim,
-            'use_dropout': True if random.randint(1, 2) == 1 else False,
             'loss_function': random.choice(loss_functions),
         }
 

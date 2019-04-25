@@ -1,13 +1,10 @@
 import os
-import random
 import sys
 import time
 
 from sklearn.metrics import precision_recall_fscore_support
 
-from Algorithms.MLPT import MLP_tensorflow, RNN_tensorflow, Bi_LSTM_tensorflow
-from Algorithms.Perceptron import Perceptron
-from Algorithms.SVM import SVM
+from Algorithms import SVM, Perceptron, RNN_tensorflow, MLP_tensorflow, Bi_LSTM_tensorflow
 from DatasetsConsumers.EnronEvidence import EnronEvidence
 from DatasetsConsumers.EnronFinancial import EnronFinancial
 from DatasetsConsumers.Newsgroups import Newsgroups
@@ -17,7 +14,6 @@ from Glove.glovemodel import GloVe
 from rootfile import ROOTPATH
 from utility.Random_Parameters import get_random_params
 from utility.confusmatrix import plot_confusion_matrix
-from utility.plotter import plot_data
 from utility.utility import log_to_file, setup_result_folder
 
 algorithms = {
