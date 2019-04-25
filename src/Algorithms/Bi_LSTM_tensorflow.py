@@ -2,11 +2,14 @@ from typing import List
 
 import numpy as np
 from sklearn.model_selection import train_test_split as tts
+from tensorflow.python.keras.callbacks import EarlyStopping, LearningRateScheduler
 from tensorflow.python.keras.optimizers import RMSprop
 
 from utility.model_factory import generate_bi_lstm_model
 from utility.plotter import PlotClass
 
+def learning_rate_function(epoch, learning_rate):
+    return learning_rate * 0.99
 
 def get_name() -> str:
     return 'Bi-LSTM_Tensorflow'
@@ -32,7 +35,12 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     bi_lstm_model.compile(loss='sparse_categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
 
     history = bi_lstm_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
-                                validation_data=(x_test, y_test), workers=4)
+                                validation_data=(x_test, y_test), workers=4,
+                                callbacks=[LearningRateScheduler(learning_rate_function, verbose=1),
+                                           EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1,
+                                                         mode='auto',
+                                                         restore_best_weights=True)
+                                           ])
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 
