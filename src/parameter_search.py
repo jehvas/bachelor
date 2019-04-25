@@ -35,8 +35,8 @@ dataset_dict = {
     "trustpilot": [Trustpilot()]
 }
 
-datasets_to_use = [Newsgroups()]
-algorithms_to_use = [RNN_tensorflow]
+datasets_to_use = [Spamassassin()]
+algorithms_to_use = [MLP_tensorflow]
 amount = 99999
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):
@@ -84,7 +84,12 @@ for dataset in datasets_to_use:
 
             start_time = time.time()
 
-            data_to_plot, y_test, predictions = algorithm.run_train(dataset, features, labels, parameters, embedding=matrix)
+            try:
+                data_to_plot, y_test, predictions = algorithm.run_train(dataset, features, labels, parameters,
+                                                                        embedding=matrix)
+            except:
+                print('Error occurred')
+                continue
 
             time_taken = time.time() - start_time
             precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)

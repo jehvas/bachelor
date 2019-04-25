@@ -8,6 +8,7 @@ from sklearn import preprocessing
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 from utility.utility import file_exists, load, save
+import tensorflow as tf
 
 GLOVE_DIR = ROOTPATH + "data/GloveWordEmbeddings/"
 
@@ -20,7 +21,7 @@ class GloVe:
     def __init__(self, dimension_count: int) -> None:
         self.dimensionCount = dimension_count
         self.glove_file = "glove.6B." + str(dimension_count) + "d.txt"
-        #self.glove_file = 'glove.840B.300d.txt'
+        # self.glove_file = 'glove.840B.300d.txt'
 
     # Load model
     def load_glove_model(self) -> None:
@@ -36,8 +37,8 @@ class GloVe:
         with open(GLOVE_DIR + self.glove_file, 'r+', encoding="utf8") as f:
             for line in f:
                 line_counter += 1
-                if line_counter % int(num_lines/10) == 0:
-                    print("{:.2f}%".format(line_counter/(int(num_lines/100)*100)*100))
+                if line_counter % int(num_lines / 10) == 0:
+                    print("{:.2f}%".format(line_counter / (int(num_lines / 100) * 100) * 100))
                 split_line = line.split()
                 word = split_line[0]
 
@@ -47,7 +48,7 @@ class GloVe:
                 self.model[word] = embedding
             print("Done.", len(self.model), " tokens loaded!")
 
-    def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset) -> np.array:
+    def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset) -> (tf.Tensor, np.array):
         wm_file_name = "{}_weights_matrix_{}".format(dataset.get_name(), self.dimensionCount)
 
         tokenizer = Tokenizer(num_words=100000)
@@ -66,6 +67,7 @@ class GloVe:
                     weights_matrix[i] = embedding_vector
             except KeyError:
                 weights_matrix[i] = np.random.normal(scale=0.6, size=(self.dimensionCount,))
+        weights_matrix = tf.convert_to_tensor(weights_matrix)
         save(weights_matrix, wm_file_name)
         return weights_matrix, sequences_matrix
 

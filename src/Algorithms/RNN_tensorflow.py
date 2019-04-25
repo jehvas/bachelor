@@ -6,7 +6,7 @@ from tensorflow.python.keras.callbacks import EarlyStopping, LearningRateSchedul
 
 from utility.model_factory import generate_rnn_model
 from utility.plotter import PlotClass
-
+import tensorflow as tf
 
 def learning_rate_function(epoch, learning_rate):
     return learning_rate * 0.99
@@ -18,6 +18,11 @@ def get_name():
 
 def run_train(dataset, features, labels, parameters, embedding=None) -> (List, List, List):
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
+    x_train = tf.convert_to_tensor(x_train)
+    x_test = tf.convert_to_tensor(x_test)
+    y_train = tf.convert_to_tensor(y_train)
+    y_test = tf.convert_to_tensor(y_test)
+    print(type(embedding))
 
     output_dim = parameters['output_dim']
     hidden_dim = parameters['hidden_dim']
@@ -45,7 +50,8 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
                                                      mode='auto',
                                                      restore_best_weights=True),
                                        TerminateOnNaN()
-                                       ])
+                                       ],
+                            verbose=1)
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 

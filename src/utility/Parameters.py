@@ -1,7 +1,7 @@
 from typing import Dict
 
 import torch
-from tensorflow.python.keras.optimizers import Adagrad
+from tensorflow.python.keras.optimizers import Adagrad, Adadelta
 
 
 def get_params(algorithm, dataset) -> Dict:
@@ -18,20 +18,27 @@ def get_params(algorithm, dataset) -> Dict:
 
     }
     if algorithm == 'RNN_Tensorflow':
+        return {'batch_size': 100,
+                'num_epochs': 5,
+                'hidden_dim': 208,
+                'layer_dim': 1,
+                'input_function': 'relu',
+                'hidden_layers': [('rnn', None)],
+                'output_function': 'selu',
+                'optimizer': Adagrad(lr=0.075),
+                'learning_rate': 'No',
+                'loss_function': 'sparse_categorical_crossentropy'}
+    elif algorithm == 'MLP_Tensorflow':
         return {'batch_size': 780,
                 'num_epochs': 50,
                 'hidden_dim': 259,
                 'layer_dim': 1,
                 'input_function': 'relu',
-                'hidden_layers': [('rnn', None), ('dropout', 0.23)],
+                'hidden_layers': [('dropout', 0.23), ('hidden', 'sigmoid')],
                 'output_function': 'relu',
-                'optimizer': Adagrad(lr=0.00165),
-                'learning_rate': '0.00165',
-                'output_dim': 2,
-                'input_dim': 256,
-                'loss_function': 'squared_hinge'}
-    elif algorithm == 'MLP_Tensorflow':
-        pass
+                'optimizer': Adadelta(),
+                'learning_rate': 'No',
+                'loss_function': 'sparse_categorical_crossentropy'}
     elif algorithm == 'MLP':
         re_dict['num_epochs'] = 20
         if dsname == 'SpamHam':
