@@ -37,7 +37,7 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     history = mlp_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
                             validation_data=(x_test, y_test), workers=4, verbose=1,
                             callbacks=[LearningRateScheduler(learning_rate_function, verbose=1),
-                                       EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1,
+                                       EarlyStopping(monitor='val_loss', min_delta=0, patience=1, verbose=1,
                                                      mode='auto',
                                                      restore_best_weights=True)
                                        ])
