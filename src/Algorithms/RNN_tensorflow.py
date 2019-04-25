@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 from sklearn.model_selection import train_test_split as tts
-from tensorflow.python.keras.callbacks import EarlyStopping, LearningRateScheduler
+from tensorflow.python.keras.callbacks import EarlyStopping, LearningRateScheduler, TerminateOnNaN
 
 from utility.model_factory import generate_rnn_model
 from utility.plotter import PlotClass
@@ -31,7 +31,8 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     loss_function = parameters['loss_function']
 
     def RNN_model():
-        model = generate_rnn_model(input_dim, hidden_dim, hidden_layers, output_dim, input_function, output_function, embedding)
+        model = generate_rnn_model(input_dim, hidden_dim, hidden_layers, output_dim, input_function, output_function,
+                                   embedding)
         return model
 
     rnn_model = RNN_model()
@@ -42,7 +43,8 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
                             callbacks=[LearningRateScheduler(learning_rate_function, verbose=1),
                                        EarlyStopping(monitor='val_loss', min_delta=0, patience=1, verbose=1,
                                                      mode='auto',
-                                                     restore_best_weights=True)
+                                                     restore_best_weights=True),
+                                       TerminateOnNaN()
                                        ])
 
     iteration_list = [i for i in range(1, num_epochs + 1)]

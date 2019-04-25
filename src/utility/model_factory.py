@@ -11,7 +11,6 @@ def make_hidden_layers(hidden_dim, middle_layers):
             layers.append(Dropout(param))
         elif layer_type == 'rnn':
             layers.append(RNN(SimpleRNNCell(hidden_dim)))
-            layers.append(Flatten())
         elif layer_type == 'bi-lstm':
             layers.append(Bidirectional(LSTM(hidden_dim)))
     return layers
@@ -50,6 +49,6 @@ def generate_rnn_model(input_dim, hidden_dim, middle_layers, output_dim, input_f
     return Sequential(
         [Embedding(embedding.shape[0], embedding.shape[1], weights=[embedding]),
          Dense(input_dim, input_dim=input_dim, activation=input_function)] +
-         make_hidden_layers(hidden_dim, middle_layers) +
-         [Dense(output_dim, name='out_layer', activation=output_function)]
+        make_hidden_layers(hidden_dim, middle_layers) +
+        [Dense(output_dim, name='out_layer', activation=output_function)]
     )

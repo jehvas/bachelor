@@ -2,6 +2,7 @@ import os
 import sys
 import time
 
+import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
 
 from Algorithms import SVM, Perceptron, RNN_tensorflow, MLP_tensorflow, Bi_LSTM_tensorflow
@@ -35,7 +36,7 @@ dataset_dict = {
 }
 
 datasets_to_use = [Newsgroups()]
-algorithms_to_use = [Perceptron]
+algorithms_to_use = [RNN_tensorflow]
 amount = 99999
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):
@@ -54,36 +55,36 @@ else:
     datasets_to_use = dataset_dict[sys.argv[2].lower()]
     amount = int(sys.argv[3])
 
-for algorithm in algorithms_to_use:
-    for dataset in datasets_to_use:
-        best_fscore = 0
-        setup_result_folder(algorithm.get_name(), dataset.get_name())
-        emails, labels = dataset.load(True)
-        glove = GloVe(200)
-        # features = glove.get_weights_matrix(emails)
+for dataset in datasets_to_use:
+    emails, labels = dataset.load(True)
+    glove = GloVe(200)
+
+    weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
+    features_from_glove = glove.get_features(emails, dataset)
+
+    for algorithm in algorithms_to_use:
         print("Running algorithm:", algorithm.get_name())
+
+        needs_weight_matrix = (algorithm.get_name() == "RNN_Tensorflow" or
+                               algorithm.get_name() == "Bi-LSTM_Tensorflow")
+
+        setup_result_folder(algorithm.get_name(), dataset.get_name())
+        best_fscore = 0
         output_dim = len(set(labels))
 
-        matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
-        features_from_glove = glove.get_features(emails, dataset)
-        for counter in range(1, amount):
-            needs_weight_matrix = (algorithm.get_name() == "RNN_Tensorflow" or
-                                   algorithm.get_name() == "Bi-LSTM_Tensorflow")
+        features = features_from_matrix if needs_weight_matrix else features_from_glove
+        matrix = weights_matrix if needs_weight_matrix else None
+        assert not np.any(np.isnan(features))
 
-            features = features_from_matrix if needs_weight_matrix else features_from_glove
+        for counter in range(1, amount):
+            print("\n#### STARTING RUN NUMBER {} #####\n".format(counter))
 
             parameters = get_random_params(algorithm.get_name(), features.shape[1], output_dim)
-
-            print("\n#### STARTING RUN NUMBER {} #####\n".format(counter))
             print(str(parameters))
+
             start_time = time.time()
 
-            if needs_weight_matrix:
-                data_to_plot, y_test, predictions = algorithm.run_train(dataset, features, labels,
-                                                                        parameters, embedding=matrix)
-            else:
-                data_to_plot, y_test, predictions = algorithm.run_train(dataset, features, labels,
-                                                                        parameters)
+            data_to_plot, y_test, predictions = algorithm.run_train(dataset, features, labels, parameters, embedding=matrix)
 
             time_taken = time.time() - start_time
             precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)

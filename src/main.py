@@ -1,4 +1,6 @@
 import sys
+
+import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
 from Algorithms import SVM, Perceptron, RNN_tensorflow, MLP_tensorflow, Bi_LSTM_tensorflow
 from DatasetsConsumers.EnronEvidence import EnronEvidence
@@ -29,7 +31,7 @@ datasets = {
 }
 
 datasets_to_use = [Newsgroups()]
-algorithms_to_use = [Perceptron]
+algorithms_to_use = [RNN_tensorflow]
 # Check arguments
 if len(sys.argv) != 3 or not (sys.argv[1].lower() in algorithms and sys.argv[2].lower() in datasets):
     print("")
@@ -46,30 +48,29 @@ else:
     algorithms_to_use = algorithms[sys.argv[1].lower()]
     datasets_to_use = datasets[sys.argv[2].lower()]
 
-for dataset_consumer in datasets_to_use:
+for dataset in datasets_to_use:
+    emails, labels = dataset.load(True)
+    glove = GloVe(200)
+
+    weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
+    features_from_glove = glove.get_features(emails, dataset)
+
     for algorithm in algorithms_to_use:
-        emails, labels = dataset_consumer.load(True)
-        glove = GloVe(200)
-        # features = glove.get_features(emails, dataset_consumer)
-        matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset_consumer)
-        features_from_glove = glove.get_features(emails, dataset_consumer)
+        print("Running algorithm:", algorithm.get_name())
+
+        parameters = get_params(algorithm.get_name(), dataset)
         needs_weight_matrix = (algorithm.get_name() == "RNN_Tensorflow" or
                                algorithm.get_name() == "Bi-LSTM_Tensorflow")
 
         features = features_from_matrix if needs_weight_matrix else features_from_glove
-
-        print("Running algorithm:", algorithm.get_name())
-        parameters = get_params(algorithm.get_name(), dataset_consumer)
+        matrix = weights_matrix if needs_weight_matrix else None
+        assert not np.any(np.isnan(features))
+        print(np.min(features), np.max(features))
 
         parameters['output_dim'] = len(set(labels))
         parameters['input_dim'] = features.shape[1]
 
-        if needs_weight_matrix:
-            data_to_plot, y_test, predictions = algorithm.run_train(dataset_consumer, features, labels,
-                                                                    parameters, embedding=matrix)
-        else:
-            data_to_plot, y_test, predictions = algorithm.run_train(dataset_consumer, features, labels,
-                                                                    parameters)
+        data_to_plot, y_test, predictions = algorithm.run_train(dataset, features, labels, parameters, embedding=matrix)
 
         # for plotClass in data_to_plot:
         #    plot_data(plotClass, True)
@@ -81,4 +82,4 @@ for dataset_consumer in datasets_to_use:
         print("\n")
         print("Avg fScore:", (sum(fscore) / len(fscore)))
 
-        plot_confusion_matrix(y_test, predictions, dataset_consumer, algorithm.get_name(), normalize=True)
+        plot_confusion_matrix(y_test, predictions, dataset, algorithm.get_name(), normalize=True)
