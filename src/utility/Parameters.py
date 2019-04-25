@@ -29,7 +29,6 @@ def get_params(algorithm, dataset) -> Dict:
                 'dropout': 0.11,
                 'output_dim': 2,
                 'input_dim': 256,
-                'use_dropout': True,
                 'loss_function': 'squared_hinge'}
     elif algorithm == 'MLP_Tensorflow':
         pass

@@ -2,13 +2,14 @@ from typing import List
 
 import numpy as np
 from sklearn.model_selection import train_test_split as tts
-from tensorflow.python.keras import Sequential
-from tensorflow.python.keras.layers import Dense, Bidirectional, LSTM, Embedding
+from tensorflow.python.keras.callbacks import EarlyStopping, LearningRateScheduler
 from tensorflow.python.keras.optimizers import RMSprop
 
 from utility.model_factory import generate_bi_lstm_model
 from utility.plotter import PlotClass
 
+def learning_rate_function(epoch, learning_rate):
+    return learning_rate * 0.99
 
 def get_name() -> str:
     return 'Bi-LSTM_Tensorflow'
@@ -16,23 +17,6 @@ def get_name() -> str:
 
 def run_train(dataset, features, labels, parameters, embedding=None) -> (List, List, List):
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1, stratify=labels)
-
-    # x_train = tf.reshape(x_train, [x_train.shape[0], x_train.shape[1], 1])
-    # y_train = tf.reshape(y_train, [1, y_train.shape[0]])
-    # y_train = tf.convert_to_tensor(y_train, np.float32)
-    # x_test = tf.reshape(x_test, [x_test.shape[0], x_test.shape[1], 1])
-    # y_test = tf.convert_to_tensor(y_test, np.float32)
-    # y_test = tf.reshape(y_test, [1, y_test.shape[0]])
-
-    '''
-    output_dim = parameters['output_dim']
-    hidden_dim = parameters['hidden_dim']
-    input_dim = parameters['input_dim']
-    max_len = parameters['max_len']
-    dropout = parameters['dropout']
-    num_epochs = parameters['num_epochs']
-    batch_size = parameters['batch_size']
-    '''
 
     output_dim = parameters['output_dim']
     hidden_dim = parameters['hidden_dim']
@@ -51,7 +35,12 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     bi_lstm_model.compile(loss='sparse_categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
 
     history = bi_lstm_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
-                                validation_data=(x_test, y_test), workers=4)
+                                validation_data=(x_test, y_test), workers=4,
+                                callbacks=[LearningRateScheduler(learning_rate_function, verbose=1),
+                                           EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1,
+                                                         mode='auto',
+                                                         restore_best_weights=True)
+                                           ])
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 

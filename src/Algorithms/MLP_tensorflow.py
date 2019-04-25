@@ -2,10 +2,13 @@ from typing import List
 
 import numpy as np
 from sklearn.model_selection import train_test_split as tts
+from tensorflow.python.keras.callbacks import LearningRateScheduler, EarlyStopping
 
-from utility.model_factory import generate_model, generate_mlp_model
+from utility.model_factory import generate_mlp_model
 from utility.plotter import PlotClass
 
+def learning_rate_function(epoch, learning_rate):
+    return learning_rate * 0.99
 
 def get_name():
     return 'MLP_Tensorflow'
@@ -32,7 +35,12 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
     mlp_model.compile(loss='sparse_categorical_crossentropy', optimizer=parameters['optimizer'], metrics=['accuracy'])
     mlp_model.summary()
     history = mlp_model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs,
-                            validation_data=(x_test, y_test), workers=4, verbose=1)
+                            validation_data=(x_test, y_test), workers=4, verbose=1,
+                            callbacks=[LearningRateScheduler(learning_rate_function, verbose=1),
+                                       EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1,
+                                                     mode='auto',
+                                                     restore_best_weights=True)
+                                       ])
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 

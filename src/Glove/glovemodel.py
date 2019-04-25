@@ -41,8 +41,7 @@ class GloVe:
             print("Done.", len(self.model), " words of loaded!")
 
     def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset) -> np.array:
-        dataset_name = type(dataset).__name__
-        wm_file_name = "weights_matrix_{}_{}".format(dataset_name, self.dimensionCount)
+        wm_file_name = "weights_matrix_{}_{}".format(dataset.get_name(), self.dimensionCount)
 
         tokenizer = Tokenizer(num_words=100000)
         tokenizer.fit_on_texts(emails)
@@ -67,8 +66,7 @@ class GloVe:
     # Check if features exist
     def get_features(self, emails: np.array, dataset: AbstractDataset) -> np.array:
         print("Loading embedding features")
-        dataset_name = type(dataset).__name__
-        feature_file_name = dataset_name + '_features_' + str(self.dimensionCount)
+        feature_file_name = dataset.get_name() + '_features_' + str(self.dimensionCount)
         if file_exists(feature_file_name):
             return load(feature_file_name)
         self.load_glove_model()

@@ -1,18 +1,10 @@
-import os
-from typing import List, Counter
+from typing import List
 
 import numpy as np
-import tensorflow as tf
 from sklearn.model_selection import train_test_split as tts
-from tensorflow import keras
-from tensorflow.python.keras import Input, Model, Sequential
 from tensorflow.python.keras.callbacks import EarlyStopping, LearningRateScheduler
-from tensorflow.python.keras.layers import Embedding, LSTM, Dense, Activation, Dropout, Bidirectional, CuDNNGRU, GRU, \
-    RNN, SimpleRNNCell
-from tensorflow.python.keras.optimizers import RMSprop
-from tensorflow.python.ops.rnn_cell_impl import RNNCell
 
-from utility.model_factory import generate_rnn_model, generate_model
+from utility.model_factory import generate_rnn_model
 from utility.plotter import PlotClass
 
 

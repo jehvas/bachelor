@@ -10,7 +10,7 @@ def run_train(dataset, features, labels, parameters, embedding=None):
     # Create training data
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2)
 
-    model = Perceptron(class_weight=parameters["class_weights"], penalty=parameters["penalty"])
+    model = Perceptron(max_iter=1_000, tol=1e-6)
     print("\nStarting fitting")
     model.fit(x_train, y_train)
 
