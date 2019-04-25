@@ -45,6 +45,8 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
                                                      restore_best_weights=True),
                                        TerminateOnNaN()
                                        ])
+    epochs_finished = len(history.history['val_accuracy'])
+    parameters['num_epochs'] = epochs_finished
 
     iteration_list = [i for i in range(1, num_epochs + 1)]
 
