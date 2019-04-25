@@ -12,7 +12,7 @@ def run_train(dataset, features, labels, parameters, embedding=None):
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1)
 
     # Algorithms.SVM Stuff
-    svm_classifier = LinearSVC(loss=parameters['loss'], class_weight=parameters['class_weights'], penalty=parameters['penalty'])
+    svm_classifier = LinearSVC(loss=parameters['loss_function'], class_weight=parameters['class_weights'], penalty=parameters['penalty'])
 
     print("\nStarting fitting")
     svm_classifier.fit(x_train, y_train)

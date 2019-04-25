@@ -32,13 +32,12 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
 
     elif algorithm == 'SVM':
         return {
-            'loss': random.choice(["hinge", "squared_hinge"]),
+            'loss_function': random.choice(["hinge", "squared_hinge"]),
             'class_weights': pick_random_class_weights(output_dim),
             'penalty': random.choice(["l2"])
         }
     elif algorithm == 'Perceptron':
         return {
-            'alpha': random.randint(1, 100) / 1000,
             'class_weights': random.choice([pick_random_class_weights(output_dim), "balanced"]),
             'penalty': random.choice([None, "l2", "l1", "elasticnet"])
         }
@@ -51,7 +50,7 @@ def pick_random_activation_function():
 
 
 def pick_optimizer():
-    random_lr = random.randint(1, 200) / 1000
+    random_lr = random.randint(1, 1000) / 10000
     possible_optimizers = [Adam(lr=random_lr), RMSprop(lr=random_lr), Adadelta(), Adagrad(lr=random_lr),
                            Adamax(lr=random_lr), Nadam(lr=random_lr), SGD(lr=random_lr)]
     optimizer_to_return = random.choice(possible_optimizers)
