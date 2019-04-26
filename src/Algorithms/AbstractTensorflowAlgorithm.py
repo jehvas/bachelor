@@ -161,12 +161,14 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             parameters['Epochs Run'] = epoch + 1
             self.epochs_run = epoch + 1
             self.fscore = fscore
-            if not check_loss(train_loss_results) or not self.check_fscore(epoch, epoch_fscore):
-                print("Loss: {}\tFScore: {}".format(epoch_loss, epoch_fscore))
-                break
             self.train_loss_results.append(epoch_loss)
             self.fscore_results.append(epoch_fscore)
             self.train_accuracy_results.append(epoch_accuracy.result())
+
+            if not check_loss(train_loss_results) or not self.check_fscore(epoch, epoch_fscore):
+                print("Loss: {}\tFScore: {}".format(epoch_loss, epoch_fscore))
+                break
+
             if epoch % 50 == 0:
                 print_status(epoch, epoch_loss, epoch_accuracy.result(), epoch_fscore)
 
