@@ -16,7 +16,7 @@ from tensorflow.python.training.rmsprop import RMSPropOptimizer
 
 def get_random_params(algorithm, input_dim, output_dim) -> Dict:
     if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi-LSTM_Tensorflow':
-        layer_dim = 4 - int(math.log10(random.randint(10, 9000)))
+        layer_dim = 5 - int(math.log10(random.randint(10, 9000)))
         hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()
         return {
