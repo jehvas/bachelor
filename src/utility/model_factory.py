@@ -7,7 +7,7 @@ def make_hidden_layers(hidden_dim, middle_layers):
     layers = []
     for layer_type, param in middle_layers:
         if layer_type == 'hidden':
-            layers.append(Dense(hidden_dim, activation=tf.nn.relu))
+            layers.append(Dense(hidden_dim, activation=param))
         elif layer_type == 'dropout':
             layers.append(Dropout(param))
         elif layer_type == 'rnn':

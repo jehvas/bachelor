@@ -9,9 +9,9 @@ from utility.model_factory import make_hidden_layers
 class MLP_Tensorflow(AbstractTensorflowAlgorithm):
     def generate_model(self):
         self.model = Sequential(
-            [Dense(self.hidden_dim, input_shape=(self.input_dim,), activation=tf.nn.relu)] +
+            [Dense(self.hidden_dim, input_shape=(self.input_dim,), activation=self.input_function)] +
             make_hidden_layers(self.hidden_dim, self.hidden_layers) +
-            [Dense(self.output_dim, name='out_layer')]
+            [Dense(self.output_dim, name='out_layer', activation=self.output_function)]
         )
 
 

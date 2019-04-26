@@ -27,6 +27,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
     optimizer = None
     loss_function = None
     fscore = []
+
     def loss(self, x, y):
         y_ = self.model(x)
         return sparse_softmax_cross_entropy(labels=y, logits=y_)
@@ -46,8 +47,10 @@ class AbstractTensorflowAlgorithm(abc.ABC):
     def check_loss(self, loss):
         min_loss = 1e-4
         if math.isnan(loss):
+            print('Stopping: Loss is nan!')
             return False
         if loss <= min_loss:
+            print('Stopping: Loss is too low!')
             return False
         return True
 
@@ -58,15 +61,15 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             if epoch >= len(self.best_fscore_list):
                 return True
             else:
-                print(self.best_fscore_list[epoch], fscore)
-                return self.best_fscore_list[epoch] - fscore < math.pow(epoch, -0.7)
+                fscore_is_within_margin = self.best_fscore_list[epoch] - fscore < math.pow(epoch, -0.7)
+                if not fscore_is_within_margin:
+                    print("Stopping: FScore too low!")
+                return fscore_is_within_margin
 
     def load_parameters(self, parameters):
         self.output_dim = parameters['output_dim']
         self.hidden_dim = parameters['hidden_dim']
         self.input_dim = parameters['input_dim']
-        self.num_epochs = parameters['num_epochs']
-        self.batch_size = parameters['batch_size']
         self.input_function = parameters['input_function']
         self.hidden_layers = parameters['hidden_layers']
         self.output_function = parameters['output_function']
@@ -82,7 +85,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.generate_model()
         # self.model.summary()
 
-        batch_size = 32
+        batch_size = 320
 
         train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).batch(batch_size)  # .shuffle(1024)
 
@@ -96,17 +99,17 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         train_accuracy_results = []
         total_epochs = 0
 
-        num_epochs = 100
+        num_epochs = 30
         total_train_entries = len(x_train)
         for epoch in range(num_epochs):
             self.epochs_run = epoch
             epoch_loss_avg = Mean()
             epoch_accuracy = Accuracy()
-            #progress = 0
+            # progress = 0
             # Training loop - using batches of 32
             for x, y in train_dataset:
-                #progress += len(x)
-                #print("{} / {}".format(progress, total_train_entries))
+                # progress += len(x)
+                # print("{} / {}".format(progress, total_train_entries))
                 # Optimize the model
                 loss_value, grads = self.grad(x, y)
                 optimizer.apply_gradients(zip(grads, self.model.trainable_variables),
@@ -123,7 +126,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             # end epoch
             epoch_loss = epoch_loss_avg.result()
             epoch_fscore = np.average(fscore)
-            parameters['Epochs Run'] = epoch+1
+            parameters['Epochs Run'] = epoch + 1
             self.fscore = fscore
             if not self.check_loss(epoch_loss) or not self.check_fscore(epoch, epoch_fscore):
                 print("Early stopping Loss: {}\tFScore: {}".format(epoch_loss, fscore))
