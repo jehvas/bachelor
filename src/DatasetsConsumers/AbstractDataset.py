@@ -19,7 +19,6 @@ class AbstractDataset(abc.ABC):
 
     @abc.abstractmethod
     def load(self, load_filtered_data: bool = False) -> (List[List[str]], List[int]):
-        print('abstr')
         pass
 
     def get_name(self) -> str:

@@ -1,8 +1,13 @@
 import sys
 
 import numpy as np
+import time
 from sklearn.metrics import precision_recall_fscore_support
-from Algorithms import SVM, Perceptron, RNN_tensorflow, MLP_tensorflow, Bi_LSTM_tensorflow
+from Algorithms import SVM, Perceptron, MLP_tensorflow, Bi_LSTM_tensorflow
+from Algorithms.AbstractTensorflowAlgorithm import AbstractTensorflowAlgorithm
+from Algorithms.RNN_tensorflow import RNN_Tensorflow
+from Algorithms.MLP_tensorflow import MLP_Tensorflow
+from Algorithms.Bi_LSTM_tensorflow import Bi_LSTM_Tensorflow
 from DatasetsConsumers.EnronEvidence import EnronEvidence
 from DatasetsConsumers.EnronFinancial import EnronFinancial
 from DatasetsConsumers.Newsgroups import Newsgroups
@@ -13,12 +18,12 @@ from utility.Parameters import get_params
 from utility.confusmatrix import plot_confusion_matrix
 
 algorithms = {
-    "all": [SVM, Perceptron, MLP_tensorflow, RNN_tensorflow, Bi_LSTM_tensorflow],
+    "all": [SVM, Perceptron, MLP_Tensorflow(), RNN_Tensorflow(), Bi_LSTM_Tensorflow()],
     "svm": [SVM],
     "perceptron": [Perceptron],
-    "mlp": [MLP_tensorflow],
-    "rnn": [RNN_tensorflow],
-    "bi-lstm": [Bi_LSTM_tensorflow]
+    "mlp": [MLP_Tensorflow()],
+    "rnn": [RNN_Tensorflow()],
+    "bi-lstm": [Bi_LSTM_Tensorflow()]
 }
 newsgroup = Newsgroups()
 datasets = {
@@ -31,7 +36,7 @@ datasets = {
 }
 
 datasets_to_use = [Newsgroups()]
-algorithms_to_use = [RNN_tensorflow]
+algorithms_to_use = [RNN_Tensorflow()]
 # Check arguments
 if len(sys.argv) != 3 or not (sys.argv[1].lower() in algorithms and sys.argv[2].lower() in datasets):
     print("")
@@ -69,9 +74,10 @@ for dataset in datasets_to_use:
 
         parameters['output_dim'] = len(set(labels))
         parameters['input_dim'] = features.shape[1]
-
+        start_time = time.time()
         data_to_plot, y_test, predictions = algorithm.run_train(dataset, features, labels, parameters, embedding=matrix)
-
+        time_taken = time.time() - start_time
+        print("Finished in {:.3f}".format(time_taken))
         # for plotClass in data_to_plot:
         #    plot_data(plotClass, True)
 

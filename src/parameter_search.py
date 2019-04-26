@@ -5,7 +5,10 @@ import time
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
 
-from Algorithms import SVM, Perceptron, RNN_tensorflow, MLP_tensorflow, Bi_LSTM_tensorflow
+from Algorithms import SVM, Perceptron
+from Algorithms.RNN_tensorflow import RNN_Tensorflow
+from Algorithms.MLP_tensorflow import MLP_Tensorflow
+from Algorithms.Bi_LSTM_tensorflow import Bi_LSTM_Tensorflow
 from DatasetsConsumers.EnronEvidence import EnronEvidence
 from DatasetsConsumers.EnronFinancial import EnronFinancial
 from DatasetsConsumers.Newsgroups import Newsgroups
@@ -18,12 +21,12 @@ from utility.confusmatrix import plot_confusion_matrix
 from utility.utility import log_to_file, setup_result_folder
 
 algorithm_dict = {
-    "all": [SVM, Perceptron, MLP_tensorflow, RNN_tensorflow, Bi_LSTM_tensorflow],
+    "all": [SVM, Perceptron, MLP_Tensorflow(), RNN_Tensorflow(), Bi_LSTM_Tensorflow()],
     "svm": [SVM],
     "perceptron": [Perceptron],
-    "mlp": [MLP_tensorflow],
-    "rnn": [RNN_tensorflow],
-    "bi-lstm": [Bi_LSTM_tensorflow]
+    "mlp": [MLP_Tensorflow()],
+    "rnn": [RNN_Tensorflow()],
+    "bi-lstm": [Bi_LSTM_Tensorflow()]
 }
 newsgroup = Newsgroups()
 dataset_dict = {
@@ -36,7 +39,7 @@ dataset_dict = {
 }
 
 datasets_to_use = [Spamassassin()]
-algorithms_to_use = [MLP_tensorflow]
+algorithms_to_use = [MLP_Tensorflow()]
 amount = 99999
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):
@@ -70,6 +73,7 @@ for dataset in datasets_to_use:
 
         setup_result_folder(algorithm.get_name(), dataset.get_name())
         best_fscore = 0
+        best_fscore_list = []
         output_dim = len(set(labels))
 
         features = features_from_matrix if needs_weight_matrix else features_from_glove
@@ -77,35 +81,37 @@ for dataset in datasets_to_use:
         assert not np.any(np.isnan(features))
 
         for counter in range(1, amount):
-            print("\n#### STARTING RUN NUMBER {} #####\n".format(counter))
+            print("\n#### STARTING RUN NUMBER {} #####".format(counter))
 
             parameters = get_random_params(algorithm.get_name(), features.shape[1], output_dim)
             print(str(parameters))
 
             start_time = time.time()
-
             try:
-                data_to_plot, y_test, predictions = algorithm.run_train(dataset, features, labels, parameters,
-                                                                        embedding=matrix)
-            except:
-                print('Error occurred')
+                algorithm.run_train(dataset, features, labels, parameters, embedding=matrix,
+                                    best_fscores=best_fscore_list)
+            except Exception as e:
+                print(str(e))
                 continue
 
-            time_taken = time.time() - start_time
-            precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)
-
-            avg_fscore = (sum(fscore) / len(fscore))
-            print("Avg fScore:", avg_fscore)
-            file_path = ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/"
-            log_to_file(parameters, fscore, file_path + "resultsfile.csv", time_taken)
-
-            if avg_fscore >= best_fscore:
+            avg_fscore = np.average(algorithm.fscore)
+            if avg_fscore > best_fscore:
                 best_fscore = avg_fscore
+                best_fscore_list = algorithm.fscore_results
+
                 if not os.path.exists(
                         ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots"):
                     os.mkdir(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
                 # if len(data_to_plot) != 0:
                 #    plot_data(data_to_plot[0], file_path + "/plots/" + str(counter) + "_plot_val_acc_.png")
                 #    plot_data(data_to_plot[1], file_path + "/plots/" + str(counter) + "_plot_val_loss_.png")
-                plot_confusion_matrix(y_test, predictions, dataset, algorithm, normalize=True,
-                                      save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_.png")
+                # plot_confusion_matrix(y_test, predictions, dataset, algorithm, normalize=True,
+                #                      save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_.png")
+
+            time_taken = time.time() - start_time
+            # precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)
+
+            # avg_fscore = (sum(fscore) / len(fscore))
+            # print("Avg fScore:", avg_fscore)
+            file_path = ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/"
+            log_to_file(parameters, algorithm.fscore, file_path + "resultsfile.csv", time_taken)

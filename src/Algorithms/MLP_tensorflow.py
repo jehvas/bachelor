@@ -1,13 +1,21 @@
-from typing import List
+import tensorflow as tf
+from tensorflow.python.keras.engine.sequential import Sequential
+from tensorflow.python.keras.layers import Dense
 
-import numpy as np
-from sklearn.model_selection import train_test_split as tts
-from tensorflow.python.keras.callbacks import LearningRateScheduler, EarlyStopping, TerminateOnNaN
-
-from utility.model_factory import generate_mlp_model
-from utility.plotter import PlotClass
+from Algorithms.AbstractTensorflowAlgorithm import AbstractTensorflowAlgorithm
+from utility.model_factory import make_hidden_layers
 
 
+class MLP_Tensorflow(AbstractTensorflowAlgorithm):
+    def generate_model(self):
+        self.model = Sequential(
+            [Dense(self.hidden_dim, input_shape=(self.input_dim,), activation=tf.nn.relu)] +
+            make_hidden_layers(self.hidden_dim, self.hidden_layers) +
+            [Dense(self.output_dim, name='out_layer')]
+        )
+
+
+'''
 def learning_rate_function(epoch, learning_rate):
     return learning_rate * 0.99
 
@@ -61,3 +69,4 @@ def run_train(dataset, features, labels, parameters, embedding=None) -> (List, L
         PlotClass([(iteration_list, history.history['val_loss'])], "Epoch", "Loss", parameters, dataset, "MLP",
                   legend=(['train', 'test'], 'upper left'))
     ]), y_test, rounded_predictions
+'''

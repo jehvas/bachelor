@@ -55,7 +55,16 @@ def get_params(algorithm, dataset) -> Dict:
             re_dict['loss'] = "squared_hinge"
             re_dict['penalty'] = "l2"
     elif algorithm == 'Bi-LSTM_Tensorflow':
-        re_dict['num_epochs'] = 10
+        return {'batch_size': 100,
+                'num_epochs': 5,
+                'hidden_dim': 208,
+                'layer_dim': 1,
+                'input_function': 'relu',
+                'hidden_layers': [('bi-lstm', None)],
+                'output_function': 'selu',
+                'optimizer': Adagrad(lr=0.075),
+                'learning_rate': 'No',
+                'loss_function': 'sparse_categorical_crossentropy'}
     elif algorithm == 'RNN_Tensorflow':
         re_dict['num_epochs'] = 1
     return re_dict

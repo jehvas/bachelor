@@ -18,29 +18,3 @@ def make_hidden_layers(hidden_dim, middle_layers):
         if type(layers[i - 1]) is type(layers[i]):
             print('IDENTICAL LAYERS!', layers)
     return layers
-
-
-def generate_mlp_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function):
-    return Sequential(
-        [Dense(input_dim, input_shape=(input_dim,), activation=tf.nn.relu)] +
-        make_hidden_layers(hidden_dim, middle_layers) +
-        [Dense(output_dim)]
-    )
-
-
-def generate_bi_lstm_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function,
-                           embedding):
-    return Sequential(
-        [Input(shape=[256]), Embedding(embedding.shape[0], embedding.shape[1], weights=[embedding], input_length=256)] +
-        make_hidden_layers(hidden_dim, middle_layers) +
-        [Dense(output_dim, activation=output_function)]
-    )
-
-
-def generate_rnn_model(input_dim, hidden_dim, middle_layers, output_dim, input_function, output_function,
-                       embedding):
-    return Sequential(
-        [Embedding(embedding.shape[0], embedding.shape[1], weights=[embedding])] +
-        make_hidden_layers(hidden_dim, middle_layers) +
-        [Dense(output_dim, name='out_layer')]
-    )

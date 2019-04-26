@@ -2,7 +2,9 @@ import math
 import random
 from typing import Dict
 
-from tensorflow.python.keras.optimizers import Adam, Adamax, Nadam, SGD, Adagrad, RMSprop, Adadelta
+from tensorflow.python.training.adagrad import AdagradOptimizer
+from tensorflow.python.training.gradient_descent import GradientDescentOptimizer
+from tensorflow.python.training.momentum import MomentumOptimizer
 
 
 def get_random_params(algorithm, input_dim, output_dim) -> Dict:
@@ -46,11 +48,10 @@ def pick_random_activation_function():
 
 def pick_optimizer():
     random_lr = random.randint(1, 1000) / 10000
-    possible_optimizers = [Adam(lr=random_lr), RMSprop(lr=random_lr), Adadelta(), Adagrad(lr=random_lr),
-                           Adamax(lr=random_lr), Nadam(lr=random_lr), SGD(lr=random_lr)]
+    possible_optimizers = [AdagradOptimizer(learning_rate=random_lr),
+                           GradientDescentOptimizer(learning_rate=random_lr)]
+                           #MomentumOptimizer(learning_rate=random_lr)]
     optimizer_to_return = random.choice(possible_optimizers)
-    if "Adadelta" in optimizer_to_return.lr.name:
-        return optimizer_to_return, "None"
     return optimizer_to_return, str(random_lr)
 
 
