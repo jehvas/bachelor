@@ -39,7 +39,7 @@ dataset_dict = {
     "trustpilot": [Trustpilot()]
 }
 
-datasets_to_use = [Newsgroups()]
+datasets_to_use = [Spamassassin()]
 algorithms_to_use = [MLP_Tensorflow()]
 amount = 99999
 # Check arguments
@@ -102,7 +102,8 @@ for dataset in datasets_to_use:
             if avg_fscore > best_fscore:
                 print('\nNew champion! {}'.format(avg_fscore))
                 best_fscore = avg_fscore
-                best_fscore_list = algorithm.fscore_results
+                if algorithm.get_name() != "SVM" or algorithm.get_name() != "Perceptron":
+                    best_fscore_list = algorithm.fscore_results
 
                 algorithm.plot_data(dataset.get_name(), counter)
 
