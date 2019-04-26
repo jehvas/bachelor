@@ -45,16 +45,6 @@ class AbstractTensorflowAlgorithm(abc.ABC):
     def generate_model(self):
         pass
 
-    def check_loss(self, loss):
-        min_loss = 1e-4
-        if math.isnan(loss):
-            print('Stopping: Loss is nan!')
-            return False
-        if loss <= min_loss:
-            print('Stopping: Loss is too low!')
-            return False
-        return True
-
     def check_fscore(self, epoch, fscore):
         if epoch < 10:
             return True
@@ -83,6 +73,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.embedding = embedding
         self.best_fscore_list = best_fscores
         self.fscore_results = []
+        self.prev_losses = []
         self.load_parameters(parameters)
         self.generate_model()
         # self.model.summary()
@@ -99,12 +90,10 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         # keep results for plotting
         train_loss_results = []
         train_accuracy_results = []
-        total_epochs = 0
 
-        num_epochs = 30
+        num_epochs = 100
         print_every = 60
         last_print_time = time.time()
-        total_train_entries = len(x_train)
         for epoch in range(num_epochs):
             self.epochs_run = epoch
             epoch_loss_avg = Mean()
@@ -113,10 +102,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             for x, y in train_dataset:
                 if time.time() - last_print_time > print_every:
                     last_print_time = time.time()
-                    print("Status: Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}, FScore: {:.3f}".format(epoch,
-                                                                                                epoch_loss,
-                                                                                                epoch_accuracy.result(),
-                                                                                                epoch_fscore))
+                    print_status(epoch, epoch_loss, epoch_accuracy.result(), epoch_fscore)
                 # Optimize the model
                 loss_value, grads = self.grad(x, y)
                 optimizer.apply_gradients(zip(grads, self.model.trainable_variables),
@@ -127,26 +113,24 @@ class AbstractTensorflowAlgorithm(abc.ABC):
                 # compare predicted label to actual label
                 epoch_accuracy(tf.argmax(self.model(x), axis=1, output_type=tf.int32), y)
 
-
             predictions = [tf.argmax(x) for x in self.model.predict(x_test)]
             precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)
 
             # end epoch
             epoch_loss = epoch_loss_avg.result()
+            train_loss_results.append(epoch_loss)
+
             epoch_fscore = np.average(fscore)
             parameters['Epochs Run'] = epoch + 1
             self.fscore = fscore
-            if not self.check_loss(epoch_loss) or not self.check_fscore(epoch, epoch_fscore):
-                print("Loss: {}\tFScore: {}".format(epoch_loss, fscore))
+            if not check_loss(train_loss_results) or not self.check_fscore(epoch, epoch_fscore):
+                print("Loss: {}\tFScore: {}".format(epoch_loss, epoch_fscore))
                 break
-            train_loss_results.append(epoch_loss)
+
             self.fscore_results.append(epoch_fscore)
             train_accuracy_results.append(epoch_accuracy.result())
             if epoch % 50 == 0:
-                print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}, FScore: {:.3f}".format(epoch,
-                                                                                            epoch_loss,
-                                                                                            epoch_accuracy.result(),
-                                                                                            epoch_fscore))
+                print_status(epoch, epoch_loss, epoch_accuracy.result(), epoch_fscore)
 
 
 '''
@@ -161,3 +145,28 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         # Return the dataset.
         return dataset
 '''
+
+patience = 3
+
+
+def check_loss(losses):
+    min_loss = 1e-4
+    loss = losses[-1]
+    if math.isnan(loss):
+        print('Stopping: Loss is nan!')
+        return False
+    if loss <= min_loss:
+        print('Stopping: Loss is too low!')
+        return False
+    if len(losses) > patience:
+        if loss >= max(losses[-(patience + 1):-1]):
+            print('Stopping: Loss is not improving!')
+            return False
+    return True
+
+
+def print_status(epoch, loss, accuracy, fscore):
+    print("Status: Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}, FScore: {:.3f}".format(epoch,
+                                                                                        loss,
+                                                                                        accuracy,
+                                                                                        fscore))
