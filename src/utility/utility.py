@@ -1,11 +1,7 @@
-import datetime
-import numpy as np
-import pickle as p
-
 import os
-
-from keras.optimizers import Optimizer
-
+import pickle as p
+import numpy as np
+from tensorflow.python.training.optimizer import Optimizer
 from rootfile import ROOTPATH
 
 output_path = ROOTPATH + "output/"
@@ -49,7 +45,7 @@ def log_to_file(parameters, fscore, file_path, time_taken):
             elif type(value) is dict:
                 f.write(';'.join([str(k2)+":"+str(v2) for k2, v2 in value.items()]) + ", ")
             elif isinstance(value, Optimizer):
-                f.write(value.lr.name[:-5] + ", ")
+                f.write(value.get_name() + ", ")
             elif type(value) is list:
                 if type(value[0]) is tuple:
                     f.write(";".join("(%s;%s)" % tup for tup in value) + ", ")

@@ -2,9 +2,16 @@ import math
 import random
 from typing import Dict
 
+from tensorflow.python.training.adadelta import AdadeltaOptimizer
 from tensorflow.python.training.adagrad import AdagradOptimizer
+from tensorflow.python.training.adagrad_da import AdagradDAOptimizer
+from tensorflow.python.training.adam import AdamOptimizer
+from tensorflow.python.training.ftrl import FtrlOptimizer
 from tensorflow.python.training.gradient_descent import GradientDescentOptimizer
 from tensorflow.python.training.momentum import MomentumOptimizer
+from tensorflow.python.training.proximal_adagrad import ProximalAdagradOptimizer
+from tensorflow.python.training.proximal_gradient_descent import ProximalGradientDescentOptimizer
+from tensorflow.python.training.rmsprop import RMSPropOptimizer
 
 
 def get_random_params(algorithm, input_dim, output_dim) -> Dict:
@@ -47,7 +54,14 @@ def pick_random_activation_function():
 def pick_optimizer():
     random_lr = random.randint(1, 1000) / 10000
     possible_optimizers = [AdagradOptimizer(learning_rate=random_lr),
-                           GradientDescentOptimizer(learning_rate=random_lr)]
+                           GradientDescentOptimizer(learning_rate=random_lr),
+                           AdadeltaOptimizer(learning_rate=random_lr),
+                           AdamOptimizer(learning_rate=random_lr),
+                           FtrlOptimizer(learning_rate=random_lr),
+                           ProximalAdagradOptimizer(learning_rate=random_lr),
+                           ProximalGradientDescentOptimizer(learning_rate=random_lr),
+                           RMSPropOptimizer(learning_rate=random_lr)
+                           ]
                            #MomentumOptimizer(learning_rate=random_lr)]
     optimizer_to_return = random.choice(possible_optimizers)
     return optimizer_to_return, str(random_lr)
