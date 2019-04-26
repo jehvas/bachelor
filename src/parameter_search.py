@@ -18,6 +18,7 @@ from Glove.glovemodel import GloVe
 from rootfile import ROOTPATH
 from utility.Random_Parameters import get_random_params
 from utility.confusmatrix import plot_confusion_matrix
+from utility.plotter import plot_data
 from utility.utility import log_to_file, setup_result_folder
 
 algorithm_dict = {
@@ -38,7 +39,7 @@ dataset_dict = {
     "trustpilot": [Trustpilot()]
 }
 
-datasets_to_use = [Newsgroups()]
+datasets_to_use = [Spamassassin()]
 algorithms_to_use = [MLP_Tensorflow()]
 amount = 99999
 # Check arguments
@@ -67,6 +68,9 @@ for dataset in datasets_to_use:
 
     for algorithm in algorithms_to_use:
         print("Running algorithm:", algorithm.get_name())
+
+        if not os.path.exists(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots"):
+            os.makedirs(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
 
         needs_weight_matrix = (algorithm.get_name() == "RNN_Tensorflow" or
                                algorithm.get_name() == "Bi-LSTM_Tensorflow")
@@ -98,16 +102,10 @@ for dataset in datasets_to_use:
             if avg_fscore > best_fscore:
                 print('\nNew champion! {}'.format(avg_fscore))
                 best_fscore = avg_fscore
-                best_fscore_list = algorithm.fscore_results
+                if algorithm.get_name() != "SVM" or algorithm.get_name() != "Perceptron":
+                    best_fscore_list = algorithm.fscore_results
 
-                if not os.path.exists(
-                        ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots"):
-                    os.mkdir(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
-                # if len(data_to_plot) != 0:
-                #    plot_data(data_to_plot[0], file_path + "/plots/" + str(counter) + "_plot_val_acc_.png")
-                #    plot_data(data_to_plot[1], file_path + "/plots/" + str(counter) + "_plot_val_loss_.png")
-                # plot_confusion_matrix(y_test, predictions, dataset, algorithm, normalize=True,
-                #                      save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_.png")
+                algorithm.plot_data(dataset.get_name(), counter)
 
             time_taken = time.time() - start_time
             # precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)
