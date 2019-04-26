@@ -39,7 +39,7 @@ dataset_dict = {
     "trustpilot": [Trustpilot()]
 }
 
-datasets_to_use = [Spamassassin()]
+datasets_to_use = [Newsgroups()]
 algorithms_to_use = [MLP_Tensorflow()]
 amount = 99999
 # Check arguments

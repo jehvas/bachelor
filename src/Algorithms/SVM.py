@@ -1,18 +1,21 @@
+from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import train_test_split as tts
 from sklearn.svm import LinearSVC
 
+from rootfile import ROOTPATH
 from utility.confusmatrix import plot_confusion_matrix
 
 
 recent_y_test = None
-recent_prediction = None
+recent_predictions = None
 recent_dataset = None
+fscore = None
 
 def get_name():
     return 'SVM'
 
 
-def run_train(dataset, features, labels, parameters, embedding=None):
+def run_train(dataset, features, labels, parameters, embedding=None, best_fscores=None):
     print("Running algorithm: Algorithms.SVM")
     # Create training data
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1)
@@ -26,18 +29,27 @@ def run_train(dataset, features, labels, parameters, embedding=None):
     print("Fitting done")
     predictions = svm_classifier.predict(x_test)
 
+    global recent_y_test
     recent_y_test = y_test
-    recent_prediction = predictions
+    global recent_predictions
+    recent_predictions = predictions
+    global recent_dataset
     recent_dataset = dataset
+
+    precision, recall, _fscore, support = precision_recall_fscore_support(y_test, predictions)
+    global fscore
+    fscore = _fscore
 
     return [], y_test, predictions
 
     parameters
 
 
-def plot_data(self, dataset_name, counter):
-    self.plot_graphs(dataset_name, counter)
+def plot_data(dataset_name, counter):
+    file_path = ROOTPATH + "Results/" + get_name() + "/" + recent_dataset.get_name() + "/"
+    plot_matrix(counter, file_path)
 
 
-def plot_matrix(self):
-    plot_confusion_matrix(recent_y_test, recent_prediction, recent_dataset, get_name(), normalize=True)
+def plot_matrix(counter, file_path):
+    plot_confusion_matrix(recent_y_test, recent_predictions, recent_dataset, get_name(), normalize=True,
+                          save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_.png")
