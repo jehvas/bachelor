@@ -161,7 +161,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             parameters['Epochs Run'] = epoch + 1
             self.epochs_run = epoch + 1
             self.fscore = fscore
-            if not check_loss(train_loss_results) or not self.check_fscore(epoch, epoch_fscore):
+            if not check_loss(train_loss_results) or not self.check_fscore(epoch, epoch_fscore) or not check_fscore_improvement(self.fscore_results):
                 print("Loss: {}\tFScore: {}".format(epoch_loss, epoch_fscore))
                 break
             self.train_loss_results.append(epoch_loss)
@@ -172,10 +172,19 @@ class AbstractTensorflowAlgorithm(abc.ABC):
 
 
 
-patience = 2
 
+def check_fscore_improvement(f_scores):
+    patience = 10
+    if len(f_scores) > patience:
+        best_loss_idx = f_scores.index(max(f_scores))
+        if len(f_scores) - best_loss_idx > patience:
+            tf.print(f_scores[-10:])
+            print('Stopping: FScore is not improving!')
+            return False
+    return True
 
 def check_loss(losses):
+    patience = 2
     min_loss = 1e-4
     loss = losses[-1]
     if math.isnan(loss):
