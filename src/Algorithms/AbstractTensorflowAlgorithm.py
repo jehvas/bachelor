@@ -146,7 +146,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         return dataset
 '''
 
-patience = 3
+patience = 2
 
 
 def check_loss(losses):
@@ -159,7 +159,9 @@ def check_loss(losses):
         print('Stopping: Loss is too low!')
         return False
     if len(losses) > patience:
-        if loss >= max(losses[-(patience + 1):-1]):
+        best_loss_idx = losses.index(min(losses))
+        if len(losses) - best_loss_idx > patience:
+            tf.print(losses[-5:])
             print('Stopping: Loss is not improving!')
             return False
     return True
