@@ -14,7 +14,7 @@ def make_hidden_layers(hidden_dim, middle_layers):
             layers.append(RNN(SimpleRNNCell(hidden_dim)))
         elif layer_type == 'bi-lstm':
             layers.append(Bidirectional(LSTM(hidden_dim)))
-    for i in range(1, len(layers)):
+    for i in range(len(layers) - 1, 0, -1):
         if type(layers[i - 1]) is type(layers[i]):
             layers.pop(i)
     return layers
