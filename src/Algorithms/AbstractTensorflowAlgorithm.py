@@ -10,10 +10,17 @@ from tensorflow.python.keras.metrics import Mean, Accuracy
 from tensorflow.python.ops.losses.losses_impl import sparse_softmax_cross_entropy
 from tensorflow.python.training.gradient_descent import GradientDescentOptimizer
 
+from rootfile import ROOTPATH
+from utility.confusmatrix import plot_confusion_matrix
+from utility.plotter import plot_data, PlotClass
+
 
 class AbstractTensorflowAlgorithm(abc.ABC):
     best_fscore_list = []
     fscore_results = []
+    train_loss_results = []
+    train_accuracy_results = []
+    epochs_run = 0
     embedding = []
     model = None
     output_dim = None
@@ -27,6 +34,9 @@ class AbstractTensorflowAlgorithm(abc.ABC):
     optimizer = None
     loss_function = None
     fscore = []
+    dataset = None
+    y_test = None
+    predictions = None
 
     def loss(self, x, y):
         y_ = self.model(x)
@@ -76,6 +86,30 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.optimizer = parameters['optimizer']
         self.loss_function = parameters['loss_function']
 
+    def plot_data(self, dataset_name, counter):
+        self.plot_graphs(dataset_name, counter)
+        self.plot_matrix()
+
+    def plot_graphs(self, dataset_name, counter):
+        file_path = ROOTPATH + "Results/" + self.get_name() + "/" + dataset_name + "/"
+        epoch_list = [i for i in range(1, self.epochs_run+1)]
+
+        loss_plot = PlotClass((epoch_list, self.train_loss_results), "Epoch", "Loss", dataset_name, self.get_name())
+        plot_data(loss_plot, file_path + "/plots/" + str(counter) + "_plot_loss_.png")
+
+        accuracy_plot = PlotClass((epoch_list, self.train_accuracy_results), "Epoch", "Accuracy", dataset_name,
+                                  self.get_name())
+        plot_data(accuracy_plot, file_path + "/plots/" + str(counter) + "_plot_acc_.png")
+
+        fscore_plot = PlotClass((epoch_list, self.fscore_results), "Epoch", "Fscore", dataset_name,
+                                  self.get_name())
+        plot_data(fscore_plot, file_path + "/plots/" + str(counter) + "_plot_fscore_.png")
+
+
+    def plot_matrix(self):
+        plot_confusion_matrix(self.y_test, self.predictions, self.dataset, self.get_name(), normalize=True)
+
+
     def run_train(self, dataset, features, labels, parameters, embedding=None, best_fscores=None) -> (List, List, List):
         x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1,
                                                             stratify=labels)
@@ -83,6 +117,9 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.best_fscore_list = best_fscores
         self.load_parameters(parameters)
         self.generate_model()
+        self.dataset = dataset
+        self.y_test = y_test
+
         # self.model.summary()
 
         batch_size = 320
@@ -93,11 +130,6 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         # optimizer = GradientDescentOptimizer(learning_rate=0.01)
 
         global_step = tf.Variable(0)
-
-        # keep results for plotting
-        train_loss_results = []
-        train_accuracy_results = []
-        total_epochs = 0
 
         num_epochs = 30
         total_train_entries = len(x_train)
@@ -120,20 +152,21 @@ class AbstractTensorflowAlgorithm(abc.ABC):
                 # compare predicted label to actual label
                 epoch_accuracy(tf.argmax(self.model(x), axis=1, output_type=tf.int32), y)
 
-            predictions = [tf.argmax(x) for x in self.model.predict(x_test)]
-            precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)
+            self.predictions = [tf.argmax(x) for x in self.model.predict(x_test)]
+            precision, recall, fscore, support = precision_recall_fscore_support(y_test, self.predictions)
 
             # end epoch
             epoch_loss = epoch_loss_avg.result()
             epoch_fscore = np.average(fscore)
             parameters['Epochs Run'] = epoch + 1
+            self.epochs_run = epoch + 1
             self.fscore = fscore
             if not self.check_loss(epoch_loss) or not self.check_fscore(epoch, epoch_fscore):
                 print("Early stopping Loss: {}\tFScore: {}".format(epoch_loss, fscore))
                 break
-            train_loss_results.append(epoch_loss)
+            self.train_loss_results.append(epoch_loss)
             self.fscore_results.append(epoch_fscore)
-            train_accuracy_results.append(epoch_accuracy.result())
+            self.train_accuracy_results.append(epoch_accuracy.result())
             if epoch % 50 == 0:
                 print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}, FScore: {:.3f}".format(epoch,
                                                                                             epoch_loss,
@@ -153,3 +186,5 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         # Return the dataset.
         return dataset
 '''
+
+

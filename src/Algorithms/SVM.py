@@ -1,6 +1,12 @@
 from sklearn.model_selection import train_test_split as tts
 from sklearn.svm import LinearSVC
 
+from utility.confusmatrix import plot_confusion_matrix
+
+
+recent_y_test = None
+recent_prediction = None
+recent_dataset = None
 
 def get_name():
     return 'SVM'
@@ -20,6 +26,18 @@ def run_train(dataset, features, labels, parameters, embedding=None):
     print("Fitting done")
     predictions = svm_classifier.predict(x_test)
 
+    recent_y_test = y_test
+    recent_prediction = predictions
+    recent_dataset = dataset
+
     return [], y_test, predictions
 
     parameters
+
+
+def plot_data(self, dataset_name, counter):
+    self.plot_graphs(dataset_name, counter)
+
+
+def plot_matrix(self):
+    plot_confusion_matrix(recent_y_test, recent_prediction, recent_dataset, get_name(), normalize=True)
