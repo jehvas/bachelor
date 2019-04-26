@@ -16,5 +16,5 @@ def make_hidden_layers(hidden_dim, middle_layers):
             layers.append(Bidirectional(LSTM(hidden_dim)))
     for i in range(1, len(layers)):
         if type(layers[i - 1]) is type(layers[i]):
-            print('IDENTICAL LAYERS!', layers)
+            layers.pop(i)
     return layers

@@ -4,6 +4,7 @@ from typing import List
 
 import numpy as np
 import tensorflow as tf
+import time
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import train_test_split
 from tensorflow.python.keras.metrics import Mean, Accuracy
@@ -115,6 +116,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
                                                             stratify=labels)
         self.embedding = embedding
         self.best_fscore_list = best_fscores
+        self.fscore_results = []
         self.load_parameters(parameters)
         self.generate_model()
         self.dataset = dataset
@@ -122,7 +124,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
 
         # self.model.summary()
 
-        batch_size = 320
+        batch_size = 512
 
         train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).batch(batch_size)  # .shuffle(1024)
 
@@ -132,16 +134,21 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         global_step = tf.Variable(0)
 
         num_epochs = 30
+        print_every = 60
+        last_print_time = time.time()
         total_train_entries = len(x_train)
         for epoch in range(num_epochs):
             self.epochs_run = epoch
             epoch_loss_avg = Mean()
             epoch_accuracy = Accuracy()
-            # progress = 0
             # Training loop - using batches of 32
             for x, y in train_dataset:
-                # progress += len(x)
-                # print("{} / {}".format(progress, total_train_entries))
+                if time.time() - last_print_time > print_every:
+                    last_print_time = time.time()
+                    print("Status: Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}, FScore: {:.3f}".format(epoch,
+                                                                                                epoch_loss,
+                                                                                                epoch_accuracy.result(),
+                                                                                                epoch_fscore))
                 # Optimize the model
                 loss_value, grads = self.grad(x, y)
                 optimizer.apply_gradients(zip(grads, self.model.trainable_variables),
@@ -162,7 +169,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             self.epochs_run = epoch + 1
             self.fscore = fscore
             if not self.check_loss(epoch_loss) or not self.check_fscore(epoch, epoch_fscore):
-                print("Early stopping Loss: {}\tFScore: {}".format(epoch_loss, fscore))
+                print("Loss: {}\tFScore: {}".format(epoch_loss, fscore))
                 break
             self.train_loss_results.append(epoch_loss)
             self.fscore_results.append(epoch_fscore)
