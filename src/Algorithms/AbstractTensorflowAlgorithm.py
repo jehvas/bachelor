@@ -8,6 +8,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import train_test_split
+from tensorflow.python import set_random_seed
 from tensorflow.python.keras.metrics import Mean, Accuracy
 from tensorflow.python.ops.losses.losses_impl import sparse_softmax_cross_entropy
 
@@ -33,7 +34,6 @@ class AbstractTensorflowAlgorithm(abc.ABC):
     hidden_layers = None
     output_function = None
     optimizer = None
-    loss_function = None
     fscore = []
     dataset = None
     y_test = None
@@ -46,6 +46,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
     def loss(self, x, y):
         y_ = self.model(x)
         return sparse_softmax_cross_entropy(labels=y, logits=y_)
+
 
     def grad(self, inputs, targets):
         with tf.GradientTape() as tape:
@@ -79,7 +80,6 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.hidden_layers = parameters['hidden_layers']
         self.output_function = parameters['output_function']
         self.optimizer = parameters['optimizer']
-        self.loss_function = parameters['loss_function']
 
     def plot_data(self, dataset_name, counter):
         file_path = ROOTPATH + "Results/" + self.get_name() + "/" + dataset_name + "/"
@@ -104,9 +104,10 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         plot_confusion_matrix(self.y_test, self.predictions, self.dataset, self.get_name(), normalize=True,
                               save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_" + self.guid + ".png")
 
-    def run_train(self, dataset, features, labels, parameters, embedding=None, best_fscores=None) -> (List, List, List):
+    def run_train(self, dataset, features, labels, parameters, embedding=None, best_fscores=[]) -> (List, List, List):
         x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1,
                                                             stratify=labels)
+        set_random_seed(1)
         self.embedding = embedding
         self.best_fscore_list = best_fscores
         self.fscore_results = []
@@ -173,7 +174,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             if epoch % 50 == 0:
                 print_status(epoch, epoch_loss, epoch_accuracy.result(), epoch_fscore)
 
-
+        print(epoch_fscore)
 patience = 2
 
 

@@ -40,7 +40,7 @@ dataset_dict = {
 }
 
 datasets_to_use = [Spamassassin()]
-algorithms_to_use = [Bi_LSTM_Tensorflow()]
+algorithms_to_use = [MLP_Tensorflow()]
 amount = 99999
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):

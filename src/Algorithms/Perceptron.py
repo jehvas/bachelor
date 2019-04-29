@@ -21,7 +21,7 @@ def run_train(dataset, features, labels, parameters, embedding=None, best_fscore
     # Create training data
     x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2)
 
-    model = Perceptron(max_iter=1_000, tol=1e-6)
+    model = Perceptron(max_iter=1_000, tol=1e-6, class_weight=parameters['class_weights'], penalty=parameters['penalty'])
     print("\nStarting fitting")
     model.fit(x_train, y_train)
 
