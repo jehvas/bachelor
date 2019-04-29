@@ -6,7 +6,6 @@ from joblib import Parallel, delayed
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
-from utility import utility
 
 
 class Newsgroups(AbstractDataset):
