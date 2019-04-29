@@ -27,7 +27,7 @@ algorithm_dict = {
     "perceptron": [Perceptron],
     "mlp": [MLP_Tensorflow()],
     "rnn": [RNN_Tensorflow()],
-    "bi-lstm": [Bi_LSTM_Tensorflow()]
+    "bi_lstm": [Bi_LSTM_Tensorflow()]
 }
 newsgroup = Newsgroups()
 dataset_dict = {
@@ -40,7 +40,7 @@ dataset_dict = {
 }
 
 datasets_to_use = [Spamassassin()]
-algorithms_to_use = [MLP_Tensorflow()]
+algorithms_to_use = [Bi_LSTM_Tensorflow()]
 amount = 99999
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):
@@ -73,7 +73,7 @@ for dataset in datasets_to_use:
             os.makedirs(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
 
         needs_weight_matrix = (algorithm.get_name() == "RNN_Tensorflow" or
-                               algorithm.get_name() == "Bi-LSTM_Tensorflow")
+                               algorithm.get_name() == "Bi_LSTM_Tensorflow")
 
         setup_result_folder(algorithm.get_name(), dataset.get_name())
         best_fscore = 0
