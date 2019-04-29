@@ -55,9 +55,9 @@ def pick_optimizer():
                            GradientDescentOptimizer(learning_rate=random_lr),
                            AdadeltaOptimizer(learning_rate=random_lr),
                            AdamOptimizer(learning_rate=random_lr),
-                           FtrlOptimizer(learning_rate=random_lr),
+                           # FtrlOptimizer(learning_rate=random_lr),
                            ProximalAdagradOptimizer(learning_rate=random_lr),
-                           ProximalGradientDescentOptimizer(learning_rate=random_lr),
+                           # ProximalGradientDescentOptimizer(learning_rate=random_lr),
                            RMSPropOptimizer(learning_rate=random_lr)
                            ]
     optimizer_to_return = random.choice(possible_optimizers)

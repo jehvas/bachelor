@@ -56,7 +56,7 @@ class Trustpilot(AbstractDataset):
             return reviews, ratings
 
     def set_classes(self):
-        self.classes = [0, 1, 2, 3, 4]
+        self.classes = ['1 Star', '2 Star', '3 Star', '4 Star', '5 Star']
 
     def process_user_object(self, i, line):
         if i % int(self.num_lines / 10) == 0:

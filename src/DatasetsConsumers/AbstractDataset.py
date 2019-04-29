@@ -49,6 +49,8 @@ class AbstractDataset(abc.ABC):
         if emails is None or labels is None:
             start_time = time.time()
             emails, labels = self.sub_load()
+            save(emails, self.get_name() + "_saved_mails")
+            save(labels, self.get_name() + "_saved_labels")
             print("--- %s seconds ---" % (time.time() - start_time))
 
         self.set_classes()
@@ -62,11 +64,10 @@ class AbstractDataset(abc.ABC):
         return type(self).__name__
 
     def pre_load(self) -> (List[List[str]], List[int]):
-        caller_name = self.get_name()
-        print("Being loading dataset:", caller_name)
-        if file_exists(caller_name + "_saved_mails") and file_exists(caller_name + "_saved_labels"):
-            emails = load(caller_name + "_saved_mails")
-            labels = load(caller_name + "_saved_labels")
+        print("Being loading dataset:", self.get_name())
+        if file_exists(self.get_name() + "_saved_mails") and file_exists(self.get_name() + "_saved_labels"):
+            emails = load(self.get_name() + "_saved_mails")
+            labels = load(self.get_name() + "_saved_labels")
             check_lengths(emails, labels)
             return emails, labels
         else:
@@ -74,15 +75,12 @@ class AbstractDataset(abc.ABC):
             return None
 
     def post_load(self, emails: np.ndarray, labels: np.ndarray) -> None:
-        caller_name = self.get_name()
         if len(self.classes) == 0:
             self.classes = list(set(labels))
 
         check_types(emails, labels)
         check_lengths(emails, labels)
-        print("Finished loading dataset:", caller_name, "\t\t", "Size: ", len(emails), ",", len(labels))
-        save(emails, caller_name + "_saved_mails")
-        save(labels, caller_name + "_saved_labels")
+        print("Finished loading dataset:", self.get_name(), "\t\t", "Size: ", len(emails), ",", len(labels))
 
     def process_single_mail(self, text: str) -> List[str]:
         text_tokenized = word_tokenize(text.lower())
