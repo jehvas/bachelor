@@ -61,7 +61,7 @@ else:
 
 for dataset in datasets_to_use:
     emails, labels = dataset.load(True)
-    glove = GloVe(50)
+    glove = GloVe(300)
 
     weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
     features_from_glove = glove.get_features(emails, dataset)
@@ -93,7 +93,7 @@ for dataset in datasets_to_use:
             start_time = time.time()
             try:
                 algorithm.run_train(dataset, features, labels, parameters, embedding=matrix,
-                                        best_fscores=best_fscore_list)
+                                    best_fscores=best_fscore_list)
             except Exception as e:
                 print(str(e))
                 continue

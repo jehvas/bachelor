@@ -1,3 +1,5 @@
+import uuid
+
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import train_test_split as tts
 from sklearn.svm import LinearSVC
@@ -10,6 +12,7 @@ recent_y_test = None
 recent_predictions = None
 recent_dataset = None
 fscore = None
+guid = None
 
 def get_name():
     return 'SVM'
@@ -39,6 +42,8 @@ def run_train(dataset, features, labels, parameters, embedding=None, best_fscore
     precision, recall, _fscore, support = precision_recall_fscore_support(y_test, predictions)
     global fscore
     fscore = _fscore
+    global guid
+    guid = str(uuid.uuid4())
 
     return [], y_test, predictions
 
@@ -52,4 +57,4 @@ def plot_data(dataset_name, counter):
 
 def plot_matrix(counter, file_path):
     plot_confusion_matrix(recent_y_test, recent_predictions, recent_dataset, get_name(), normalize=True,
-                          save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_.png")
+                          save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_" + guid + ".png")
