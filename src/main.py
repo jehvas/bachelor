@@ -23,7 +23,7 @@ algorithms = {
     "perceptron": [Perceptron],
     "mlp": [MLP_Tensorflow()],
     "rnn": [RNN_Tensorflow()],
-    "bi-lstm": [Bi_LSTM_Tensorflow()]
+    "bi_lstm": [Bi_LSTM_Tensorflow()]
 }
 newsgroup = Newsgroups()
 datasets = {
@@ -66,7 +66,7 @@ for dataset in datasets_to_use:
         parameters = get_params(algorithm.get_name(), dataset)
         print(str(parameters))
         needs_weight_matrix = (algorithm.get_name() == "RNN_Tensorflow" or
-                               algorithm.get_name() == "Bi-LSTM_Tensorflow")
+                               algorithm.get_name() == "Bi_LSTM_Tensorflow")
 
         features = features_from_matrix if needs_weight_matrix else features_from_glove
         matrix = weights_matrix if needs_weight_matrix else None

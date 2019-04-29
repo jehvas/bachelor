@@ -14,6 +14,6 @@ def make_hidden_layers(hidden_dim, middle_layers):
             layers.append(Dropout(param))
         elif layer_type == 'rnn':
             layers.append(RNN(SimpleRNNCell(hidden_dim)))
-        elif layer_type == 'bi-lstm':
+        elif layer_type == 'bi_lstm':
             layers.append(Bidirectional(LSTM(hidden_dim)))
     return layers

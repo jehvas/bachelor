@@ -158,7 +158,6 @@ class AbstractTensorflowAlgorithm(abc.ABC):
 
             epoch_fscore = np.average(fscore)
             parameters['Epochs Run'] = epoch + 1
-            parameters['GUID'] = self.guid
             self.epochs_run = epoch + 1
             self.fscore = fscore
             self.train_loss_results.append(epoch_loss)

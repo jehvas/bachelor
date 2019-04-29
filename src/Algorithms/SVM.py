@@ -44,7 +44,6 @@ def run_train(dataset, features, labels, parameters, embedding=None, best_fscore
     fscore = _fscore
     global guid
     guid = str(uuid.uuid4())
-
     return [], y_test, predictions
 
     parameters

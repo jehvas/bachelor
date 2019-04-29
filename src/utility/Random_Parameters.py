@@ -13,7 +13,7 @@ from tensorflow.python.training.rmsprop import RMSPropOptimizer
 
 
 def get_random_params(algorithm, input_dim, output_dim) -> Dict:
-    if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi-LSTM_Tensorflow':
+    if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi_LSTM_Tensorflow':
         layer_dim = 5 - int(math.log10(random.randint(10, 9000)))
         hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()
@@ -99,8 +99,8 @@ def generate_middle_layers(num_layers, algorithm):
     # Special networks must have their corresponding specific layer.
     if algorithm == "RNN_Tensorflow":
         layers.append(('rnn', ""))
-    elif algorithm == "Bi-LSTM_Tensorflow":
-        layers.append(("bi-lstm", ""))
+    elif algorithm == "Bi_LSTM_Tensorflow":
+        layers.append(("bi_lstm", ""))
 
     for i in range(num_layers - len(layers)):
         dropout_chance = int(random.randint(1, 2) / 2) * random.randint(1, 80) / 100  # 50% chance to be 0
