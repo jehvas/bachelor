@@ -117,7 +117,6 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.dataset = dataset
         self.y_test = y_test
 
-        self.model.summary()
         # Generate GUID for each run. If parameter search is run multiple time there is a chance it will risk overriding
         # Plots. Therefor a GUID will also be associated with each run to prevent this.
         self.guid = str(uuid.uuid4())
@@ -171,7 +170,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
                 print("Loss: {}\tFScore: {}".format(epoch_loss, epoch_fscore))
                 break
 
-            if epoch % 50 == 0:
+            if epoch % 1 == 0:
                 print_status(epoch, epoch_loss, epoch_accuracy.result(), epoch_fscore)
 
         print(epoch_fscore)
