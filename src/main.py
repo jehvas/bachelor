@@ -34,7 +34,7 @@ datasets = {
 }
 
 datasets_to_use = [Spamassassin()]
-algorithms_to_use = [RNN_Tensorflow()]
+algorithms_to_use = [Bi_LSTM_Tensorflow()]
 # Check arguments
 if len(sys.argv) != 3 or not (sys.argv[1].lower() in algorithms and sys.argv[2].lower() in datasets):
     print("")

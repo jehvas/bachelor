@@ -117,6 +117,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.dataset = dataset
         self.y_test = y_test
 
+        self.model.summary()
         # Generate GUID for each run. If parameter search is run multiple time there is a chance it will risk overriding
         # Plots. Therefor a GUID will also be associated with each run to prevent this.
         self.guid = str(uuid.uuid4())

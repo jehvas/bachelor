@@ -1,4 +1,5 @@
-from tensorflow.python.keras.layers import LSTM, Dense, Dropout, Bidirectional, RNN, SimpleRNNCell
+from tensorflow.python.keras.layers import LSTM, Dense, Dropout, Bidirectional, RNN, SimpleRNNCell, CuDNNLSTM
+import tensorflow as tf
 
 
 def make_hidden_layers(hidden_dim, middle_layers):
@@ -15,5 +16,10 @@ def make_hidden_layers(hidden_dim, middle_layers):
         elif layer_type == 'rnn':
             layers.append(RNN(SimpleRNNCell(hidden_dim)))
         elif layer_type == 'bi_lstm':
-            layers.append(Bidirectional(LSTM(hidden_dim)))
+            if tf.test.gpu_device_name():
+                print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
+                layers.append(Bidirectional(CuDNNLSTM(hidden_dim)))
+            else:
+                print("Please install GPU version of TF")
+                layers.append(Bidirectional(LSTM(hidden_dim)))
     return layers

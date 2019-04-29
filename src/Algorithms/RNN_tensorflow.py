@@ -1,5 +1,5 @@
 from tensorflow.python.keras.engine.sequential import Sequential
-from tensorflow.python.keras.layers import Embedding, Dense
+from tensorflow.python.keras.layers import Embedding, Dense, StackedRNNCells, RNN, SimpleRNNCell, CuDNNGRU
 
 from Algorithms.AbstractTensorflowAlgorithm import AbstractTensorflowAlgorithm
 from utility.model_factory import make_hidden_layers
@@ -11,4 +11,17 @@ class RNN_Tensorflow(AbstractTensorflowAlgorithm):
             [Embedding(self.embedding.shape[0], self.embedding.shape[1], weights=[self.embedding], trainable=False)] +
             make_hidden_layers(self.hidden_dim, self.hidden_layers) +
             [Dense(self.output_dim, name='out_layer')]
+
         )
+        '''
+        cells = [
+            StackedRNNCells(self.output_dim),
+            StackedRNNCells(self.output_dim),
+            StackedRNNCells(self.output_dim),
+        ]
+
+        self.model = Sequential(
+            [
+                Embedding(self.embedding.shape[0], self.embedding.shape[1], weights=[self.embedding], trainable=False),
+                RNN(CuDNNGRU(self.output_dim))
+            ])'''
