@@ -40,7 +40,7 @@ dataset_dict = {
 }
 
 datasets_to_use = [Spamassassin()]
-algorithms_to_use = [MLP_Tensorflow()]
+algorithms_to_use = [Perceptron]
 amount = 99999
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):
@@ -102,7 +102,7 @@ for dataset in datasets_to_use:
             if avg_fscore > best_fscore:
                 print('\nNew champion! {}'.format(avg_fscore))
                 best_fscore = avg_fscore
-                if algorithm.get_name() != "SVM" or algorithm.get_name() != "Perceptron":
+                if algorithm.get_name() != "SVM" and algorithm.get_name() != "Perceptron":
                     best_fscore_list = algorithm.fscore_results
 
                 algorithm.plot_data(dataset.get_name(), counter)
