@@ -40,7 +40,7 @@ dataset_dict = {
 }
 
 datasets_to_use = [Spamassassin()]
-algorithms_to_use = [Perceptron]
+algorithms_to_use = [MLP_Tensorflow()]
 amount = 99999
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):
@@ -113,4 +113,4 @@ for dataset in datasets_to_use:
             # avg_fscore = (sum(fscore) / len(fscore))
             # print("Avg fScore:", avg_fscore)
             file_path = ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/"
-            log_to_file(parameters, algorithm.fscore, file_path + "resultsfile.csv", time_taken)
+            log_to_file(parameters, algorithm.fscore, file_path + "resultsfile.csv", time_taken, algorithm.guid)

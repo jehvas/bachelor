@@ -34,7 +34,7 @@ def print_progress(progress, total):
     print("{:.2f}".format(progress / total * 100), "%")
 
 
-def log_to_file(parameters, fscore, file_path, time_taken):
+def log_to_file(parameters, fscore, file_path, time_taken, guid):
     create_file_is_not_exists(file_path, parameters)
     avg = sum(fscore) / len(fscore)
     with open(file_path, 'a+') as f:
@@ -55,6 +55,7 @@ def log_to_file(parameters, fscore, file_path, time_taken):
                 f.write(str(value) + ", ")
         f.write(np.array2string(fscore, separator=';', max_line_width=500) + ", ")
         f.write(str(time_taken) + ",")
+        f.write(guid + ",")
         f.write("\n")
 
 
@@ -65,6 +66,7 @@ def create_file_is_not_exists(file_path, parameters):
             header_info += [key]
         header_info += ["Fscore"]
         header_info += ["Time_taken"]
+        header_info += ['GUID']
         with open(file_path, 'w+') as f:
             f.write(','.join(header_info) + '\n')
 
