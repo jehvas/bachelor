@@ -127,6 +127,8 @@ class AbstractTensorflowAlgorithm(abc.ABC):
 
         num_epochs = 100
         print_every = 60
+        epoch_loss = 0
+        epoch_fscore = 0
         last_print_time = time.time()
         for epoch in range(num_epochs):
             self.epochs_run = epoch

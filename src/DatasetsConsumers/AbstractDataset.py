@@ -25,7 +25,7 @@ class AbstractDataset(abc.ABC):
         return type(self).__name__
 
     def pre_load(self) -> (List[List[str]], List[int]):
-        caller_name = type(self).__name__
+        caller_name = self.get_name()
         print("Being loading dataset:", caller_name)
         if file_exists(caller_name + "_saved_mails") and file_exists(caller_name + "_saved_labels"):
             emails = load(caller_name + "_saved_mails")
@@ -37,7 +37,7 @@ class AbstractDataset(abc.ABC):
             return None
 
     def post_load(self, emails: np.ndarray, labels: np.ndarray) -> None:
-        caller_name = type(self).__name__
+        caller_name = self.get_name()
         if len(self.classes) == 0:
             self.classes = list(set(labels))
 
