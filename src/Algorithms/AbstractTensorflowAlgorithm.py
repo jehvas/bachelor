@@ -126,7 +126,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         optimizer = self.optimizer
         global_step = tf.Variable(0)
 
-        num_epochs = 1
+        num_epochs = 100
         print_every = 60
         epoch_loss = 0
         epoch_fscore = 0
