@@ -33,7 +33,6 @@ class AbstractTensorflowAlgorithm(abc.ABC):
     hidden_layers = None
     output_function = None
     optimizer = None
-    loss_function = None
     fscore = []
     dataset = None
     y_test = None
@@ -46,6 +45,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
     def loss(self, x, y):
         y_ = self.model(x)
         return sparse_softmax_cross_entropy(labels=y, logits=y_)
+
 
     def grad(self, inputs, targets):
         with tf.GradientTape() as tape:
@@ -79,7 +79,6 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.hidden_layers = parameters['hidden_layers']
         self.output_function = parameters['output_function']
         self.optimizer = parameters['optimizer']
-        self.loss_function = parameters['loss_function']
 
     def plot_data(self, dataset_name, counter):
         file_path = ROOTPATH + "Results/" + self.get_name() + "/" + dataset_name + "/"
