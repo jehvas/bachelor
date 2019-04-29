@@ -1,6 +1,5 @@
 from typing import Dict
 
-import torch
 from tensorflow.python.keras.optimizers import Adagrad
 from tensorflow.python.training.adadelta import AdadeltaOptimizer
 from tensorflow.python.training.adam import AdamOptimizer
@@ -20,7 +19,10 @@ def get_params(algorithm, dataset) -> Dict:
 
     }
     if algorithm == 'RNN_Tensorflow':
-        return {'hidden_dim': 322, 'layer_dim': 2, 'input_function': 'relu', 'hidden_layers': [('hidden', 'tanh'), ('rnn', ''), ('dropout', 0.63)], 'output_function': 'sigmoid', 'optimizer': AdadeltaOptimizer(learning_rate=0.0757), 'learning_rate': '0.0757', 'output_dim': 20, 'input_dim': 256}
+        return {'hidden_dim': 120, 'layer_dim': 2, 'input_function': 'relu',
+                'hidden_layers': [('hidden', 'tanh'), ('rnn', ''), ('dropout', 0.63)], 'output_function': 'sigmoid',
+                'optimizer': AdadeltaOptimizer(learning_rate=0.0757), 'learning_rate': '0.0757', 'output_dim': 20,
+                'input_dim': 256}
     elif algorithm == 'MLP_Tensorflow':
         return {'batch_size': 780,
                 'num_epochs': 50,
@@ -31,12 +33,6 @@ def get_params(algorithm, dataset) -> Dict:
                 'output_function': 'relu',
                 'optimizer': AdamOptimizer(learning_rate=0.001),
                 'learning_rate': '0.001'}
-    elif algorithm == 'MLP':
-        re_dict['num_epochs'] = 20
-        if dsname == 'SpamHam':
-            re_dict['class_weights'] = torch.FloatTensor([1, 2])
-        elif dsname == 'Spamassassin':
-            re_dict['class_weights'] = torch.FloatTensor([1, 100])
     elif algorithm == 'SVM':
         if dsname == 'SpamHam':
             re_dict['class_weights'] = {0: 1, 1: 2}

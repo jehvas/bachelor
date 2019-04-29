@@ -34,7 +34,7 @@ datasets = {
 }
 
 datasets_to_use = [Spamassassin()]
-algorithms_to_use = [Bi_LSTM_Tensorflow()]
+algorithms_to_use = [RNN_Tensorflow()]
 # Check arguments
 if len(sys.argv) != 3 or not (sys.argv[1].lower() in algorithms and sys.argv[2].lower() in datasets):
     print("")
@@ -71,7 +71,7 @@ for dataset in datasets_to_use:
         assert not np.any(np.isnan(features))
 
         parameters['output_dim'] = len(set(labels))
-        parameters['input_dim'] = features.shape[1]
+        #parameters['input_dim'] = features.shape[1]
         start_time = time.time()
         algorithm.run_train(dataset, features, labels, parameters, embedding=matrix)
         time_taken = time.time() - start_time

@@ -177,7 +177,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
 
 
 def check_fscore_improvement(f_scores):
-    patience = 3
+    patience = 10
     if len(f_scores) > patience:
         best_loss_idx = f_scores.index(max(f_scores))
         if len(f_scores) - best_loss_idx > patience:
