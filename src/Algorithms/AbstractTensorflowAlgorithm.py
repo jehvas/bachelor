@@ -1,16 +1,15 @@
 import abc
 import math
+import time
 import uuid
 from typing import List
 
 import numpy as np
 import tensorflow as tf
-import time
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import train_test_split
 from tensorflow.python.keras.metrics import Mean, Accuracy
 from tensorflow.python.ops.losses.losses_impl import sparse_softmax_cross_entropy
-from tensorflow.python.training.gradient_descent import GradientDescentOptimizer
 
 from rootfile import ROOTPATH
 from utility.confusmatrix import plot_confusion_matrix
@@ -40,6 +39,9 @@ class AbstractTensorflowAlgorithm(abc.ABC):
     y_test = None
     predictions = None
     guid = None
+
+    def __init__(self):
+        self.prev_losses = []
 
     def loss(self, x, y):
         y_ = self.model(x)
@@ -108,7 +110,6 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.embedding = embedding
         self.best_fscore_list = best_fscores
         self.fscore_results = []
-        self.prev_losses = []
         self.train_loss_results = []
         self.train_accuracy_results = []
         self.load_parameters(parameters)
@@ -125,7 +126,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         optimizer = self.optimizer
         global_step = tf.Variable(0)
 
-        num_epochs = 100
+        num_epochs = 1
         print_every = 60
         epoch_loss = 0
         epoch_fscore = 0
@@ -164,8 +165,9 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             self.fscore_results.append(epoch_fscore)
             self.train_accuracy_results.append(epoch_accuracy.result())
 
-
-            if not check_loss(self.train_loss_results) or not self.check_fscore(epoch, epoch_fscore) or not check_fscore_improvement(self.fscore_results):
+            if not check_loss(self.train_loss_results) or not self.check_fscore(epoch,
+                                                                                epoch_fscore) or not check_fscore_improvement(
+                    self.fscore_results):
                 print("Loss: {}\tFScore: {}".format(epoch_loss, epoch_fscore))
                 break
 
@@ -185,6 +187,7 @@ def check_fscore_improvement(f_scores):
             print('Stopping: FScore is not improving!')
             return False
     return True
+
 
 def check_loss(losses):
     patience = 2

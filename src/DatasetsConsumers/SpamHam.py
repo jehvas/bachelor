@@ -1,24 +1,19 @@
 import os
 
-import numpy as np
-
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 
 
 class SpamHam(AbstractDataset):
-    def load(self, load_filtered_data=False) -> (np.ndarray, np.ndarray):
+    def set_classes(self) -> None:
         self.classes = ['Ham', 'Spam']
 
-        if load_filtered_data:
-            load_check_result = super().pre_load()
-            if load_check_result is not None:
-                return load_check_result
+    def sub_load(self):
 
-        direc = ROOTPATH + "data/emails/"
-        files = os.listdir(direc)
+        directory = ROOTPATH + "data/emails/"
+        files = os.listdir(directory)
 
-        emails = [direc + email for email in files]
+        emails = [directory + email for email in files]
         words = []
         ec = 0
         labels = []
@@ -28,7 +23,7 @@ class SpamHam(AbstractDataset):
             elif "spam" in email:
                 labels.append(1)
             else:
-                continue  # SO .DS_Store is not processed
+                continue  # So .DS_Store is not processed
 
             if ec % 1000 == 0:
                 print('Loaded', ec, 'of', len(emails))
@@ -38,6 +33,4 @@ class SpamHam(AbstractDataset):
             f.close()
 
             words.append(self.process_single_mail(text))
-        words, labels = np.asarray(words), np.asarray(labels)
-        super().post_load(words, labels)
         return words, labels

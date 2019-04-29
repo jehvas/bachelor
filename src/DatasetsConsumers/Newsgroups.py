@@ -1,44 +1,40 @@
 import os
-import time
 
-import numpy
 from joblib import Parallel, delayed
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 
 
+def get_subdirectories(path):
+    subdirectories = []
+    for item in os.listdir(path):
+        if os.path.isdir(os.path.join(path, item)):
+            subdirectories.append(item)
+    return subdirectories
+
+
 class Newsgroups(AbstractDataset):
-    label_names = []
-
-    def load(self, load_filtered_data=False):
-        self.classes = ['alt.atheism', 'comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware',
-                        'comp.sys.mac.hardware', 'comp.windows.x', 'misc.forsale', 'rec.autos', 'rec.motorcycles',
-                        'rec.sport.baseball', 'rec.sport.hockey', 'sci.crypt', 'sci.electronics', 'sci.med',
-                        'sci.space', 'soc.religion.christian', 'talk.politics.guns', 'talk.politics.mideast',
-                        'talk.politics.misc', 'talk.religion.misc']
-
-        if load_filtered_data:
-            load_check_result = super().pre_load()
-            if load_check_result is not None:
-                return load_check_result
-        direc = ROOTPATH + "data/20Newsgroups/"
-        subdirecs = self.get_subdirectories(direc)
+    def sub_load(self):
+        directories = ROOTPATH + "data/20Newsgroups/"
+        sub_directories = get_subdirectories(directories)
 
         emails = []
         labels = []
-        start_time = time.time()
-        val = Parallel(n_jobs=-1)(delayed(self.parse_email_category)(direc + i + "/") for i in subdirecs)
+        val = Parallel(n_jobs=-1)(delayed(self.parse_email_category)(directories + i + "/") for i in sub_directories)
         for i in range(len(val)):
             labels += ([i] * len(val[i]))
 
         for sublist in val:
             emails = emails + sublist
-
-        print("--- %s seconds ---" % (time.time() - start_time))
-        emails, labels = numpy.asarray(emails), numpy.asarray(labels)
-        super().post_load(emails, labels)
         return emails, labels
+
+    def set_classes(self):
+        self.classes = ['alt.atheism', 'comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware',
+                        'comp.sys.mac.hardware', 'comp.windows.x', 'misc.forsale', 'rec.autos', 'rec.motorcycles',
+                        'rec.sport.baseball', 'rec.sport.hockey', 'sci.crypt', 'sci.electronics', 'sci.med',
+                        'sci.space', 'soc.religion.christian', 'talk.politics.guns', 'talk.politics.mideast',
+                        'talk.politics.misc', 'talk.religion.misc']
 
     def parse_email_category(self, path):
         print(path)
@@ -52,10 +48,3 @@ class Newsgroups(AbstractDataset):
             f.close()
             words.append(self.process_single_mail(text))
         return words
-
-    def get_subdirectories(self, path):
-        subdirectories = []
-        for item in os.listdir(path):
-            if os.path.isdir(os.path.join(path, item)):
-                subdirectories.append(item)
-        return subdirectories

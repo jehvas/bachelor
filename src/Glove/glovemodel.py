@@ -51,7 +51,7 @@ class GloVe:
     def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset) -> (tf.Tensor, np.array):
         wm_file_name = "{}_weights_matrix_{}".format(dataset.get_name(), self.dimensionCount)
 
-        tokenizer = Tokenizer(num_words=100000)
+        tokenizer = Tokenizer()
         tokenizer.fit_on_texts(emails)
         sequences = tokenizer.texts_to_sequences(emails)
         sequences_matrix = sequence.pad_sequences(sequences, maxlen=256)
@@ -59,14 +59,12 @@ class GloVe:
             return load(wm_file_name), sequences_matrix
 
         self.load_glove_model()
-        weights_matrix = np.zeros((tokenizer.num_words, self.dimensionCount))
+        vocab_size = len(tokenizer.word_index) + 1
+        weights_matrix = np.zeros((vocab_size, self.dimensionCount))
         for word, i in tokenizer.word_index.items():
-            try:
-                embedding_vector = self.model.get(word)
-                if embedding_vector is not None:
-                    weights_matrix[i] = embedding_vector
-            except KeyError:
-                weights_matrix[i] = np.random.normal(scale=0.6, size=(self.dimensionCount,))
+            embedding_vector = self.model.get(word)
+            if embedding_vector is not None:
+                weights_matrix[i] = embedding_vector
         weights_matrix = tf.convert_to_tensor(weights_matrix)
         save(weights_matrix, wm_file_name)
         return weights_matrix, sequences_matrix

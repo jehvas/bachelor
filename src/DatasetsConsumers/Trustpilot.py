@@ -8,26 +8,32 @@ from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 
 
+def filter_genders(reviews: np.array, genders: np.array) -> (np.array, np.array):
+    idx_to_delete: List = []
+    for i, gender in enumerate(genders):
+        if gender == 2:
+            idx_to_delete += i
+    for i in reversed(idx_to_delete):
+        genders.pop(i)
+        reviews.pop(i)
+    return reviews, genders
+
+
 class Trustpilot(AbstractDataset):
     num_no_gender_specified = 0
     num_json_parse_errors = 0
     gender_list: List = []
     num_line = 0
+    num_lines = 0
 
-    def load(self, load_filtered_data=False, label_idx=0):
-        if load_filtered_data:
-            load_check_result = super().pre_load()
-            if load_check_result is not None:
-                reviews, labels = load_check_result
-                ratings, genders = labels
-                if label_idx == 1:
-                    return self.filter_gender(reviews, genders)
-                self.classes = [0, 1, 2, 3, 4]
-                return reviews, ratings
+    def sub_load(self, load_filtered_data=False, label_idx=0):
+        directories = ROOTPATH + "data/Trustpilot/united_states.auto-adjusted_gender.geocoded.jsonl.tmp"
 
-        direc = ROOTPATH + "data/Trustpilot/united_states.auto-adjusted_gender.geocoded.jsonl.tmp"
-
-        with open(direc, 'r', encoding='UTF8') as f:
+        self.num_lines = 0
+        with open(directories, 'r', encoding='UTF8') as f:
+            for _ in f:
+                self.num_lines += 1
+        with open(directories, 'r', encoding='UTF8') as f:
             val = Parallel(n_jobs=-1)(delayed(self.process_user_object)(i, line) for i, line in enumerate(f))
             reviews, ratings, genders, num_empty_reviews, num_no_rating = zip(*val)
             # Flatten lists
@@ -39,40 +45,22 @@ class Trustpilot(AbstractDataset):
                     reviews.pop(i)
                     ratings.pop(i)
                     genders.pop(i)
-            num_empty_reviews = sum(num_empty_reviews)
-            num_no_rating = sum(num_no_rating)
-            print(num_empty_reviews, num_no_rating)
-
-            self.classes = [0, 1, 2, 3, 4]
-
-            ratings = np.array(ratings)
-            genders = np.array(genders)
-            reviews = np.array(reviews)
-
-            super().post_load(reviews, (ratings, genders))
-
-            print(Counter(ratings))
-            print(Counter(genders))
-            print("Empty reviews: ", num_empty_reviews)
+            # num_empty_reviews = sum(num_empty_reviews)
+            # num_no_rating = sum(num_no_rating)
+            # print(num_empty_reviews, num_no_rating)
+            # print("Empty reviews: ", num_empty_reviews)
             # labels = list((list(zip(*labels)))[label_idx])
             if label_idx == 1:
-                return self.filter_genders(reviews, genders)
+                return filter_genders(reviews, genders)
 
             return reviews, ratings
 
-    def filter_genders(self, reviews: np.array, genders: np.array) -> (np.array, np.array):
-        idx_to_delete: List = []
-        for i, gender in enumerate(genders):
-            if gender == 2:
-                idx_to_delete += i
-        for i in reversed(idx_to_delete):
-            genders.pop(i)
-            reviews.pop(i)
-        return reviews, genders
+    def set_classes(self):
+        self.classes = [0, 1, 2, 3, 4]
 
     def process_user_object(self, i, line):
-        if i % 10000 == 0:
-            print(i)
+        if i % int(self.num_lines / 10) == 0:
+            print("{:.2f}%".format(i / (int(self.num_lines / 100) * 100) * 100))
         user_json_object = ast.literal_eval(line)
         if "reviews" in user_json_object:
             gender = 2
@@ -80,7 +68,7 @@ class Trustpilot(AbstractDataset):
             ratings: List = []
             genders: List = []
             num_empty_review = 0
-            num_empty_rating= 0
+            num_empty_rating = 0
             if "gender" in user_json_object:
                 if user_json_object["gender"] == "M":
                     gender = 0

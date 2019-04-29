@@ -1,5 +1,7 @@
 import os
 import pickle as p
+
+import errno
 import numpy as np
 from tensorflow.python.training.optimizer import Optimizer
 from rootfile import ROOTPATH
@@ -7,8 +9,18 @@ from rootfile import ROOTPATH
 output_path = ROOTPATH + "output/"
 
 
+def check_directory(filename):
+    if not os.path.exists(os.path.dirname(filename)):
+        try:
+            os.makedirs(os.path.dirname(filename))
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+
+
 def save(object_to_save, file_name):
     file_name = output_path + file_name
+    check_directory(file_name)
     with open(file_name, "wb") as fp:
         p.dump(object_to_save, fp)
     print("Utility saved", file_name)
@@ -43,7 +55,7 @@ def log_to_file(parameters, fscore, file_path, time_taken):
             if isinstance(value, (np.ndarray, np.generic)):
                 f.write(np.array2string(value, separator=';', max_line_width=500) + ", ")
             elif type(value) is dict:
-                f.write(';'.join([str(k2)+":"+str(v2) for k2, v2 in value.items()]) + ", ")
+                f.write(';'.join([str(k2) + ":" + str(v2) for k2, v2 in value.items()]) + ", ")
             elif isinstance(value, Optimizer):
                 f.write(value.get_name() + ", ")
             elif type(value) is list:
@@ -69,7 +81,7 @@ def create_file_is_not_exists(file_path, parameters):
             f.write(','.join(header_info) + '\n')
 
 
-def setup_result_folder(algorithm_name, dataset_name,):
+def setup_result_folder(algorithm_name, dataset_name, ):
     if not os.path.exists(ROOTPATH + "Results/" + algorithm_name):
         os.mkdir(ROOTPATH + "Results/" + algorithm_name)
     if not os.path.exists(ROOTPATH + "Results/" + algorithm_name + "/" + dataset_name):

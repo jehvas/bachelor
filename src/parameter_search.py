@@ -39,9 +39,9 @@ dataset_dict = {
     "trustpilot": [Trustpilot()]
 }
 
-datasets_to_use = [Spamassassin()]
-algorithms_to_use = [Perceptron]
-amount = 99999
+datasets_to_use = [Spamassassin(), Trustpilot(), EnronEvidence(), EnronFinancial(), Newsgroups()]
+algorithms_to_use = [RNN_Tensorflow()]
+amount = 2
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):
     print("")

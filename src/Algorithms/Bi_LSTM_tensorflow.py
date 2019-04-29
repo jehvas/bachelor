@@ -8,7 +8,7 @@ class Bi_LSTM_Tensorflow(AbstractTensorflowAlgorithm):
     def generate_model(self):
         self.model = Sequential(
             [Embedding(self.embedding.shape[0], self.embedding.shape[1], weights=[self.embedding],
-                       input_length=self.input_dim)] +
+                       input_length=self.input_dim, trainable=False)] +
             make_hidden_layers(self.hidden_dim, self.hidden_layers) +
             [Dense(self.output_dim, name='out_layer')]
         )
