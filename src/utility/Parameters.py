@@ -1,7 +1,8 @@
 from typing import Dict
 
 import torch
-from tensorflow.python.keras.optimizers import Adagrad, Adadelta, Adam
+from tensorflow.python.keras.optimizers import Adagrad
+from tensorflow.python.training.adadelta import AdadeltaOptimizer
 from tensorflow.python.training.adam import AdamOptimizer
 
 
@@ -19,15 +20,7 @@ def get_params(algorithm, dataset) -> Dict:
 
     }
     if algorithm == 'RNN_Tensorflow':
-        return {'batch_size': 100,
-                'num_epochs': 5,
-                'hidden_dim': 208,
-                'layer_dim': 1,
-                'input_function': 'relu',
-                'hidden_layers': [('rnn', None)],
-                'output_function': 'selu',
-                'optimizer': Adagrad(lr=0.075),
-                'learning_rate': 'No'}
+        return {'hidden_dim': 322, 'layer_dim': 2, 'input_function': 'relu', 'hidden_layers': [('hidden', 'tanh'), ('rnn', ''), ('dropout', 0.63)], 'output_function': 'sigmoid', 'optimizer': AdadeltaOptimizer(learning_rate=0.0757), 'learning_rate': '0.0757', 'output_dim': 20, 'input_dim': 256}
     elif algorithm == 'MLP_Tensorflow':
         return {'batch_size': 780,
                 'num_epochs': 50,

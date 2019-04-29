@@ -47,7 +47,6 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         y_ = self.model(x)
         return sparse_softmax_cross_entropy(labels=y, logits=y_)
 
-
     def grad(self, inputs, targets):
         with tf.GradientTape() as tape:
             loss_value = self.loss(inputs, targets)
@@ -167,7 +166,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
 
             if not check_loss(self.train_loss_results) or not self.check_fscore(epoch,
                                                                                 epoch_fscore) or not check_fscore_improvement(
-                    self.fscore_results):
+                self.fscore_results):
                 print("Loss: {}\tFScore: {}".format(epoch_loss, epoch_fscore))
                 break
 
@@ -175,11 +174,10 @@ class AbstractTensorflowAlgorithm(abc.ABC):
                 print_status(epoch, epoch_loss, epoch_accuracy.result(), epoch_fscore)
 
         print(epoch_fscore)
-patience = 2
 
 
 def check_fscore_improvement(f_scores):
-    patience = 10
+    patience = 3
     if len(f_scores) > patience:
         best_loss_idx = f_scores.index(max(f_scores))
         if len(f_scores) - best_loss_idx > patience:
@@ -202,7 +200,7 @@ def check_loss(losses):
     if len(losses) > patience:
         best_loss_idx = losses.index(min(losses))
         if len(losses) - best_loss_idx > patience:
-            tf.print(losses[-5:])
+            tf.print(losses[-(patience+1):])
             print('Stopping: Loss is not improving!')
             return False
     return True
