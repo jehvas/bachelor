@@ -54,4 +54,8 @@ def get_params(algorithm, dataset) -> Dict:
                 'learning_rate': 'No'}
     elif algorithm == 'RNN_Tensorflow':
         re_dict['num_epochs'] = 1
+    elif algorithm == 'Perceptron':
+        re_dict['class_weights'] = {0: 1, 1: 2}
+        re_dict['loss_function'] = "squared_hinge"
+        re_dict['penalty'] = "l2"
     return re_dict

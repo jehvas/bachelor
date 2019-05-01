@@ -61,6 +61,8 @@ else:
 
 for dataset in datasets_to_use:
     emails, labels = dataset.load(True)
+    emails = emails[:1000]
+    labels = labels[:1000]
     glove = GloVe(300)
 
     weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
