@@ -25,7 +25,7 @@ def run_train(dataset, train_data, test_data, parameters, embedding=None, best_f
     n_estimators = int(len(x_train)/100)
     print(n_estimators)
     # svm_classifier = LinearSVC(loss=parameters['loss_function'], class_weight='balanced', penalty=parameters['penalty'])
-    clf = BaggingClassifier(LinearSVC(loss=parameters['loss_function'], class_weight='balanced', penalty=parameters['penalty']), max_samples=1.0 / n_estimators, n_estimators=n_estimators)
+    clf = LinearSVC(loss=parameters['loss_function'], class_weight='balanced', penalty=parameters['penalty'])
     print("\nStarting fitting")
     clf.fit(x_train, y_train)
 
