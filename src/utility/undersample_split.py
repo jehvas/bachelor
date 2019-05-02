@@ -30,3 +30,17 @@ def under_sample_split(features, labels, test_size=0.2, random_state=None):
     print('train:', Counter(y_train))
     print('test:', Counter(y_test))
     return np.array(x_train), np.array(x_test), np.array(y_train), np.array(y_test)
+
+def resize_under_sample(emails, labels, size=1000):
+    class_count = len(set(labels))
+    num_per_class = size/class_count
+
+    class_counts = [0] * class_count
+    re_emails, re_labels = [], []
+    for i in range(0, len(labels)):
+        label = labels[i]
+        if class_counts[label] < num_per_class:
+            class_counts[label] += 1
+            re_labels.append(label)
+            re_emails.append(emails[i])
+    return re_emails, re_labels

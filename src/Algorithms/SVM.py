@@ -1,5 +1,6 @@
 import uuid
 
+from sklearn.ensemble import BaggingClassifier
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.svm import LinearSVC
 
@@ -21,13 +22,15 @@ def run_train(dataset, train_data, test_data, parameters, embedding=None, best_f
     x_train, y_train = train_data
     x_test, y_test = test_data
     # Algorithms.SVM Stuff
-    svm_classifier = LinearSVC(loss=parameters['loss_function'], class_weight=parameters['class_weights'], penalty=parameters['penalty'])
-
+    n_estimators = int(len(x_train)/100)
+    print(n_estimators)
+    # svm_classifier = LinearSVC(loss=parameters['loss_function'], class_weight='balanced', penalty=parameters['penalty'])
+    clf = BaggingClassifier(LinearSVC(loss=parameters['loss_function'], class_weight='balanced', penalty=parameters['penalty']), max_samples=1.0 / n_estimators, n_estimators=n_estimators)
     print("\nStarting fitting")
-    svm_classifier.fit(x_train, y_train)
+    clf.fit(x_train, y_train)
 
     print("Fitting done")
-    predictions = svm_classifier.predict(x_test)
+    predictions = clf.predict(x_test)
 
     global recent_y_test
     recent_y_test = y_test
@@ -37,6 +40,7 @@ def run_train(dataset, train_data, test_data, parameters, embedding=None, best_f
     recent_dataset = dataset
 
     precision, recall, _fscore, support = precision_recall_fscore_support(y_test, predictions)
+    print(sum(_fscore)/len(_fscore))
     global fscore
     fscore = _fscore
     global guid

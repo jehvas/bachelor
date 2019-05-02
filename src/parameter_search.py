@@ -20,7 +20,7 @@ from rootfile import ROOTPATH
 from utility.Random_Parameters import get_random_params
 from utility.confusmatrix import plot_confusion_matrix
 from utility.plotter import plot_data
-from utility.undersample_split import under_sample_split
+from utility.undersample_split import under_sample_split, resize_under_sample
 from utility.utility import log_to_file, setup_result_folder
 from sklearn.model_selection import train_test_split
 
@@ -43,8 +43,8 @@ dataset_dict = {
 }
 
 datasets_to_use = [EnronEvidence()]
-algorithms_to_use = [MLP_Tensorflow()]
-amount = 99999
+algorithms_to_use = [Perceptron]
+amount = 1
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):
     print("")
@@ -64,8 +64,7 @@ else:
 
 for dataset in datasets_to_use:
     emails, labels = dataset.load(True)
-    emails = emails[:1000]
-    labels = labels[:1000]
+    emails, labels = resize_under_sample(emails, labels)
     glove = GloVe(300)
 
     weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
@@ -88,6 +87,7 @@ for dataset in datasets_to_use:
         features = features_from_matrix if needs_weight_matrix else features_from_glove
         matrix = weights_matrix if needs_weight_matrix else None
         assert not np.any(np.isnan(features))
+        # features = features[:1000]
 
         # Create training data
         # x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
@@ -96,7 +96,6 @@ for dataset in datasets_to_use:
             print("\n#### STARTING RUN NUMBER {} #####".format(counter))
 
             parameters = get_random_params(algorithm.get_name(), features.shape[1], output_dim)
-            parameters = {'hidden_dim': 148, 'layer_dim': 2, 'input_function': 'softplus', 'hidden_layers': [('dropout', 0.57), ('dropout', 0.08), ('dropout', 0.59)], 'output_function': 'softplus', 'optimizer': AdadeltaOptimizer(0.0182), 'learning_rate': '0.0182', 'output_dim': 2, 'input_dim': 300}
             print(str(parameters))
 
             start_time = time.time()
