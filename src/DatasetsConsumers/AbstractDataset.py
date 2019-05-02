@@ -6,7 +6,7 @@ import numpy as np
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 
-from utility.utility import save, load, file_exists
+from utility.utility import save, file_exists, load
 
 
 def check_lengths(emails: np.ndarray, labels: np.ndarray) -> None:
@@ -29,7 +29,6 @@ def check_types(emails: np.ndarray, labels: np.ndarray) -> None:
 
 class AbstractDataset(abc.ABC):
     stop_words = set(stopwords.words("english"))
-    word_count_list: List = []
     classes: List = []
 
     @abc.abstractmethod

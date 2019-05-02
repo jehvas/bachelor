@@ -24,8 +24,8 @@ def run_train(dataset, train_data, test_data, parameters, embedding=None, best_f
     model.fit(x_train, y_train)
 
     print("Fitting done")
-    predictions = model.predict(x_test)
-
+    predictions = [0] * len(x_test)
+    print(predictions)
     global recent_y_test
     recent_y_test = y_test
     global recent_predictions
