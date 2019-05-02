@@ -2,7 +2,6 @@ import uuid
 
 from sklearn.linear_model import Perceptron
 from sklearn.metrics import precision_recall_fscore_support
-from sklearn.model_selection import train_test_split as tts
 
 from rootfile import ROOTPATH
 from utility.confusmatrix import plot_confusion_matrix
@@ -17,10 +16,9 @@ def get_name():
     return 'Perceptron'
 
 
-def run_train(dataset, features, labels, parameters, embedding=None, best_fscores=None):
-    # Create training data
-    x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2)
-
+def run_train(dataset, train_data, test_data, parameters, embedding=None, best_fscores=None):
+    x_train, y_train = train_data
+    x_test, y_test = test_data
     model = Perceptron(max_iter=1_000, tol=1e-6, class_weight=parameters['class_weights'], penalty=parameters['penalty'])
     print("\nStarting fitting")
     model.fit(x_train, y_train)

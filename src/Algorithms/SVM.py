@@ -1,7 +1,6 @@
 import uuid
 
 from sklearn.metrics import precision_recall_fscore_support
-from sklearn.model_selection import train_test_split as tts
 from sklearn.svm import LinearSVC
 
 from rootfile import ROOTPATH
@@ -18,11 +17,9 @@ def get_name():
     return 'SVM'
 
 
-def run_train(dataset, features, labels, parameters, embedding=None, best_fscores=None):
-    print("Running algorithm: Algorithms.SVM")
-    # Create training data
-    x_train, x_test, y_train, y_test = tts(features, labels, test_size=0.2, random_state=1)
-
+def run_train(dataset, train_data, test_data, parameters, embedding=None, best_fscores=None):
+    x_train, y_train = train_data
+    x_test, y_test = test_data
     # Algorithms.SVM Stuff
     svm_classifier = LinearSVC(loss=parameters['loss_function'], class_weight=parameters['class_weights'], penalty=parameters['penalty'])
 

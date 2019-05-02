@@ -7,7 +7,6 @@ from typing import List
 import numpy as np
 import tensorflow as tf
 from sklearn.metrics import precision_recall_fscore_support
-from sklearn.model_selection import train_test_split
 from tensorflow.python import set_random_seed
 from tensorflow.python.keras.metrics import Mean, Accuracy
 from tensorflow.python.ops.losses.losses_impl import sparse_softmax_cross_entropy
@@ -103,9 +102,9 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         plot_confusion_matrix(self.y_test, self.predictions, self.dataset, self.get_name(), normalize=True,
                               save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_" + self.guid + ".png")
 
-    def run_train(self, dataset, features, labels, parameters, embedding=None, best_fscores=[]) -> (List, List, List):
-        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1,
-                                                            stratify=labels)
+    def run_train(self, dataset, train_data, test_data, parameters, embedding=None, best_fscores=[]) -> (List, List, List):
+        x_train, y_train = train_data
+        x_test, y_test = test_data
         set_random_seed(1)
         self.embedding = embedding
         self.best_fscore_list = best_fscores

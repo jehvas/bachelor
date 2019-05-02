@@ -4,6 +4,7 @@ import time
 
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
+from tensorflow.python.training.adadelta import AdadeltaOptimizer
 
 from Algorithms import SVM, Perceptron
 from Algorithms.RNN_tensorflow import RNN_Tensorflow
@@ -19,7 +20,9 @@ from rootfile import ROOTPATH
 from utility.Random_Parameters import get_random_params
 from utility.confusmatrix import plot_confusion_matrix
 from utility.plotter import plot_data
+from utility.undersample_split import under_sample_split
 from utility.utility import log_to_file, setup_result_folder
+from sklearn.model_selection import train_test_split
 
 algorithm_dict = {
     "all": [SVM, Perceptron, MLP_Tensorflow(), RNN_Tensorflow(), Bi_LSTM_Tensorflow()],
@@ -39,7 +42,7 @@ dataset_dict = {
     "trustpilot": [Trustpilot()]
 }
 
-datasets_to_use = [Spamassassin()]
+datasets_to_use = [EnronEvidence()]
 algorithms_to_use = [MLP_Tensorflow()]
 amount = 99999
 # Check arguments
@@ -84,15 +87,19 @@ for dataset in datasets_to_use:
         matrix = weights_matrix if needs_weight_matrix else None
         assert not np.any(np.isnan(features))
 
+        # Create training data
+        # x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
+        x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
         for counter in range(1, amount):
             print("\n#### STARTING RUN NUMBER {} #####".format(counter))
 
             parameters = get_random_params(algorithm.get_name(), features.shape[1], output_dim)
+            parameters = {'hidden_dim': 148, 'layer_dim': 2, 'input_function': 'softplus', 'hidden_layers': [('dropout', 0.57), ('dropout', 0.08), ('dropout', 0.59)], 'output_function': 'softplus', 'optimizer': AdadeltaOptimizer(0.0182), 'learning_rate': '0.0182', 'output_dim': 2, 'input_dim': 300}
             print(str(parameters))
 
             start_time = time.time()
             try:
-                algorithm.run_train(dataset, features, labels, parameters, embedding=matrix,
+                algorithm.run_train(dataset, (x_train, y_train), (x_test, y_test), parameters, embedding=matrix,
                                     best_fscores=best_fscore_list)
             except Exception as e:
                 print(str(e))
