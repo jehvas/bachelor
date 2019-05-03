@@ -1,4 +1,4 @@
-from tensorflow.python.keras.layers import LSTM, Dense, Dropout, Bidirectional, RNN, SimpleRNNCell, CuDNNLSTM
+from tensorflow.python.keras.layers import LSTM, Dense, Bidirectional, RNN, SimpleRNNCell, CuDNNLSTM, Dropout
 import tensorflow as tf
 
 

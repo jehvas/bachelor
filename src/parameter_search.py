@@ -5,7 +5,7 @@ import time
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
 from tensorflow.python.training.adadelta import AdadeltaOptimizer
-
+from tensorflow.python.keras.utils import to_categorical
 from Algorithms import SVM, Perceptron
 from Algorithms.RNN_tensorflow import RNN_Tensorflow
 from Algorithms.MLP_tensorflow import MLP_Tensorflow
@@ -76,8 +76,11 @@ for dataset in datasets_to_use:
         if not os.path.exists(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots"):
             os.makedirs(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
 
-        needs_weight_matrix = (algorithm.get_name() == "RNN_Tensorflow" or
-                               algorithm.get_name() == "Bi_LSTM_Tensorflow")
+        needs_weight_matrix = (
+                algorithm.get_name() == "RNN_Tensorflow"
+                or algorithm.get_name() == "MLP_Tensorflow"
+                or algorithm.get_name() == "Bi_LSTM_Tensorflow"
+        )
 
         setup_result_folder(algorithm.get_name(), dataset.get_name())
         best_fscore = 0
@@ -92,6 +95,8 @@ for dataset in datasets_to_use:
         # Create training data
         # x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
         x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
+        y_test = to_categorical(np.asarray(y_test))
+        y_train = to_categorical(np.asarray(y_train))
         for counter in range(1, amount):
             print("\n#### STARTING RUN NUMBER {} #####".format(counter))
 
@@ -99,12 +104,12 @@ for dataset in datasets_to_use:
             print(str(parameters))
 
             start_time = time.time()
-            try:
-                algorithm.run_train(dataset, (x_train, y_train), (x_test, y_test), parameters, embedding=matrix,
-                                    best_fscores=best_fscore_list)
-            except Exception as e:
-                print(str(e))
-                continue
+            # try:
+            algorithm.run_train(dataset, (x_train, y_train), (x_test, y_test), parameters, embedding=matrix,
+                                best_fscores=best_fscore_list)
+            # except Exception as e:
+            #    print("Caught exception: " + str(e))
+            #    continue
 
             avg_fscore = np.average(algorithm.fscore)
             if avg_fscore > best_fscore:

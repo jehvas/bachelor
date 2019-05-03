@@ -8,7 +8,9 @@ import numpy as np
 import tensorflow as tf
 from sklearn.metrics import precision_recall_fscore_support
 from tensorflow.python import set_random_seed
+from tensorflow.python.keras.losses import categorical_crossentropy, binary_crossentropy
 from tensorflow.python.keras.metrics import Mean, Accuracy
+from tensorflow.python.keras.utils import to_categorical
 from tensorflow.python.ops.losses.losses_impl import sparse_softmax_cross_entropy
 
 from rootfile import ROOTPATH
@@ -44,7 +46,9 @@ class AbstractTensorflowAlgorithm(abc.ABC):
 
     def loss(self, x, y):
         y_ = self.model(x)
-        return sparse_softmax_cross_entropy(labels=y, logits=y_)
+        preds = tf.argmax(y_, axis=1, output_type=tf.dtypes.int32)
+        # print(y_[0], preds[0])
+        return categorical_crossentropy(y, y_)
 
     def grad(self, inputs, targets):
         with tf.GradientTape() as tape:
@@ -102,7 +106,8 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         plot_confusion_matrix(self.y_test, self.predictions, self.dataset, self.get_name(), normalize=True,
                               save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_" + self.guid + ".png")
 
-    def run_train(self, dataset, train_data, test_data, parameters, embedding=None, best_fscores=[]) -> (List, List, List):
+    def run_train(self, dataset, train_data, test_data, parameters, embedding=None, best_fscores=[]) -> (
+    List, List, List):
         x_train, y_train = train_data
         x_test, y_test = test_data
         set_random_seed(1)
@@ -147,10 +152,11 @@ class AbstractTensorflowAlgorithm(abc.ABC):
                 # Track progress
                 epoch_loss_avg(loss_value)  # add current batch loss
                 # compare predicted label to actual label
-                epoch_accuracy(tf.argmax(self.model(x), axis=1, output_type=tf.int32), y)
+                epoch_accuracy(tf.argmax(self.model(x), axis=1, output_type=tf.int32), tf.argmax(y, axis=1))
 
-            self.predictions = [tf.argmax(x) for x in self.model.predict(x_test)]
-            precision, recall, fscore, support = precision_recall_fscore_support(y_test, self.predictions)
+            self.predictions = tf.argmax(self.model.predict(x_test), axis=1)
+            _y_test = tf.argmax(y_test, axis=1)
+            precision, recall, fscore, support = precision_recall_fscore_support(_y_test, self.predictions)
 
             # end epoch
             epoch_loss = epoch_loss_avg.result()
@@ -163,16 +169,16 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             self.fscore_results.append(epoch_fscore)
             self.train_accuracy_results.append(epoch_accuracy.result())
 
-            if not check_loss(self.train_loss_results) or not self.check_fscore(epoch,
-                                                                                epoch_fscore) or not check_fscore_improvement(
-                self.fscore_results):
-                print("Loss: {}\tFScore: {}".format(epoch_loss, epoch_fscore))
-                break
+            #if not check_loss(self.train_loss_results) or not self.check_fscore(epoch, epoch_fscore)\
+            #        or not check_fscore_improvement(self.fscore_results):
+            #    print("Loss: {}\tFScore: {}".format(epoch_loss, epoch_fscore))
+            #    break
 
             if epoch % 1 == 0:
                 print_status(epoch, epoch_loss, epoch_accuracy.result(), epoch_fscore)
 
         print(epoch_fscore)
+        self.y_test = tf.argmax(y_test, axis=1)
 
 
 def check_fscore_improvement(f_scores):
@@ -199,7 +205,7 @@ def check_loss(losses):
     if len(losses) > patience:
         best_loss_idx = losses.index(min(losses))
         if len(losses) - best_loss_idx > patience:
-            tf.print(losses[-(patience+1):])
+            tf.print(losses[-(patience + 1):])
             print('Stopping: Loss is not improving!')
             return False
     return True

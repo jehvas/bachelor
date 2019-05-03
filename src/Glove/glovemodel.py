@@ -44,7 +44,7 @@ class GloVe:
 
                 if len(split_line) > self.dimensionCount + 1:
                     continue
-                embedding = np.array([float(val) for val in split_line[1:]])
+                embedding = np.asarray(split_line[1:], dtype='float32')
                 self.model[word] = embedding
             print("Done.", len(self.model), " tokens loaded!")
 
