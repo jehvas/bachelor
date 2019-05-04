@@ -102,11 +102,11 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             optimizer=opt,
             metrics=['accuracy'],
         )
-        es_loss = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=50, restore_best_weights=True)
+        es_loss = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=5, restore_best_weights=True)
 
         self.history = self.model.fit(x_train,
                                       y_train,
-                                      epochs=500,
+                                      epochs=50,
                                       callbacks=[es_loss],
                                       validation_data=(x_test, y_test),
                                       verbose=0)
