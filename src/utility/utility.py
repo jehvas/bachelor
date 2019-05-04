@@ -3,7 +3,7 @@ import pickle as p
 
 import errno
 import numpy as np
-from tensorflow.python.training.optimizer import Optimizer
+from tensorflow.python.keras.optimizers import Optimizer
 from rootfile import ROOTPATH
 
 output_path = ROOTPATH + "output/"
@@ -83,7 +83,7 @@ def create_file_is_not_exists(file_path, parameters):
             f.write('\t'.join(header_info) + '\n')
 
 
-def setup_result_folder(algorithm_name, dataset_name, ):
+def setup_result_folder(algorithm_name, dataset_name):
     if not os.path.exists(ROOTPATH + "Results/" + algorithm_name):
         os.mkdir(ROOTPATH + "Results/" + algorithm_name)
     if not os.path.exists(ROOTPATH + "Results/" + algorithm_name + "/" + dataset_name):
