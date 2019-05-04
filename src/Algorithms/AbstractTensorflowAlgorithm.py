@@ -106,9 +106,10 @@ class AbstractTensorflowAlgorithm(abc.ABC):
 
         self.history = self.model.fit(x_train,
                                       y_train,
-                                      epochs=200,
+                                      epochs=500,
                                       callbacks=[es_loss],
-                                      validation_data=(x_test, y_test))
+                                      validation_data=(x_test, y_test),
+                                      verbose=0)
 
         self.predictions = self.model.predict(x_test)
 
