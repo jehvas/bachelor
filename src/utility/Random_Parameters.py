@@ -30,17 +30,17 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
             'input_dim': input_dim,
         }
         if algorithm == "MLP_Tensorflow":
-            params["hidden_layers"] = [("Dense", 128, pick_random_activation_function()),
-                                       ("Dropout", 0.2, ""),
-                                       ("Dense", output_dim, "softmax")]
+            params["hidden_layers"] = [("Dense", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Dropout", random.randint(1, 5) / 10, ""),
+                                       ("Dense", output_dim, pick_random_activation_function())]
         elif algorithm == "RNN_Tensorflow":
-            params["hidden_layers"] = [("RNN", 128, pick_random_activation_function()),
-                                       ("Dropout", 0.2, ""),
-                                       ("RNN", 128, pick_random_activation_function()),
-                                       ("Dropout", 0.1, ""),
-                                       ("Dense", 128, pick_random_activation_function()),
-                                       ("Dropout", 0.2, ""),
-                                       ("Dense", output_dim, "softmax")]
+            params["hidden_layers"] = [("RNN", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Dropout", random.randint(1, 5) / 10, ""),
+                                       ("RNN", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Dropout", random.randint(1, 5) / 10, ""),
+                                       ("Dense", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Dropout", random.randint(1, 5) / 10, ""),
+                                       ("Dense", output_dim, pick_random_activation_function())]
         elif algorithm == "Bi_LSTM_Tensorflow":
             params["hidden_layers"] = [("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(1, 5) / 10, ""),
@@ -48,18 +48,18 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
                                        ("Dropout", random.randint(1, 5) / 10, ""),
                                        ("Dense", random.randint(10, 300) / 10, pick_random_activation_function()),
                                        ("Dropout", random.randint(1, 5) / 10, ""),
-                                       ("Dense", output_dim, "softmax")]
+                                       ("Dense", output_dim, pick_random_activation_function())]
         return params
 
     elif algorithm == 'SVM':
         return {
             'loss_function': random.choice(["hinge", "squared_hinge"]),
-            'class_weights': random.choice([pick_random_class_weights(output_dim), "balanced"]),
+            'class_weights': random.choice(["balanced"]),
             'penalty': random.choice(["l2"])
         }
     elif algorithm == 'Perceptron':
         return {
-            'class_weights': random.choice([pick_random_class_weights(output_dim), "balanced"]),
+            'class_weights': random.choice(["balanced"]),
             'penalty': random.choice([None, "l2", "l1", "elasticnet"])
         }
 
@@ -68,7 +68,7 @@ def pick_random_activation_function():
     possible_activations = [
         #"LeakyReLU",
         "relu",
-        # "softmax",
+        "softmax",
         # "sigmoid",
         # "elu",
         # "selu",
