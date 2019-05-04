@@ -22,14 +22,14 @@ def run_train(dataset, train_data, test_data, parameters, embedding=None):
     x_train, y_train = train_data
     x_test, y_test = test_data
     # Algorithms.SVM Stuff
-    n_estimators = int(len(x_train)/100)
-    print(n_estimators)
+    # n_estimators = int(len(x_train)/100)
+    # print(n_estimators)
     # svm_classifier = LinearSVC(loss=parameters['loss_function'], class_weight='balanced', penalty=parameters['penalty'])
     clf = LinearSVC(loss=parameters['loss_function'], class_weight='balanced', penalty=parameters['penalty'])
-    print("\nStarting fitting")
+    # print("\nStarting fitting")
     clf.fit(x_train, y_train)
 
-    print("Fitting done")
+    # print("Fitting done")
     predictions = clf.predict(x_test)
 
     global recent_y_test
