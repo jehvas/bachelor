@@ -13,7 +13,7 @@ from tensorflow.python.training.proximal_gradient_descent import ProximalGradien
 from tensorflow.python.training.rmsprop import RMSPropOptimizer
 
 
-def get_random_params(algorithm, input_dim, output_dim) -> Dict:
+def get_random_params(algorithm, input_dim, output_dim):
     if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi_LSTM_Tensorflow':
         #layer_dim = 5 - int(math.log10(random.randint(10, 9000)))
         hidden_dim = random.randint(10, 500)

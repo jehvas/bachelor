@@ -5,7 +5,7 @@ from tensorflow.python.training.adadelta import AdadeltaOptimizer
 from tensorflow.python.training.adam import AdamOptimizer
 
 
-def get_params(algorithm, dataset) -> Dict:
+def get_params(algorithm, dataset):
     dsname = type(dataset).__name__
     re_dict = {
         'batch_size': 128,

@@ -20,7 +20,7 @@ from DatasetsConsumers.Trustpilot import Trustpilot
 from Glove.glovemodel import GloVe
 from rootfile import ROOTPATH
 from utility.Random_Parameters import get_random_params
-from utility.undersample_split import resize_under_sample
+from utility.undersample_split import resize_under_sample, under_sample_split
 from utility.utility import log_to_file, setup_result_folder
 
 algorithm_dict = {
@@ -93,15 +93,14 @@ for dataset in datasets_to_use:
         # features = features[:1000]
 
         # Create training data
-        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1,
-                                                            stratify=labels)
-        # x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
+        # x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
+        x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
         # y_test = to_categorical(np.asarray(y_test))
         # y_train = to_categorical(np.asarray(y_train))
         for counter in range(1, amount):
             np.random.seed(1)
             set_random_seed(1)
-            print("\n#### STARTING RUN NUMBER {} #####".format(counter))
+            print("#### STARTING RUN NUMBER {} #####".format(counter))
 
             parameters = get_random_params(algorithm.get_name(), features.shape[1], output_dim)
             print(str(parameters))
@@ -116,7 +115,7 @@ for dataset in datasets_to_use:
 
             avg_fscore = np.average(algorithm.fscore)
             if avg_fscore > best_fscore:
-                print('\nNew champion! {}'.format(avg_fscore))
+                print('New champion! {}'.format(avg_fscore))
                 best_fscore = avg_fscore
                 algorithm.plot_data(dataset.get_name(), counter)
 

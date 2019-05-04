@@ -5,7 +5,7 @@ from rootfile import ROOTPATH
 
 
 class SpamHam(AbstractDataset):
-    def set_classes(self) -> None:
+    def set_classes(self):
         self.classes = ['Ham', 'Spam']
 
     def sub_load(self):

@@ -9,16 +9,12 @@ from nltk.corpus import stopwords
 from utility.utility import save, file_exists, load
 
 
-def check_lengths(emails: np.ndarray, labels: np.ndarray) -> None:
-    if type(labels) == tuple:
-        lb1, lb2 = labels
-        if len(emails) != len(lb1) and len(emails) != len(lb2):
-            raise Exception("length of emails & labels should match!!")
-    elif len(emails) != len(labels):
+def check_lengths(emails, labels):
+    if len(emails) != len(labels):
         raise Exception("length of emails & labels should match!!")
 
 
-def check_types(emails: np.ndarray, labels: np.ndarray) -> None:
+def check_types(emails, labels):
     if type(labels) == tuple:
         lb1, lb2 = labels
         if type(emails) is not np.ndarray or type(lb1) is not np.ndarray or type(lb2) is not np.ndarray:
@@ -32,14 +28,14 @@ class AbstractDataset(abc.ABC):
     classes: List = []
 
     @abc.abstractmethod
-    def sub_load(self) -> (List[List[str]], List[int]):
+    def sub_load(self):
         pass
 
     @abc.abstractmethod
-    def set_classes(self) -> None:
+    def set_classes(self):
         pass
 
-    def load(self, load_filtered_data: bool = False) -> (List[List[str]], List[int]):
+    def load(self, load_filtered_data: bool = False):
         emails, labels = None, None
         if load_filtered_data:
             load_check_result = self.pre_load()
@@ -59,10 +55,10 @@ class AbstractDataset(abc.ABC):
         self.post_load(emails, labels)
         return emails, labels
 
-    def get_name(self) -> str:
+    def get_name(self):
         return type(self).__name__
 
-    def pre_load(self) -> (List[List[str]], List[int]):
+    def pre_load(self):
         print("Being loading dataset:", self.get_name())
         if file_exists(self.get_name() + "_saved_mails") and file_exists(self.get_name() + "_saved_labels"):
             emails = load(self.get_name() + "_saved_mails")
@@ -73,7 +69,7 @@ class AbstractDataset(abc.ABC):
             print("Saved mails and labels not found... Creating them\n")
             return None
 
-    def post_load(self, emails: np.ndarray, labels: np.ndarray) -> None:
+    def post_load(self, emails: np.ndarray, labels: np.ndarray):
         if len(self.classes) == 0:
             self.classes = list(set(labels))
 
@@ -81,13 +77,13 @@ class AbstractDataset(abc.ABC):
         check_lengths(emails, labels)
         print("Finished loading dataset:", self.get_name(), "\t\t", "Size: ", len(emails), ",", len(labels))
 
-    def process_single_mail(self, text: str) -> List[str]:
+    def process_single_mail(self, text: str):
         text_tokenized = word_tokenize(text.lower())
         sentence_no_stop_words = self.filter_stop_words(text_tokenized)
         email_words = [w for w in sentence_no_stop_words if w.isalpha()]
         return email_words
 
-    def filter_stop_words(self, text_tokenized: List[str]) -> List[str]:
+    def filter_stop_words(self, text_tokenized: List[str]):
         filtered_sentence = []
         for w in text_tokenized:
             if w not in self.stop_words:

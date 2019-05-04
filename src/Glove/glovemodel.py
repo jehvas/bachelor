@@ -19,13 +19,13 @@ class GloVe:
     glove_file = ''
     model = {}
 
-    def __init__(self, dimension_count: int) -> None:
+    def __init__(self, dimension_count: int):
         self.dimensionCount = dimension_count
         self.glove_file = "glove.6B." + str(dimension_count) + "d.txt"
         # self.glove_file = 'glove.840B.300d.txt'
 
     # Load model
-    def load_glove_model(self) -> None:
+    def load_glove_model(self):
         if len(self.model) is not 0:
             return
         print('Features / Weights matrix not found.')
@@ -49,7 +49,7 @@ class GloVe:
                 self.model[word] = embedding
             print("Done.", len(self.model), " tokens loaded!")
 
-    def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset) -> (tf.Tensor, np.array):
+    def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset):
         wm_file_name = "{}_weights_matrix_{}".format(dataset.get_name(), self.dimensionCount)
 
         tokenizer = Tokenizer()
@@ -71,7 +71,7 @@ class GloVe:
         return weights_matrix, sequences_matrix
 
     # Check if features exist
-    def get_features(self, emails: np.array, dataset: AbstractDataset) -> np.array:
+    def get_features(self, emails: np.array, dataset: AbstractDataset):
         print("Loading embedding features")
         feature_file_name = dataset.get_name() + '_features_' + str(self.dimensionCount)
         if file_exists(feature_file_name):

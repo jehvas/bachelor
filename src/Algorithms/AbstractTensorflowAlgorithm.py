@@ -69,9 +69,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         plot_confusion_matrix(self.y_test, self.predictions, self.dataset, self.get_name(), normalize=True,
                               save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_" + self.guid + ".png")
 
-    def run_train(self, dataset, train_data, test_data, parameters, embedding=None) -> (
-            List, List, List):
-
+    def run_train(self, dataset, train_data, test_data, parameters, embedding=None):
         x_train, y_train = train_data
         x_test, y_test = test_data
         set_random_seed(1)

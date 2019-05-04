@@ -8,7 +8,7 @@ from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 
 
-def filter_genders(reviews: np.array, genders: np.array) -> (np.array, np.array):
+def filter_genders(reviews: np.array, genders: np.array):
     idx_to_delete: List = []
     for i, gender in enumerate(genders):
         if gender == 2:
