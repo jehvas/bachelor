@@ -77,8 +77,8 @@ class AbstractTensorflowAlgorithm(abc.ABC):
 
         self.embedding = embedding
         self.load_parameters(parameters)
-        # self.dataset = dataset
-        # self.y_test = y_test
+        self.dataset = dataset
+        self.y_test = y_test
         if self.get_name() != "MLP_Tensorflow":
             x_train = np.expand_dims(x_train, axis=1)
             y_train = np.expand_dims(y_train, axis=1)

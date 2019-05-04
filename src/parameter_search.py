@@ -8,6 +8,7 @@ import numpy as np
 
 
 import tensorflow as tf
+from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import train_test_split
 from tensorflow.python import set_random_seed, reset_default_graph, ops
 from tensorflow.python.keras.backend import clear_session
@@ -121,15 +122,12 @@ for dataset in datasets_to_use:
             if avg_fscore > best_fscore:
                 print('New champion! {}'.format(avg_fscore))
                 best_fscore = avg_fscore
-                # algorithm.plot_data(dataset.get_name(), counter)
+                algorithm.plot_data(dataset.get_name(), counter)
 
             time_taken = time.time() - start_time
-            # precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)
 
-            # avg_fscore = (sum(fscore) / len(fscore))
-            # print("Avg fScore:", avg_fscore)
             file_path = ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/"
-            # log_to_file(parameters, algorithm.fscore, file_path + "resultsfile.csv", time_taken, algorithm.guid)
+            log_to_file(parameters, algorithm.fscore, file_path + "resultsfile.csv", time_taken, algorithm.guid)
             clear_session()
             reset_default_graph()
             ops.reset_default_graph()
