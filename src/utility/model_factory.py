@@ -1,7 +1,8 @@
+from tensorflow.python import set_random_seed
 from tensorflow.python.keras.layers import LSTM, Dense, Bidirectional, RNN, SimpleRNNCell, CuDNNLSTM, Dropout
 import tensorflow as tf
 
-
+set_random_seed(1)
 def make_hidden_layers(middle_layers, input_shape):
     layers = []
     for idx, layer_info in enumerate(middle_layers):

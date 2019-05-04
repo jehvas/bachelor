@@ -3,10 +3,11 @@ import sys
 import time
 
 import numpy as np
+
+
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from tensorflow.python import set_random_seed
-
 from Algorithms import SVM, Perceptron
 from Algorithms.Bi_LSTM_tensorflow import Bi_LSTM_Tensorflow
 from Algorithms.MLP_tensorflow import MLP_Tensorflow
@@ -98,6 +99,8 @@ for dataset in datasets_to_use:
         # y_test = to_categorical(np.asarray(y_test))
         # y_train = to_categorical(np.asarray(y_train))
         for counter in range(1, amount):
+            np.random.seed(1)
+            set_random_seed(1)
             print("\n#### STARTING RUN NUMBER {} #####".format(counter))
 
             parameters = get_random_params(algorithm.get_name(), features.shape[1], output_dim)
@@ -105,10 +108,7 @@ for dataset in datasets_to_use:
 
             start_time = time.time()
             # try:
-            with tf.Session() as sess:
-                set_random_seed(1)
-                sess.run(
-                    algorithm.run_train(dataset, (x_train, y_train), (x_test, y_test), parameters, embedding=matrix))
+            algorithm.run_train(dataset, (x_train, y_train), (x_test, y_test), parameters, embedding=matrix)
 
             # except Exception as e:
             #    print("Caught exception: " + str(e))

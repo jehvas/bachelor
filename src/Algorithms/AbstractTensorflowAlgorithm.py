@@ -6,6 +6,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.metrics import precision_recall_fscore_support
 from tensorflow.python import set_random_seed
+from tensorflow.python.keras.callbacks import EarlyStopping
 
 from rootfile import ROOTPATH
 from utility.confusmatrix import plot_confusion_matrix
@@ -73,7 +74,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
 
         x_train, y_train = train_data
         x_test, y_test = test_data
-        #set_random_seed(1)
+        set_random_seed(1)
 
 
         self.embedding = embedding
@@ -103,11 +104,14 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             optimizer=opt,
             metrics=['accuracy'],
         )
+        es_loss = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=50, restore_best_weights=True)
 
         self.history = self.model.fit(x_train,
                                       y_train,
-                                      epochs=100,
+                                      epochs=200,
+                                      callbacks=[es_loss],
                                       validation_data=(x_test, y_test))
+
         self.predictions = self.model.predict(x_test)
 
         self.predictions = tf.argmax(self.predictions, axis=1)
