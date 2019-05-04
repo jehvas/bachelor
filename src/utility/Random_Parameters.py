@@ -15,12 +15,12 @@ from tensorflow.python.training.rmsprop import RMSPropOptimizer
 
 def get_random_params(algorithm, input_dim, output_dim) -> Dict:
     if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi_LSTM_Tensorflow':
-        layer_dim = 5 - int(math.log10(random.randint(10, 9000)))
+        #layer_dim = 5 - int(math.log10(random.randint(10, 9000)))
         hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()
         params = {
             'hidden_dim': hidden_dim,
-            'layer_dim': layer_dim,
+            #'layer_dim': layer_dim,
             'input_function': pick_random_activation_function(),
             # 'hidden_layers': generate_middle_layers(layer_dim, algorithm),
             'output_function': pick_random_activation_function(),
@@ -83,7 +83,7 @@ def pick_optimizer():
     random_lr = random.randint(1, 1000) / 10000
     possible_optimizers = [
         # AdagradOptimizer(learning_rate=random_lr),
-        # SGD(lr=0.001, decay=1e-6),
+        SGD(lr=0.001, decay=1e-6),
         # AdadeltaOptimizer(learning_rate=random_lr),
         Adam(lr=0.001, decay=1e-6),
         # FtrlOptimizer(learning_rate=random_lr),
