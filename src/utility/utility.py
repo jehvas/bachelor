@@ -57,7 +57,7 @@ def log_to_file(parameters, fscore, file_path, time_taken, guid):
             elif type(value) is dict:
                 f.write(';'.join([str(k2) + ":" + str(v2) for k2, v2 in value.items()]) + "\t ")
             elif isinstance(value, Optimizer):
-                f.write(value.get_name() + "\t ")
+                f.write(value.lr._shared_name + "\t ")
             elif type(value) is list:
                 if type(value[0]) is tuple:
                     f.write(";".join("(%s;%f,%s)" % tup for tup in value) + "\t ")
