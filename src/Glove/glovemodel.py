@@ -1,6 +1,7 @@
-from typing import Dict, List
+from typing import List
 
 import numpy as np
+import tensorflow as tf
 from keras_preprocessing import sequence
 from keras_preprocessing.text import Tokenizer
 from sklearn import preprocessing
@@ -8,7 +9,6 @@ from sklearn import preprocessing
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 from utility.utility import file_exists, load, save
-import tensorflow as tf
 
 GLOVE_DIR = ROOTPATH + "data/GloveWordEmbeddings/"
 
@@ -54,7 +54,7 @@ class GloVe:
         tokenizer = Tokenizer()
         tokenizer.fit_on_texts(emails)
         sequences = tokenizer.texts_to_sequences(emails)
-        sequences_matrix = sequence.pad_sequences(sequences, maxlen=256)
+        sequences_matrix = sequence.pad_sequences(sequences, maxlen=100, padding='post')
         if file_exists(wm_file_name):
             return load(wm_file_name), sequences_matrix
 

@@ -12,6 +12,7 @@ recent_dataset = None
 fscore = None
 guid = None
 
+
 def get_name():
     return 'Perceptron'
 
@@ -19,7 +20,8 @@ def get_name():
 def run_train(dataset, train_data, test_data, parameters, embedding=None, best_fscores=None):
     x_train, y_train = train_data
     x_test, y_test = test_data
-    model = Perceptron(max_iter=1_000, tol=1e-6, class_weight=parameters['class_weights'], penalty=parameters['penalty'])
+    model = Perceptron(max_iter=1_000, tol=1e-6, class_weight=parameters['class_weights'],
+                       penalty=parameters['penalty'])
     print("\nStarting fitting")
     model.fit(x_train, y_train)
 

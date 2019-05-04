@@ -44,23 +44,23 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
 
 def pick_random_activation_function():
     possible_activations = [
-                            "LeakyReLU",
+                            # "LeakyReLU",
                             # "softmax",
                             # "sigmoid",
-                            # "elu",
+                            "elu",
                             # "selu",
                             # "softplus",
                             # "softsign",
-                            # "tanh"
+                            "tanh"
                             ]
     return random.choice(possible_activations)
 
 
 def pick_optimizer():
-    random_lr = random.randint(1, 1000) / 10000
+    random_lr = 0.001 # random.randint(1, 1000) / 10000
     possible_optimizers = [
         # AdagradOptimizer(learning_rate=random_lr),
-        GradientDescentOptimizer(learning_rate=random_lr),
+        # GradientDescentOptimizer(learning_rate=random_lr),
         # AdadeltaOptimizer(learning_rate=random_lr),
         AdamOptimizer(learning_rate=random_lr),
         # FtrlOptimizer(learning_rate=random_lr),

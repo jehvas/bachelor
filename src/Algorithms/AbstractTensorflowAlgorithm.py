@@ -48,7 +48,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         y_ = self.model(x)
         preds = tf.argmax(y_, axis=1, output_type=tf.dtypes.int32)
         # print(y_[0], preds[0])
-        return categorical_crossentropy(y, y_)
+        return sparse_softmax_cross_entropy(labels=y, logits=y_)
 
     def grad(self, inputs, targets):
         with tf.GradientTape() as tape:
@@ -125,7 +125,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         # Plots. Therefor a GUID will also be associated with each run to prevent this.
         self.guid = str(uuid.uuid4())
         # self.model.summary()
-        batch_size = 512
+        batch_size = 50
         train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).batch(batch_size)  # .shuffle(1024)
         optimizer = self.optimizer
         global_step = tf.Variable(0)
@@ -151,12 +151,12 @@ class AbstractTensorflowAlgorithm(abc.ABC):
 
                 # Track progress
                 epoch_loss_avg(loss_value)  # add current batch loss
-                # compare predicted label to actual label
-                epoch_accuracy(tf.argmax(self.model(x), axis=1, output_type=tf.int32), tf.argmax(y, axis=1))
 
-            self.predictions = tf.argmax(self.model.predict(x_test), axis=1)
-            _y_test = tf.argmax(y_test, axis=1)
-            precision, recall, fscore, support = precision_recall_fscore_support(_y_test, self.predictions)
+            self.predictions = tf.argmax(self.model(x_test), axis=1)
+            # compare predicted label to actual label
+            epoch_accuracy(self.predictions, y_test)
+            # _y_test = tf.argmax(y_test, axis=1)
+            precision, recall, fscore, support = precision_recall_fscore_support(y_test, self.predictions)
 
             # end epoch
             epoch_loss = epoch_loss_avg.result()
@@ -168,6 +168,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             self.train_loss_results.append(epoch_loss)
             self.fscore_results.append(epoch_fscore)
             self.train_accuracy_results.append(epoch_accuracy.result())
+            print(precision)
 
             #if not check_loss(self.train_loss_results) or not self.check_fscore(epoch, epoch_fscore)\
             #        or not check_fscore_improvement(self.fscore_results):
@@ -178,7 +179,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
                 print_status(epoch, epoch_loss, epoch_accuracy.result(), epoch_fscore)
 
         print(epoch_fscore)
-        self.y_test = tf.argmax(y_test, axis=1)
+        # self.y_test = tf.argmax(y_test, axis=1)
 
 
 def check_fscore_improvement(f_scores):

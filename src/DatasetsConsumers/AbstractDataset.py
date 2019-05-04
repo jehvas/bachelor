@@ -62,7 +62,7 @@ class AbstractDataset(abc.ABC):
     def get_name(self) -> str:
         return type(self).__name__
 
-    def pre_load(self) -> (List[List[str]], List[int]):
+    def pre_load(self):
         print("Being loading dataset:", self.get_name())
         if file_exists(self.get_name() + "_saved_mails") and file_exists(self.get_name() + "_saved_labels"):
             emails = load(self.get_name() + "_saved_mails")
@@ -73,7 +73,7 @@ class AbstractDataset(abc.ABC):
             print("Saved mails and labels not found... Creating them\n")
             return None
 
-    def post_load(self, emails: np.ndarray, labels: np.ndarray) -> None:
+    def post_load(self, emails, labels):
         if len(self.classes) == 0:
             self.classes = list(set(labels))
 
@@ -81,13 +81,13 @@ class AbstractDataset(abc.ABC):
         check_lengths(emails, labels)
         print("Finished loading dataset:", self.get_name(), "\t\t", "Size: ", len(emails), ",", len(labels))
 
-    def process_single_mail(self, text: str) -> List[str]:
+    def process_single_mail(self, text):
         text_tokenized = word_tokenize(text.lower())
         sentence_no_stop_words = self.filter_stop_words(text_tokenized)
         email_words = [w for w in sentence_no_stop_words if w.isalpha()]
         return email_words
 
-    def filter_stop_words(self, text_tokenized: List[str]) -> List[str]:
+    def filter_stop_words(self, text_tokenized):
         filtered_sentence = []
         for w in text_tokenized:
             if w not in self.stop_words:

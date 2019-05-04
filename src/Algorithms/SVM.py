@@ -7,12 +7,12 @@ from sklearn.svm import LinearSVC
 from rootfile import ROOTPATH
 from utility.confusmatrix import plot_confusion_matrix
 
-
 recent_y_test = None
 recent_predictions = None
 recent_dataset = None
 fscore = None
 guid = None
+
 
 def get_name():
     return 'SVM'
@@ -22,7 +22,7 @@ def run_train(dataset, train_data, test_data, parameters, embedding=None, best_f
     x_train, y_train = train_data
     x_test, y_test = test_data
     # Algorithms.SVM Stuff
-    n_estimators = int(len(x_train)/100)
+    n_estimators = int(len(x_train) / 100)
     print(n_estimators)
     # svm_classifier = LinearSVC(loss=parameters['loss_function'], class_weight='balanced', penalty=parameters['penalty'])
     clf = LinearSVC(loss=parameters['loss_function'], class_weight='balanced', penalty=parameters['penalty'])
@@ -40,7 +40,7 @@ def run_train(dataset, train_data, test_data, parameters, embedding=None, best_f
     recent_dataset = dataset
 
     precision, recall, _fscore, support = precision_recall_fscore_support(y_test, predictions)
-    print(sum(_fscore)/len(_fscore))
+    print(sum(_fscore) / len(_fscore))
     global fscore
     fscore = _fscore
     global guid

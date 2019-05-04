@@ -3,13 +3,11 @@ import sys
 import time
 
 import numpy as np
-from sklearn.metrics import precision_recall_fscore_support
-from tensorflow.python.training.adadelta import AdadeltaOptimizer
-from tensorflow.python.keras.utils import to_categorical
+
 from Algorithms import SVM, Perceptron
-from Algorithms.RNN_tensorflow import RNN_Tensorflow
-from Algorithms.MLP_tensorflow import MLP_Tensorflow
 from Algorithms.Bi_LSTM_tensorflow import Bi_LSTM_Tensorflow
+from Algorithms.MLP_tensorflow import MLP_Tensorflow
+from Algorithms.RNN_tensorflow import RNN_Tensorflow
 from DatasetsConsumers.EnronEvidence import EnronEvidence
 from DatasetsConsumers.EnronFinancial import EnronFinancial
 from DatasetsConsumers.Newsgroups import Newsgroups
@@ -18,11 +16,8 @@ from DatasetsConsumers.Trustpilot import Trustpilot
 from Glove.glovemodel import GloVe
 from rootfile import ROOTPATH
 from utility.Random_Parameters import get_random_params
-from utility.confusmatrix import plot_confusion_matrix
-from utility.plotter import plot_data
-from utility.undersample_split import under_sample_split, resize_under_sample
+from utility.undersample_split import under_sample_split
 from utility.utility import log_to_file, setup_result_folder
-from sklearn.model_selection import train_test_split
 
 algorithm_dict = {
     "all": [SVM, Perceptron, MLP_Tensorflow(), RNN_Tensorflow(), Bi_LSTM_Tensorflow()],
@@ -32,7 +27,6 @@ algorithm_dict = {
     "rnn": [RNN_Tensorflow()],
     "bi_lstm": [Bi_LSTM_Tensorflow()]
 }
-newsgroup = Newsgroups()
 dataset_dict = {
     "all": [Newsgroups(), Spamassassin(), EnronEvidence(), EnronFinancial(), Trustpilot()],
     "newsgroups": [Newsgroups()],
@@ -64,7 +58,7 @@ else:
 
 for dataset in datasets_to_use:
     emails, labels = dataset.load(True)
-    emails, labels = resize_under_sample(emails, labels)
+    # emails, labels = resize_under_sample(emails, labels)
     glove = GloVe(300)
 
     weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
@@ -95,8 +89,8 @@ for dataset in datasets_to_use:
         # Create training data
         # x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
         x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
-        y_test = to_categorical(np.asarray(y_test))
-        y_train = to_categorical(np.asarray(y_train))
+        # y_test = to_categorical(np.asarray(y_test))
+        # y_train = to_categorical(np.asarray(y_train))
         for counter in range(1, amount):
             print("\n#### STARTING RUN NUMBER {} #####".format(counter))
 
