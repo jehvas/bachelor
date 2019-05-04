@@ -63,7 +63,7 @@ else:
 
 for dataset in datasets_to_use:
     emails, labels = dataset.load(True)
-    emails, labels = resize_under_sample(emails, labels)
+    # emails, labels = resize_under_sample(emails, labels)
     glove = GloVe(300)
 
     weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
