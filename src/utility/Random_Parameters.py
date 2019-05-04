@@ -83,9 +83,9 @@ def pick_optimizer():
     random_lr = random.randint(1, 1000) / 10000
     possible_optimizers = [
         # AdagradOptimizer(learning_rate=random_lr),
-        SGD(lr=0.001, decay=1e-6),
+        SGD(lr=random_lr, decay=1e-6),
         # AdadeltaOptimizer(learning_rate=random_lr),
-        Adam(lr=0.001, decay=1e-6),
+        Adam(lr=random_lr, decay=1e-6),
         # FtrlOptimizer(learning_rate=random_lr),
         # ProximalAdagradOptimizer(learning_rate=random_lr),
         # ProximalGradientDescentOptimizer(learning_rate=random_lr),
