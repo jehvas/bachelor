@@ -97,7 +97,7 @@ for dataset in datasets_to_use:
         x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
         # y_test = to_categorical(np.asarray(y_test))
         # y_train = to_categorical(np.asarray(y_train))
-        for counter in range(1, amount):
+        for counter in range(1, (amount + 1)):
             np.random.seed(1)
             set_random_seed(1)
             print("#### STARTING RUN NUMBER {} #####".format(counter))
