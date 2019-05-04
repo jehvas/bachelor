@@ -23,9 +23,9 @@ def make_hidden_layers(middle_layers, input_shape):
             if tf.test.gpu_device_name():
                 print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
                 if idx == 0:
-                    layers.append(Bidirectional(CuDNNLSTM(size, activation=activation_func, input_shape=input_shape, return_sequences=True)))
+                    layers.append(Bidirectional(CuDNNLSTM(size, input_shape=input_shape, return_sequences=True)))
                 else:
-                    layers.append(Bidirectional(CuDNNLSTM(size, activation=activation_func)))
+                    layers.append(Bidirectional(CuDNNLSTM(size)))
             else:
                 print("Please install GPU version of TF")
                 if idx == 0:
