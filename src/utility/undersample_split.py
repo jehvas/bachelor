@@ -1,15 +1,15 @@
-import random
 from collections import Counter
 
 import numpy as np
 
 
 def under_sample_split(features, labels, test_size=0.2, random_state=None):
+    import random
     if len(features) != len(labels):
         raise Exception(
             "Features not equal labels length: len(features): {}, len(labels): {}".format(len(features), len(labels)))
     if random_state:
-        random.seed(random_state)
+        pass # random.seed(random_state)
     comb = list(zip(features, labels))
     random.shuffle(comb)
     features, labels = zip(*comb)

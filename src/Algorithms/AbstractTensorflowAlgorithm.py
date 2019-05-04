@@ -72,7 +72,6 @@ class AbstractTensorflowAlgorithm(abc.ABC):
     def run_train(self, dataset, train_data, test_data, parameters, embedding=None):
         x_train, y_train = train_data
         x_test, y_test = test_data
-        set_random_seed(1)
 
 
         self.embedding = embedding
