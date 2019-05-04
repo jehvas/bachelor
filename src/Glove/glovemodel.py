@@ -4,6 +4,7 @@ import numpy as np
 from keras_preprocessing import sequence
 from keras_preprocessing.text import Tokenizer
 from sklearn import preprocessing
+from sklearn.preprocessing import MinMaxScaler
 
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
@@ -105,4 +106,8 @@ class GloVe:
                     vector_sum += word_vector
             vector_sum = vector_sum / len(words)
             all_vector_sum.append(vector_sum)
-        return all_vector_sum
+        scaler = MinMaxScaler()
+        scaler.fit(all_vector_sum)
+        MinMaxScaler(copy=True, feature_range=(0, 1))
+        normed_vectors = scaler.transform(all_vector_sum)
+        return normed_vectors

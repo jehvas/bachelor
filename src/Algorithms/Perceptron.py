@@ -16,7 +16,7 @@ def get_name():
     return 'Perceptron'
 
 
-def run_train(dataset, train_data, test_data, parameters, embedding=None, best_fscores=None):
+def run_train(dataset, train_data, test_data, parameters, embedding=None):
     x_train, y_train = train_data
     x_test, y_test = test_data
     model = Perceptron(max_iter=1_000, tol=1e-6, class_weight=parameters['class_weights'], penalty=parameters['penalty'])

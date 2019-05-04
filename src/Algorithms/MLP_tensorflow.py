@@ -7,17 +7,5 @@ from utility.model_factory import make_hidden_layers
 
 
 class MLP_Tensorflow(AbstractTensorflowAlgorithm):
-    def generate_model(self):
-        self.model = Sequential(
-            [Embedding(self.embedding.shape[0], self.embedding.shape[1], weights=[self.embedding], trainable=True,
-                       input_length=self.input_dim),
-             GlobalAveragePooling1D(),
-             LeakyReLU(),
-             Dense(self.hidden_dim, activation='linear')] +
-            # make_hidden_layers(self.hidden_dim, self.hidden_layers) +
-            [
-                Dense(self.output_dim, name='out_layer', activation='linear'),
-                LeakyReLU()
-             ]
-        )
-        self.model.summary()
+    def generate_model(self, middle_layers, input_shape):
+        self.model = Sequential(make_hidden_layers(middle_layers, input_shape))

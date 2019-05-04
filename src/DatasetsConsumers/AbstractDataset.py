@@ -93,3 +93,4 @@ class AbstractDataset(abc.ABC):
             if w not in self.stop_words:
                 filtered_sentence.append(w)
         return filtered_sentence
+

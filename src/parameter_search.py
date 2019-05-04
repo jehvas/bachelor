@@ -3,13 +3,14 @@ import sys
 import time
 
 import numpy as np
-from sklearn.metrics import precision_recall_fscore_support
-from tensorflow.python.training.adadelta import AdadeltaOptimizer
-from tensorflow.python.keras.utils import to_categorical
+import tensorflow as tf
+from sklearn.model_selection import train_test_split
+from tensorflow.python import set_random_seed
+
 from Algorithms import SVM, Perceptron
-from Algorithms.RNN_tensorflow import RNN_Tensorflow
-from Algorithms.MLP_tensorflow import MLP_Tensorflow
 from Algorithms.Bi_LSTM_tensorflow import Bi_LSTM_Tensorflow
+from Algorithms.MLP_tensorflow import MLP_Tensorflow
+from Algorithms.RNN_tensorflow import RNN_Tensorflow
 from DatasetsConsumers.EnronEvidence import EnronEvidence
 from DatasetsConsumers.EnronFinancial import EnronFinancial
 from DatasetsConsumers.Newsgroups import Newsgroups
@@ -18,11 +19,8 @@ from DatasetsConsumers.Trustpilot import Trustpilot
 from Glove.glovemodel import GloVe
 from rootfile import ROOTPATH
 from utility.Random_Parameters import get_random_params
-from utility.confusmatrix import plot_confusion_matrix
-from utility.plotter import plot_data
-from utility.undersample_split import under_sample_split, resize_under_sample
+from utility.undersample_split import resize_under_sample
 from utility.utility import log_to_file, setup_result_folder
-from sklearn.model_selection import train_test_split
 
 algorithm_dict = {
     "all": [SVM, Perceptron, MLP_Tensorflow(), RNN_Tensorflow(), Bi_LSTM_Tensorflow()],
@@ -42,9 +40,9 @@ dataset_dict = {
     "trustpilot": [Trustpilot()]
 }
 
-datasets_to_use = [EnronEvidence()]
-algorithms_to_use = [Perceptron]
-amount = 1
+datasets_to_use = [Newsgroups()]
+algorithms_to_use = [MLP_Tensorflow()]
+amount = 10
 # Check arguments
 if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):
     print("")
@@ -76,11 +74,12 @@ for dataset in datasets_to_use:
         if not os.path.exists(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots"):
             os.makedirs(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
 
-        needs_weight_matrix = (
+        needs_weight_matrix = False
+        '''(
                 algorithm.get_name() == "RNN_Tensorflow"
                 or algorithm.get_name() == "MLP_Tensorflow"
-                or algorithm.get_name() == "Bi_LSTM_Tensorflow"
-        )
+                #or algorithm.get_name() == "Bi_LSTM_Tensorflow"
+        )'''
 
         setup_result_folder(algorithm.get_name(), dataset.get_name())
         best_fscore = 0
@@ -93,10 +92,11 @@ for dataset in datasets_to_use:
         # features = features[:1000]
 
         # Create training data
-        # x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
-        x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
-        y_test = to_categorical(np.asarray(y_test))
-        y_train = to_categorical(np.asarray(y_train))
+        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1,
+                                                            stratify=labels)
+        # x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
+        # y_test = to_categorical(np.asarray(y_test))
+        # y_train = to_categorical(np.asarray(y_train))
         for counter in range(1, amount):
             print("\n#### STARTING RUN NUMBER {} #####".format(counter))
 
@@ -105,8 +105,11 @@ for dataset in datasets_to_use:
 
             start_time = time.time()
             # try:
-            algorithm.run_train(dataset, (x_train, y_train), (x_test, y_test), parameters, embedding=matrix,
-                                best_fscores=best_fscore_list)
+            with tf.Session() as sess:
+                set_random_seed(1)
+                sess.run(
+                    algorithm.run_train(dataset, (x_train, y_train), (x_test, y_test), parameters, embedding=matrix))
+
             # except Exception as e:
             #    print("Caught exception: " + str(e))
             #    continue
@@ -115,9 +118,6 @@ for dataset in datasets_to_use:
             if avg_fscore > best_fscore:
                 print('\nNew champion! {}'.format(avg_fscore))
                 best_fscore = avg_fscore
-                if algorithm.get_name() != "SVM" and algorithm.get_name() != "Perceptron":
-                    best_fscore_list = algorithm.fscore_results
-
                 algorithm.plot_data(dataset.get_name(), counter)
 
             time_taken = time.time() - start_time

@@ -2,6 +2,7 @@ import math
 import random
 from typing import Dict
 
+from tensorflow.python.keras.optimizers import Adam, SGD
 from tensorflow.python.training.adadelta import AdadeltaOptimizer
 from tensorflow.python.training.adagrad import AdagradOptimizer
 from tensorflow.python.training.adam import AdamOptimizer
@@ -17,17 +18,38 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
         layer_dim = 5 - int(math.log10(random.randint(10, 9000)))
         hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()
-        return {
+        params = {
             'hidden_dim': hidden_dim,
             'layer_dim': layer_dim,
             'input_function': pick_random_activation_function(),
-            'hidden_layers': generate_middle_layers(layer_dim, algorithm),
+            # 'hidden_layers': generate_middle_layers(layer_dim, algorithm),
             'output_function': pick_random_activation_function(),
             'optimizer': optimizer,
             'learning_rate': lr,
             'output_dim': output_dim,
             'input_dim': input_dim,
         }
+        if algorithm == "MLP_Tensorflow":
+            params["hidden_layers"] = [("Dense", 128, pick_random_activation_function()),
+                                       ("Dropout", 0.2, ""),
+                                       ("Dense", output_dim, "softmax")]
+        elif algorithm == "RNN_Tensorflow":
+            params["hidden_layers"] = [("RNN", 128, pick_random_activation_function()),
+                                       ("Dropout", 0.2, ""),
+                                       ("RNN", 128, pick_random_activation_function()),
+                                       ("Dropout", 0.1, ""),
+                                       ("Dense", 128, pick_random_activation_function()),
+                                       ("Dropout", 0.2, ""),
+                                       ("Dense", output_dim, "softmax")]
+        elif algorithm == "Bi_LSTM_Tensorflow":
+            params["hidden_layers"] = [("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Dropout", random.randint(1, 5) / 10, ""),
+                                       ("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Dropout", random.randint(1, 5) / 10, ""),
+                                       ("Dense", random.randint(10, 300) / 10, pick_random_activation_function()),
+                                       ("Dropout", random.randint(1, 5) / 10, ""),
+                                       ("Dense", output_dim, "softmax")]
+        return params
 
     elif algorithm == 'SVM':
         return {
@@ -44,15 +66,16 @@ def get_random_params(algorithm, input_dim, output_dim) -> Dict:
 
 def pick_random_activation_function():
     possible_activations = [
-                            "LeakyReLU",
-                            # "softmax",
-                            # "sigmoid",
-                            # "elu",
-                            # "selu",
-                            # "softplus",
-                            # "softsign",
-                            # "tanh"
-                            ]
+        #"LeakyReLU",
+        "relu",
+        # "softmax",
+        # "sigmoid",
+        # "elu",
+        # "selu",
+        # "softplus",
+        # "softsign",
+        # "tanh"
+    ]
     return random.choice(possible_activations)
 
 
@@ -60,9 +83,9 @@ def pick_optimizer():
     random_lr = random.randint(1, 1000) / 10000
     possible_optimizers = [
         # AdagradOptimizer(learning_rate=random_lr),
-        GradientDescentOptimizer(learning_rate=random_lr),
+        # SGD(lr=0.001, decay=1e-6),
         # AdadeltaOptimizer(learning_rate=random_lr),
-        AdamOptimizer(learning_rate=random_lr),
+        Adam(lr=0.001, decay=1e-6),
         # FtrlOptimizer(learning_rate=random_lr),
         # ProximalAdagradOptimizer(learning_rate=random_lr),
         # ProximalGradientDescentOptimizer(learning_rate=random_lr),
