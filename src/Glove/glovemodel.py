@@ -104,7 +104,6 @@ class GloVe:
                 if word in self.model:
                     word_vector = self.model[word]
                     vector_sum += word_vector
-            vector_sum = vector_sum / len(words)
             all_vector_sum.append(vector_sum)
         scaler = MinMaxScaler()
         scaler.fit(all_vector_sum)
