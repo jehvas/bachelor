@@ -3,12 +3,7 @@ import sys
 import time
 
 import gc
-import keras
 import numpy as np
-
-
-import tensorflow as tf
-from sklearn.metrics import precision_recall_fscore_support
 from sklearn.model_selection import train_test_split
 from tensorflow.python import set_random_seed, reset_default_graph, ops
 from tensorflow.python.keras.backend import clear_session
@@ -68,7 +63,7 @@ else:
 
 for dataset in datasets_to_use:
     emails, labels = dataset.load(True)
-    emails, labels = resize_under_sample(emails, labels)
+    #emails, labels = resize_under_sample(emails, labels)
     glove = GloVe(300)
 
     weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
@@ -98,8 +93,8 @@ for dataset in datasets_to_use:
         # features = features[:1000]
 
         # Create training data
-        # x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
-        x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
+        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
+        #x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
         # y_test = to_categorical(np.asarray(y_test))
         # y_train = to_categorical(np.asarray(y_train))
         for counter in range(1, (amount + 1)):
