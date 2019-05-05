@@ -4,9 +4,12 @@ import math
 import matplotlib.pyplot as plt
 
 # file_name = ROOTPATH + "/Results/MLP_Tensorflow/Newsgroups/resultsfile.csv"
+import sys
+
 datas = ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']
 for dataset in datas:
-    file_name = "C:\\Users\\Jens\\IdeaProjects\\Bachelor\\Results\\RNN_Tensorflow\\"+dataset+"\\resultsfile.csv"
+    file_name = sys.argv[1]
+    print('Reading ' + file_name)
     with open(file_name) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter='\t')
         line_count = 0
