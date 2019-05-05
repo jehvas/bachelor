@@ -82,7 +82,7 @@ for dataset in datasets_to_use:
 
     glove = GloVe(300)
 
-    weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset, dataset_mode)
+    # weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset, dataset_mode)
     features_from_glove = glove.get_features(emails, dataset, dataset_mode)
 
     for algorithm in algorithms_to_use:
@@ -103,8 +103,10 @@ for dataset in datasets_to_use:
         best_fscore_list = []
         output_dim = len(set(labels))
 
-        features = features_from_matrix if needs_weight_matrix else features_from_glove
-        matrix = weights_matrix if needs_weight_matrix else None
+        # features = features_from_matrix if needs_weight_matrix else features_from_glove
+        # matrix = weights_matrix if needs_weight_matrix else None
+        features = features_from_glove
+        matrix = None
         assert not np.any(np.isnan(features))
 
         # Create training data
