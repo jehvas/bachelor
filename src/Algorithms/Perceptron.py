@@ -40,8 +40,8 @@ def run_train(dataset, train_data, test_data, parameters, embedding=None):
     return [], y_test, predictions
 
 
-def plot_data(dataset_name, counter):
-    file_path = ROOTPATH + "Results/" + get_name() + "/" + recent_dataset.get_name() + "/"
+def plot_data(dataset_name, counter, dataset_mode):
+    file_path = ROOTPATH + "Results/" + dataset_mode + "/" + get_name() + "/" + recent_dataset.get_name() + "/"
     plot_matrix(counter, file_path)
 
 

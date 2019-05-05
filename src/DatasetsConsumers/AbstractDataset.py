@@ -35,10 +35,10 @@ class AbstractDataset(abc.ABC):
     def set_classes(self):
         pass
 
-    def load(self, load_filtered_data: bool = False):
+    def load(self, dataset_mode: str = "standard", load_filtered_data: bool = False):
         emails, labels = None, None
         if load_filtered_data:
-            load_check_result = self.pre_load()
+            load_check_result = self.pre_load(dataset_mode)
             if load_check_result is not None:
                 emails, labels = load_check_result
         if emails is None or labels is None:
@@ -58,7 +58,7 @@ class AbstractDataset(abc.ABC):
     def get_name(self):
         return type(self).__name__
 
-    def pre_load(self):
+    def pre_load(self, dataset_mode):
         print("Being loading dataset:", self.get_name())
         if file_exists(self.get_name() + "_saved_mails") and file_exists(self.get_name() + "_saved_labels"):
             emails = load(self.get_name() + "_saved_mails")

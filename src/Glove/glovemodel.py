@@ -49,8 +49,8 @@ class GloVe:
                 self.model[word] = embedding
             print("Done.", len(self.model), " tokens loaded!")
 
-    def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset):
-        wm_file_name = "{}_weights_matrix_{}".format(dataset.get_name(), self.dimensionCount)
+    def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset, dataset_mode):
+        wm_file_name = dataset_mode + "/" + "{}_weights_matrix_{}".format(dataset.get_name(), self.dimensionCount)
 
         tokenizer = Tokenizer()
         tokenizer.fit_on_texts(emails)
@@ -71,9 +71,9 @@ class GloVe:
         return weights_matrix, sequences_matrix
 
     # Check if features exist
-    def get_features(self, emails: np.array, dataset: AbstractDataset):
+    def get_features(self, emails: np.array, dataset: AbstractDataset, dataset_mode):
         print("Loading embedding features")
-        feature_file_name = dataset.get_name() + '_features_' + str(self.dimensionCount)
+        feature_file_name = dataset_mode + "/" + dataset.get_name() + '_features_' + str(self.dimensionCount)
         if file_exists(feature_file_name):
             return load(feature_file_name)
         self.load_glove_model()

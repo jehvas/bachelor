@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+from collections import Counter
 
 import gc
 import numpy as np
@@ -40,12 +41,18 @@ dataset_dict = {
     "enronfinancial": [EnronFinancial()],
     "trustpilot": [Trustpilot()]
 }
+dataset_modes = [
+    "standard",
+    "2000",
+    "equal"
+]
 
 datasets_to_use = [Newsgroups()]
 algorithms_to_use = [MLP_Tensorflow()]
 amount = 10
+dataset_mode = 0
 # Check arguments
-if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict):
+if len(sys.argv) != 5 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict and sys.argv[4].lower() in dataset_modes):
     print("")
     print("There was an error in the program arguments")
     print("There must be 3 arguments: an algorithm, a dataset and a count for how many times it should run")
@@ -55,25 +62,34 @@ if len(sys.argv) != 4 or not (sys.argv[1].lower() in algorithm_dict and sys.argv
     print("Possible datasets:")
     for x in dataset_dict.keys():
         print("\t" + x)
+    print("Possible dataset modes:")
+    for i, x in enumerate(dataset_modes):
+        print("\t" + x)
     # exit()
 else:
     algorithms_to_use = algorithm_dict[sys.argv[1].lower()]
     datasets_to_use = dataset_dict[sys.argv[2].lower()]
     amount = int(sys.argv[3])
+    dataset_mode = sys.argv[4]
+    if not os.path.exists(ROOTPATH + "output/" + dataset_mode):
+        os.makedirs(ROOTPATH + "output/" + dataset_mode)
 
 for dataset in datasets_to_use:
-    emails, labels = dataset.load(True)
-    #emails, labels = resize_under_sample(emails, labels)
+    emails, labels = dataset.load(True, dataset_mode)
+
+    if dataset_mode == "2000":
+        emails, labels = resize_under_sample(emails, labels)
+
     glove = GloVe(300)
 
-    weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset)
-    features_from_glove = glove.get_features(emails, dataset)
+    weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset, dataset_mode)
+    features_from_glove = glove.get_features(emails, dataset, dataset_mode)
 
     for algorithm in algorithms_to_use:
         print("Running algorithm:", algorithm.get_name())
 
-        if not os.path.exists(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots"):
-            os.makedirs(ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
+        if not os.path.exists(ROOTPATH + "Results/" + dataset_mode + "/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots"):
+            os.makedirs(ROOTPATH + "Results/" + dataset_mode + "/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
 
         needs_weight_matrix = False
         '''(
@@ -90,11 +106,13 @@ for dataset in datasets_to_use:
         features = features_from_matrix if needs_weight_matrix else features_from_glove
         matrix = weights_matrix if needs_weight_matrix else None
         assert not np.any(np.isnan(features))
-        # features = features[:1000]
 
         # Create training data
-        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
-        #x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
+        if dataset_mode != "equal":
+            x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
+        else:
+            x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
+        print(Counter(y_train))
         # y_test = to_categorical(np.asarray(y_test))
         # y_train = to_categorical(np.asarray(y_train))
         for counter in range(1, (amount + 1)):
@@ -117,11 +135,11 @@ for dataset in datasets_to_use:
             if avg_fscore > best_fscore:
                 print('New champion! {}'.format(avg_fscore))
                 best_fscore = avg_fscore
-                algorithm.plot_data(dataset.get_name(), counter)
+                algorithm.plot_data(dataset.get_name(), counter, dataset_mode)
 
             time_taken = time.time() - start_time
 
-            file_path = ROOTPATH + "Results/" + algorithm.get_name() + "/" + dataset.get_name() + "/"
+            file_path = ROOTPATH + "Results/" + dataset_mode + "/" + algorithm.get_name() + "/" + dataset.get_name() + "/"
             log_to_file(parameters, algorithm.fscore, file_path + "resultsfile.csv", time_taken, algorithm.guid)
             clear_session()
             reset_default_graph()
