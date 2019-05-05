@@ -49,8 +49,8 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.output_function = parameters['output_function']
         self.optimizer = parameters['optimizer']
 
-    def plot_data(self, dataset_name, counter):
-        file_path = ROOTPATH + "Results/" + self.get_name() + "/" + dataset_name + "/"
+    def plot_data(self, dataset_name, counter, dataset_mode):
+        file_path = ROOTPATH + "Results/" + dataset_mode + "/" +  self.get_name() + "/" + dataset_name + "/"
         self.plot_graphs(dataset_name, counter, file_path)
         self.plot_matrix(counter, file_path)
 
