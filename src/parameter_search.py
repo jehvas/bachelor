@@ -127,7 +127,7 @@ for dataset in datasets_to_use:
 
             start_time = time.time()
             # try:
-            algorithm.run_train(dataset, (x_train, y_train), (x_test, y_test), parameters, embedding=matrix)
+            algorithm.run_train(dataset, (x_train, y_train), (x_test, y_test), parameters)
 
             # except Exception as e:
             #    print("Caught exception: " + str(e))
