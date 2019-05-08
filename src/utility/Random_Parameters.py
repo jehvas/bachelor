@@ -30,7 +30,8 @@ def get_random_params(algorithm, input_dim, output_dim):
             'input_dim': input_dim,
         }
         if algorithm == "MLP_Tensorflow":
-            params["hidden_layers"] = [("LeakyReLU", random.randint(10, 300), pick_random_activation_function()),
+            params["hidden_layers"] = [("Dense", input_dim, ""),
+                                       ("LeakyReLU", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "RNN_Tensorflow":
@@ -38,6 +39,7 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("RNN", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
+                                       ("Dense", input_dim, ""),
                                        ("LeakyReLU", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
@@ -46,6 +48,7 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
+                                       ("Dense", input_dim, ""),
                                        ("LeakyReLU", random.randint(10, 300) / 10, pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
