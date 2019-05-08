@@ -30,7 +30,7 @@ def get_random_params(algorithm, input_dim, output_dim):
             'input_dim': input_dim,
         }
         if algorithm == "MLP_Tensorflow":
-            params["hidden_layers"] = [("Dense", input_dim, "linear"),
+            params["hidden_layers"] = [("Dense", random.randint(10, 300), "linear"),
                                        ("LeakyReLU", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
