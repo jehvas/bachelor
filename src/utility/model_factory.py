@@ -1,6 +1,7 @@
 from tensorflow.python import set_random_seed
-from tensorflow.python.keras.layers import LSTM, Dense, Bidirectional, RNN, SimpleRNNCell, CuDNNLSTM, Dropout
+from tensorflow.python.keras.layers import LSTM, Dense, Bidirectional, RNN, SimpleRNNCell, CuDNNLSTM, Dropout, LeakyReLU
 import tensorflow as tf
+
 
 def make_hidden_layers(middle_layers, input_shape):
     layers = []
@@ -11,11 +12,17 @@ def make_hidden_layers(middle_layers, input_shape):
                 layers.append(Dense(size, activation=activation_func, input_shape=input_shape))
             else:
                 layers.append(Dense(size, activation=activation_func))
+        elif layer_type == 'LeakyReLU':
+            if idx == 0:
+                layers.append(LeakyReLU(size, input_shape=input_shape))
+            else:
+                layers.append(LeakyReLU(size))
         elif layer_type == 'Dropout':
             layers.append(Dropout(size))
         elif layer_type == 'RNN':
             if idx == 0:
-                layers.append(RNN(SimpleRNNCell(size, activation=activation_func), input_shape=input_shape, return_sequences=True))
+                layers.append(RNN(SimpleRNNCell(size, activation=activation_func), input_shape=input_shape,
+                                  return_sequences=True))
             else:
                 layers.append(RNN(SimpleRNNCell(size, activation=activation_func)))
         elif layer_type == 'Bi_LSTM':
@@ -28,7 +35,8 @@ def make_hidden_layers(middle_layers, input_shape):
             else:
                 print("Please install GPU version of TF")
                 if idx == 0:
-                    layers.append(Bidirectional(LSTM(size, activation=activation_func, input_shape=input_shape, return_sequences=True)))
+                    layers.append(Bidirectional(
+                        LSTM(size, activation=activation_func, input_shape=input_shape, return_sequences=True)))
                 else:
                     layers.append(Bidirectional(LSTM(size, activation=activation_func)))
     return layers
