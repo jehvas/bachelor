@@ -15,12 +15,12 @@ from tensorflow.python.training.rmsprop import RMSPropOptimizer
 
 def get_random_params(algorithm, input_dim, output_dim):
     if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi_LSTM_Tensorflow':
-        #layer_dim = 5 - int(math.log10(random.randint(10, 9000)))
+        # layer_dim = 5 - int(math.log10(random.randint(10, 9000)))
         hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()
         params = {
             'hidden_dim': hidden_dim,
-            #'layer_dim': layer_dim,
+            # 'layer_dim': layer_dim,
             'input_function': pick_random_activation_function(),
             # 'hidden_layers': generate_middle_layers(layer_dim, algorithm),
             'output_function': pick_random_activation_function(),
@@ -32,7 +32,7 @@ def get_random_params(algorithm, input_dim, output_dim):
         if algorithm == "MLP_Tensorflow":
             params["hidden_layers"] = [("LeakyReLU", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("Dense", output_dim, pick_random_activation_function())]
+                                       ("Dense", output_dim, 'softmax')]
         elif algorithm == "RNN_Tensorflow":
             params["hidden_layers"] = [("RNN", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
@@ -40,7 +40,7 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("LeakyReLU", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("Dense", output_dim, pick_random_activation_function())]
+                                       ("Dense", output_dim, 'softmax')]
         elif algorithm == "Bi_LSTM_Tensorflow":
             params["hidden_layers"] = [("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
@@ -48,7 +48,7 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("LeakyReLU", random.randint(10, 300) / 10, pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("Dense", output_dim, pick_random_activation_function())]
+                                       ("Dense", output_dim, 'softmax')]
         return params
 
     elif algorithm == 'SVM':
@@ -60,7 +60,7 @@ def get_random_params(algorithm, input_dim, output_dim):
     elif algorithm == 'Perceptron':
         return {
             'class_weights': random.choice(["balanced"]),
-            'penalty': random.choice([None, "l2", "l1", "elasticnet"])
+            'penalty': random.choice(["elasticnet", None, "l2", "l1"])
         }
 
 
