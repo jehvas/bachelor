@@ -30,8 +30,8 @@ def get_random_params(algorithm, input_dim, output_dim):
             'input_dim': input_dim,
         }
         if algorithm == "MLP_Tensorflow":
-            params["hidden_layers"] = [("Dense", random.randint(10, 300), "linear"),
-                                       ("LeakyReLU", random.randint(10, 300), pick_random_activation_function()),
+            params["hidden_layers"] = [("Dense", random.randint(10, 3500), "linear"),
+                                       ("LeakyReLU", "", ""),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "RNN_Tensorflow":
@@ -40,7 +40,7 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("RNN", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", input_dim, "linear"),
-                                       ("LeakyReLU", random.randint(10, 300), pick_random_activation_function()),
+                                       ("LeakyReLU", "", ""),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "Bi_LSTM_Tensorflow":
@@ -49,7 +49,7 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", input_dim, "linear"),
-                                       ("LeakyReLU", random.randint(10, 300) / 10, pick_random_activation_function()),
+                                       ("LeakyReLU", "", ""),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         return params
@@ -69,14 +69,14 @@ def get_random_params(algorithm, input_dim, output_dim):
 
 def pick_random_activation_function():
     possible_activations = [
-        "relu",
-        "softmax",
+        #"relu",
+        #"softmax",
         # "sigmoid",
         # "elu",
         # "selu",
         # "softplus",
         # "softsign",
-        # "tanh"
+        "tanh"
     ]
     return random.choice(possible_activations)
 

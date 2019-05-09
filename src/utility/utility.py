@@ -60,7 +60,7 @@ def log_to_file(parameters, fscore, file_path, time_taken, guid):
                 f.write(value.lr._shared_name + "\t ")
             elif type(value) is list:
                 if type(value[0]) is tuple:
-                    f.write(";".join("(%s;%f,%s)" % tup for tup in value) + "\t ")
+                    f.write(";".join([str(tup) for tup in value]) + "\t ")
                 else:
                     f.write(';'.join([str(v) for v in value]) + "\t ")
             else:

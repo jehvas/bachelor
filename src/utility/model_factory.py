@@ -13,10 +13,7 @@ def make_hidden_layers(middle_layers, input_shape):
             else:
                 layers.append(Dense(size, activation=activation_func))
         elif layer_type == 'LeakyReLU':
-            if idx == 0:
-                layers.append(LeakyReLU(size, input_shape=input_shape))
-            else:
-                layers.append(LeakyReLU(size))
+            layers.append(LeakyReLU())
         elif layer_type == 'Dropout':
             layers.append(Dropout(size))
         elif layer_type == 'RNN':
