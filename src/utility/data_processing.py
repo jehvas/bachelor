@@ -127,7 +127,7 @@ def process_bar_data(row_idx, dataset_name, algo):
         print(row[8])
         if m is not None:
             continue
-        m = re.search('Dense(;\d+\.\d+,|., \d+, \')(\w+)', key)  # first dropout layer
+        m = re.search('RNN(;\d+\.\d+,|., \d+, \')(\w+)', key)  # first dropout layer
         if m is None:
             print(m)
             print(key)
@@ -177,7 +177,7 @@ def process_bar_data(row_idx, dataset_name, algo):
 
 
 def run_bars():
-    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in ['RNN_Tensorflow']:  # 'Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
         # print(algo)
         datas = ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']
 
@@ -201,11 +201,10 @@ def run_bars():
 
         # print(bar_data)
         bar_data.sort()
-        plot_bar_chart(bar_data, datas, algo + ' hidden layer activation function',
-                       'Dataset', 'F-Score')
+        plot_bar_chart(bar_data, datas, algo + ' activation function', 'Dataset', 'F-Score')
 
 
-# run_bars()
+run_bars()
 
 def process_line_data(row_idx, dataset_name, algo, ax):
     file_name = 'C:\\Users\\Jens\\Dropbox\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
@@ -433,10 +432,10 @@ def get_max_fscores():
 
 
 def plot_dropout():
-    for algo in ['Bi_LSTM_Tensorflow']:#, 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in ['Bi_LSTM_Tensorflow']:  # , 'MLP_Tensorflow', 'RNN_Tensorflow']:
         # print(algo)
         fig, ax = plt.subplots()
-        for dataset_name in ['EnronFinancial']:#, 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+        for dataset_name in ['EnronFinancial']:  # , 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
             file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
             print(file_name)
             file_data, file_headers = parse_file(file_name)
@@ -446,7 +445,9 @@ def plot_dropout():
             all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
             print(max(all_f_scores))
             all_hidden, xlabel = get_row_data(file_data, file_headers, 8, use_relu)
-            first_dropout = [float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[0][1]) + float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[1][1]) +float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[2][1]) for x in all_hidden]
+            first_dropout = [float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[0][1]) + float(
+                re.findall('Dropout(;|\', )(\d+\.\d+)', x)[1][1]) + float(
+                re.findall('Dropout(;|\', )(\d+\.\d+)', x)[2][1]) for x in all_hidden]
             all_f_scores, first_dropout = sort_data(all_f_scores, first_dropout)
             all_f_scores = all_f_scores
             first_dropout = first_dropout
@@ -470,4 +471,4 @@ def plot_dropout():
         fig.savefig(title.replace('/', ''))
 
 
-plot_dropout()
+# plot_dropout()
