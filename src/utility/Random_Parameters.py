@@ -69,8 +69,8 @@ def get_random_params(algorithm, input_dim, output_dim):
 
 def pick_random_activation_function():
     possible_activations = [
-        #"relu",
-        #"softmax",
+        "relu",
+        "softmax",
         # "sigmoid",
         # "elu",
         # "selu",
@@ -103,29 +103,3 @@ def pick_random_class_weights(num_labels):
     for i in classes:
         class_weight_dic[i] = random.randint(1, 100)
     return class_weight_dic
-
-
-def generate_middle_layers(num_layers, algorithm):
-    """
-    Generate layers that are randomly filled with dropout layers.
-    Returns: List of tuple (layer_type, parameter)
-    Parameter is ether an activation function for the hidden layer, or a dropout percentage for the dropout layer
-    """
-    layers = []
-    # Special networks must have their corresponding specific layer.
-    if algorithm == "RNN_Tensorflow":
-        layers.append(('rnn', ""))
-    elif algorithm == "Bi_LSTM_Tensorflow":
-        layers.append(("bi_lstm", ""))
-
-    for i in range(num_layers - len(layers)):
-        dropout_chance = int(random.randint(1, 2) / 2) * random.randint(1, 80) / 100  # 50% chance to be 0
-        if dropout_chance > 0:
-            layers.append(('dropout', dropout_chance))
-        else:
-            layers.append(('hidden', pick_random_activation_function()))
-    random.shuffle(layers)
-    dropout_chance = int(random.randint(1, 2) / 2) * random.randint(1, 80) / 100  # 50% chance to be 0
-    if dropout_chance > 0:
-        layers.append(('dropout', dropout_chance))
-    return layers
