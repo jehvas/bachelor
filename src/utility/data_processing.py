@@ -201,7 +201,7 @@ def run_bars():
 
         # print(bar_data)
         bar_data.sort()
-        plot_bar_chart(bar_data, datas, algo + ' Optimizer',
+        plot_bar_chart(bar_data, datas, algo + ' hidden layer activation function',
                        'Dataset', 'F-Score')
 
 
@@ -431,4 +431,43 @@ def get_max_fscores():
             all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
             print("{} {:.3f}".format(dataset_name, max(all_f_scores)))
 
-run_bars()
+
+def plot_dropout():
+    for algo in ['Bi_LSTM_Tensorflow']:#, 'MLP_Tensorflow', 'RNN_Tensorflow']:
+        # print(algo)
+        fig, ax = plt.subplots()
+        for dataset_name in ['EnronFinancial']:#, 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+            file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+            print(file_name)
+            file_data, file_headers = parse_file(file_name)
+            use_relu = False
+
+            all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, use_relu)
+            all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
+            print(max(all_f_scores))
+            all_hidden, xlabel = get_row_data(file_data, file_headers, 8, use_relu)
+            first_dropout = [float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[0][1]) + float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[1][1]) +float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[2][1]) for x in all_hidden]
+            all_f_scores, first_dropout = sort_data(all_f_scores, first_dropout)
+            all_f_scores = all_f_scores
+            first_dropout = first_dropout
+            drop_dict = {}
+            for i, x in enumerate(first_dropout):
+                dropout_list = drop_dict.get(x, [])
+                dropout_list.append(all_f_scores[i])
+                drop_dict[x] = dropout_list
+            xdata = list(drop_dict.keys())
+            xdata.sort()
+            ydata = [statistics.mean(drop_dict[val]) for val in xdata]
+            plot_line_data(ax, xdata, ydata, dataset_name)
+
+        ax.set_xlabel('Dropout')
+        ax.set_ylabel(ylabel)
+        title = algo + ' Dropout first layer'
+        ax.set_title(title)
+        ax.legend()
+        fig.tight_layout()
+        plt.show()
+        fig.savefig(title.replace('/', ''))
+
+
+plot_dropout()
