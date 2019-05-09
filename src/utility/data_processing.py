@@ -55,10 +55,11 @@ def plot_bar_chart(bars, groups, title, xlabel, ylabel):
     opacity = 0.4
     error_config = {'ecolor': '0.3'}
     c = 0
+
     for label, data in bars:
         _data, std_dev = data
         ax.bar(index + bar_width * c, _data, bar_width,
-               alpha=0.5,
+               alpha=0.5, color='blue' if label == 'LeakyReLU' else None,
                yerr=std_dev, error_kw=error_config,
                label=label)
         c += 1
@@ -84,7 +85,7 @@ def parse_file(file_name):
         for row in csv_reader:
             if line_count == 0:
                 headers = row
-                print(f'Column names are {", ".join(row)}')
+                # print(f'Column names are {", ".join(row)}')
                 line_count += 1
             else:
                 data.append(row)
@@ -123,10 +124,14 @@ def process_bar_data(row_idx, dataset_name, algo):
         key = row[row_idx]
         # key = str(key.count("Dropout") - key.count("Dropout;0.0"))
         m = re.search('relu\)$', row[8])  # No relu output
+        print(row[8])
         if m is not None:
             continue
-        m = re.search('Dense;\d+\.\d+,(\w+)', key)  # first dropout layer
-        key = m.group(1)
+        m = re.search('Dense(;\d+\.\d+,|., \d+, \')(\w+)', key)  # first dropout layer
+        if m is None:
+            print(m)
+            print(key)
+        key = m.group(2)
         if key == 'linear':
             key = 'LeakyReLU'
         # m = re.search('^.+?Dropout;([\d\.]+)', key)  # first dropout layer
@@ -195,6 +200,7 @@ def run_bars():
             bar_data.append((key, f_score_lists[key]))
 
         # print(bar_data)
+        bar_data.sort()
         plot_bar_chart(bar_data, datas, algo + ' Optimizer',
                        'Dataset', 'F-Score')
 
@@ -372,7 +378,8 @@ def plot_layer_correlation():
         plt.show()
         fig.savefig(title.replace('/', ''))
 
-#plot_layer_correlation()
+
+# plot_layer_correlation()
 
 '''
 for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
@@ -403,7 +410,6 @@ def plot_optimizers():
 
             all_optimizers, xlabel = get_row_data(file_data, file_headers, 4, use_relu)
 
-
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
         title = algo + ' Optimizers'
@@ -412,5 +418,17 @@ def plot_optimizers():
         fig.tight_layout()
         plt.show()
         fig.savefig(title.replace('/', ''))
+
+
+def get_max_fscores():
+    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+        print(algo)
+        fig, ax = plt.subplots()
+        for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+            file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+            file_data, file_headers = parse_file(file_name)
+            all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, True)
+            all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
+            print("{} {:.3f}".format(dataset_name, max(all_f_scores)))
 
 run_bars()

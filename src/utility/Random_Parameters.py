@@ -36,8 +36,10 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "RNN_Tensorflow":
             params["hidden_layers"] = [("RNN", random.randint(10, 300), pick_random_activation_function()),
+                                       ("LeakyReLU", "", ""),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("RNN", random.randint(10, 300), pick_random_activation_function()),
+                                       ("LeakyReLU", "", ""),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", input_dim, "linear"),
                                        ("LeakyReLU", "", ""),
@@ -45,8 +47,10 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "Bi_LSTM_Tensorflow":
             params["hidden_layers"] = [("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
+                                       ("LeakyReLU", "", ""),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
+                                       ("LeakyReLU", "", ""),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", input_dim, "linear"),
                                        ("LeakyReLU", "", ""),
