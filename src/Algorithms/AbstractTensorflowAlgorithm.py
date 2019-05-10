@@ -78,6 +78,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.load_parameters(parameters)
         self.dataset = dataset
         self.y_test = y_test
+        '''
         if self.get_name() != "MLP_Tensorflow":
             x_train = np.expand_dims(x_train, axis=1)
             y_train = np.expand_dims(y_train, axis=1)
@@ -88,7 +89,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
             y_train = np.array(y_train)
             x_test = np.array(x_test)
             y_test = np.array(y_test)
-
+        '''
         # Generate GUID for each run. If parameter search is run multiple time there is a chance it will risk overriding
         # Plots. Therefor a GUID will also be associated with each run to prevent this.
         self.guid = str(uuid.uuid4())
@@ -106,8 +107,9 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         self.history = self.model.fit(x_train,
                                       y_train,
                                       epochs=50,
-                                      callbacks=[es_loss],
+                                      batch_size=32,
                                       validation_data=(x_test, y_test),
+                                      callbacks=[es_loss],
                                       verbose=1)
 
         self.predictions = self.model.predict(x_test)

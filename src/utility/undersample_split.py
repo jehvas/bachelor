@@ -43,4 +43,4 @@ def resize_under_sample(emails, labels, size=2000):
             class_counts[label] += 1
             re_labels.append(label)
             re_emails.append(emails[i])
-    return re_emails, re_labels
+    return np.array(re_emails), np.array(re_labels)

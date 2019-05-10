@@ -2,6 +2,7 @@ import random
 
 import numpy
 import numpy as np
+import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.ticker import MaxNLocator
 from collections import namedtuple
@@ -15,6 +16,12 @@ import matplotlib.pyplot as plt
 import sys
 
 from sklearn.preprocessing import MinMaxScaler
+
+
+def normalize(data):
+    x_min = min(data)
+    x_max = max(data)
+    return [(x - x_min) / (x_max - x_min) for x in data]
 
 
 def plot_line_graph(ax, data, title, xlabel, ylabel):
@@ -203,8 +210,6 @@ def run_bars():
         bar_data.sort()
         plot_bar_chart(bar_data, datas, algo + ' activation function', 'Dataset', 'F-Score')
 
-
-run_bars()
 
 def process_line_data(row_idx, dataset_name, algo, ax):
     file_name = 'C:\\Users\\Jens\\Dropbox\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
@@ -471,4 +476,80 @@ def plot_dropout():
         fig.savefig(title.replace('/', ''))
 
 
+def plot_hidden_dims():
+    for algo in ['MLP_Tensorflow']:#''Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+        fig, ax = plt.subplots()
+        for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+            file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+            print(file_name)
+            file_data, file_headers = parse_file(file_name)
+            use_relu = False
+
+            all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, use_relu)
+            all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
+            print(max(all_f_scores))
+            all_hidden, xlabel = get_row_data(file_data, file_headers, 8, use_relu)
+            all_layers = [re.findall('(RNN|Bi_LSTM|Dense)(;|\', )(\d+)', x) for x in all_hidden]
+            all_layers_num = []
+            for ii, layers in enumerate(all_layers):
+                layer_list = []
+                if len(layers) < 2:
+                    print(all_hidden[ii], all_f_scores[ii])
+                for i in range(len(layers) - 1):  # Ignore output layer
+                    layer = layers[i]
+                    layer_list.append(float(layer[2]))
+                all_layers_num.append(sum(layer_list)/float(layers[-1][2]))
+            # all_layers_num, ydata = sort_data(all_layers_num, all_f_scores)
+            layer_sum = [x for x in all_layers_num]
+            xdata, ydata = sort_data(layer_sum, all_f_scores)
+            ydata = normalize(ydata)
+            plot_trend_line(xdata, ydata, dataset_name)
+            #plt.axvline(x=xdata[ydata.index(max(ydata))], c=)
+            # plt.axhline(y=0.98)
+            # xdata = [x[1] for x in all_layers_num]
+            # xdata, ydata = sort_data(first_layer, all_f_scores)
+            # plot_trend_line(xdata, ydata, 'Layer 2')
+
+            # xdata = [x[2] for x in all_layers_num]
+            # xdata, ydata = sort_data(first_layer, all_f_scores)
+            # plot_trend_line(xdata, ydata, 'Layer 3 (Dense)')
+            '''drop_dict = {}
+            for i, x in enumerate(first_dropout):
+                dropout_list = drop_dict.get(x, [])
+                dropout_list.append(all_f_scores[i])
+                drop_dict[x] = dropout_list
+            xdata = list(drop_dict.keys())
+            xdata.sort()
+            ydata = [statistics.mean(drop_dict[val]) for val in xdata]
+            '''
+            # plot_line_data(ax, xdata, ydata, dataset_name)
+            # plot_trend_line(xdata, ydata, dataset_name)
+        plt.grid(True)
+        ax.set_xticks([x for x in range(0, 160, 10)])
+        ax.set_xlabel('Layer node count / Number of classes')
+        ax.set_ylabel('Normalized Avg F-Score')
+        title = algo + ' F-Score over nodes in hidden layer\nNormalized'
+        ax.set_title(title)
+        ax.legend()
+        fig.tight_layout()
+        plt.show()
+        fig.savefig(title.replace('/', '').replace('\n', ''))
+
+
+plot_hidden_dims()
 # plot_dropout()
+'''
+data = pd.read_csv('C:\\Users\\Jens\\Documents\\Results\\2000\\MLP_Tensorflow\\Spamassassin\\resultsfile.csv', index_col=0, delimiter='\t')
+corr = data.corr()
+fig = plt.figure()
+ax = fig.add_subplot(111)
+cax = ax.matshow(corr, cmap='coolwarm', vmin=-1, vmax=1)
+fig.colorbar(cax)
+ticks = np.arange(0,len(data.columns),1)
+ax.set_xticks(ticks)
+plt.xticks(rotation=90)
+ax.set_yticks(ticks)
+ax.set_xticklabels(data.columns)
+ax.set_yticklabels(data.columns)
+plt.show()
+'''

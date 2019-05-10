@@ -8,6 +8,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from tensorflow.python import set_random_seed, reset_default_graph, ops
 from tensorflow.python.keras.backend import clear_session
+from tensorflow.python.keras.optimizers import Adam
 
 from Algorithms import SVM, Perceptron
 from Algorithms.Bi_LSTM_tensorflow import Bi_LSTM_Tensorflow
@@ -52,7 +53,9 @@ algorithms_to_use = [MLP_Tensorflow()]
 amount = 10
 dataset_mode = 0
 # Check arguments
-if len(sys.argv) != 5 or not (sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict and sys.argv[4].lower() in dataset_modes):
+if len(sys.argv) != 5 or not (
+        sys.argv[1].lower() in algorithm_dict and sys.argv[2].lower() in dataset_dict and sys.argv[
+    4].lower() in dataset_modes):
     print("")
     print("There was an error in the program arguments")
     print("There must be 3 arguments: an algorithm, a dataset and a count for how many times it should run")
@@ -84,12 +87,14 @@ for dataset in datasets_to_use:
 
     # weights_matrix, features_from_matrix = glove.get_weights_matrix(emails, dataset, dataset_mode)
     features_from_glove = glove.get_features(emails, dataset, dataset_mode)
-
+    print(np.max(features_from_glove))
     for algorithm in algorithms_to_use:
         print("Running algorithm:", algorithm.get_name())
 
-        if not os.path.exists(ROOTPATH + "Results/" + dataset_mode + "/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots"):
-            os.makedirs(ROOTPATH + "Results/" + dataset_mode + "/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
+        if not os.path.exists(
+                ROOTPATH + "Results/" + dataset_mode + "/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots"):
+            os.makedirs(
+                ROOTPATH + "Results/" + dataset_mode + "/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
 
         needs_weight_matrix = False
         '''(
@@ -110,10 +115,10 @@ for dataset in datasets_to_use:
         assert not np.any(np.isnan(features))
 
         # Create training data
-        if dataset_mode != "equal":
-            x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
-        else:
-            x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
+        #if dataset_mode != "equal":
+        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
+        #else:
+            # x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
         print(Counter(y_train))
         # y_test = to_categorical(np.asarray(y_test))
         # y_train = to_categorical(np.asarray(y_train))
@@ -122,7 +127,14 @@ for dataset in datasets_to_use:
             set_random_seed(1)
             print("#### STARTING RUN NUMBER {} #####".format(counter))
 
-            parameters = get_random_params(algorithm.get_name(), features.shape[1], output_dim)
+            parameters = {'hidden_dim': 198, 'input_function': 'relu', 'output_function': 'softmax',
+                          'optimizer': Adam(lr=0.0305, decay=1e-6), 'learning_rate': '0.0305', 'output_dim': 5,
+                          'input_dim': 300,
+                          'hidden_layers': [('Bi_LSTM', 135, 'linear'), ('LeakyReLU', '', ''), ('Dropout', 0.5, ''),
+                                            ('Bi_LSTM', 289, 'linear'), ('LeakyReLU', '', ''), ('Dropout', 0.5, ''),
+                                            ('Dense', 300, 'linear'), ('LeakyReLU', '', ''), ('Dropout', 0.4, ''),
+                                            ('Dense', 5, 'softmax')]}
+            # get_random_params(algorithm.get_name(), features.shape[1], output_dim)
             print(str(parameters))
 
             start_time = time.time()

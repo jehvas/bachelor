@@ -30,6 +30,10 @@ class GloVe:
             return
         print('Features / Weights matrix not found.')
         print("Loading Glove word embeddings")
+        if file_exists('glove_model'):
+            self.model = load('glove_model')
+            return
+
         num_lines = 0
         line_counter = 0
         with open(GLOVE_DIR + self.glove_file, 'r+', encoding="utf8") as f:
@@ -48,6 +52,7 @@ class GloVe:
                 embedding = np.asarray(split_line[1:], dtype='float32')
                 self.model[word] = embedding
             print("Done.", len(self.model), " tokens loaded!")
+            save(self.model, 'glove_model')
 
     def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset, dataset_mode):
         wm_file_name = dataset_mode + "/" + "{}_weights_matrix_{}".format(dataset.get_name(), self.dimensionCount)
@@ -77,8 +82,8 @@ class GloVe:
         if file_exists(feature_file_name):
             return load(feature_file_name)
         self.load_glove_model()
-        sum_vectors_array = self.sum_vectors(emails)
-        features = preprocessing.scale(sum_vectors_array)
+        sum_vectors_array = self.seq_vectors(emails)
+        features = sum_vectors_array
         save(features, feature_file_name)
         return features
 
@@ -97,8 +102,7 @@ class GloVe:
 
     def sum_vectors(self, words_in_emails):
         all_vector_sum = []
-        for i in range(len(words_in_emails)):
-            words = words_in_emails[i]
+        for words in words_in_emails:
             vector_sum = np.zeros(self.dimensionCount)
             for word in words:
                 if word in self.model:
@@ -110,3 +114,18 @@ class GloVe:
         MinMaxScaler(copy=True, feature_range=(0, 1))
         normed_vectors = scaler.transform(all_vector_sum)
         return normed_vectors
+
+    def seq_vectors(self, all_emails):
+        all_vectors = np.zeros([len(all_emails), 32, self.dimensionCount])
+        for i, email_words in enumerate(all_emails):
+            for i2, word in enumerate(email_words):
+                if i2 >= 32:
+                    break
+                if word in self.model:
+                    all_vectors[i][i2] = np.array(self.model[word])
+                scaler = MinMaxScaler()
+                scaler.fit(all_vectors[i])
+                MinMaxScaler(feature_range=(0, 1))
+                all_vectors[i] = scaler.transform(all_vectors[i])
+        return all_vectors
+

@@ -10,9 +10,10 @@ from DatasetsConsumers.Trustpilot import Trustpilot
 
 datasets = [Newsgroups(), Spamassassin(), EnronEvidence(), EnronFinancial(), Trustpilot()]
 
-for dataset in datasets:
-    emails, labels = dataset.load(True)
-    count = {0:90, 1:10}
+for dataset in ['']:
+    # emails, labels = dataset.load(True)
+    count = {0: 100, 1: 100, 2: 100, 3: 100, 4: 100, 5: 100, 6: 100, 7: 100, 8: 100, 9: 100,
+             10: 100, 11: 100, 12: 100, 13: 100, 14: 100, 15: 100, 16: 100, 17: 100, 18: 100, 19: 100}
     correct_preds = max(count.values())
     incorrect_preds = sum(count.values()) - correct_preds
     num = (correct_preds) / (sum(count.values()))
@@ -21,7 +22,7 @@ for dataset in datasets:
     predictions = [0] * sum(count.values())
     precision, recall, _fscore, support = precision_recall_fscore_support(y_test, predictions)
 
-    print(dataset.get_name())
+    # print(dataset.get_name())
     print('Class count:', count.values())
     print('Accuracy:', num)
     print('Average F-Score:', sum(_fscore)/len(_fscore))
