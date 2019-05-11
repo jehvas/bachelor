@@ -115,10 +115,11 @@ for dataset in datasets_to_use:
         assert not np.any(np.isnan(features))
 
         # Create training data
-        #if dataset_mode != "equal":
-        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
-        #else:
-            # x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
+        # if dataset_mode != "equal":
+        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1,
+                                                            stratify=labels)
+        # else:
+        # x_train, x_test, y_train, y_test = under_sample_split(features, labels, test_size=0.2, random_state=1)
         print(Counter(y_train))
         # y_test = to_categorical(np.asarray(y_test))
         # y_train = to_categorical(np.asarray(y_train))
@@ -127,13 +128,7 @@ for dataset in datasets_to_use:
             set_random_seed(1)
             print("#### STARTING RUN NUMBER {} #####".format(counter))
 
-            parameters = {'hidden_dim': 198, 'input_function': 'relu', 'output_function': 'softmax',
-                          'optimizer': Adam(lr=0.0305, decay=1e-6), 'learning_rate': '0.0305', 'output_dim': 5,
-                          'input_dim': 300,
-                          'hidden_layers': [('Bi_LSTM', 135, 'linear'), ('LeakyReLU', '', ''), ('Dropout', 0.5, ''),
-                                            ('Bi_LSTM', 289, 'linear'), ('LeakyReLU', '', ''), ('Dropout', 0.5, ''),
-                                            ('Dense', 300, 'linear'), ('LeakyReLU', '', ''), ('Dropout', 0.4, ''),
-                                            ('Dense', 5, 'softmax')]}
+            parameters = eval(sys.argv[5])
             # get_random_params(algorithm.get_name(), features.shape[1], output_dim)
             print(str(parameters))
 
