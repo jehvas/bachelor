@@ -103,8 +103,8 @@ def parse_file(file_name):
 def get_row_data(data, headers, row_idx, includeRelu=False):
     data_list = []
     for row in data:
-        if not includeRelu and re.search('relu\)$', row[8]) is not None:
-            continue
+        # if not includeRelu and re.search('relu\)$', row[8]) is not None:
+        #    continue
         data_list.append(row[row_idx])
     return data_list, headers[row_idx]
 
@@ -477,7 +477,7 @@ def plot_dropout():
 
 
 def plot_hidden_dims():
-    for algo in ['MLP_Tensorflow']:#''Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in ['MLP_Tensorflow']:  # ''Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
         fig, ax = plt.subplots()
         for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
             file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
@@ -498,13 +498,13 @@ def plot_hidden_dims():
                 for i in range(len(layers) - 1):  # Ignore output layer
                     layer = layers[i]
                     layer_list.append(float(layer[2]))
-                all_layers_num.append(sum(layer_list)/float(layers[-1][2]))
+                all_layers_num.append(sum(layer_list) / float(layers[-1][2]))
             # all_layers_num, ydata = sort_data(all_layers_num, all_f_scores)
             layer_sum = [x for x in all_layers_num]
             xdata, ydata = sort_data(layer_sum, all_f_scores)
             ydata = normalize(ydata)
             plot_trend_line(xdata, ydata, dataset_name)
-            #plt.axvline(x=xdata[ydata.index(max(ydata))], c=)
+            # plt.axvline(x=xdata[ydata.index(max(ydata))], c=)
             # plt.axhline(y=0.98)
             # xdata = [x[1] for x in all_layers_num]
             # xdata, ydata = sort_data(first_layer, all_f_scores)
@@ -536,7 +536,29 @@ def plot_hidden_dims():
         fig.savefig(title.replace('/', '').replace('\n', ''))
 
 
-plot_hidden_dims()
+def get_best_parameters():
+    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+        print(algo)
+        for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+            file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+            # print(file_name)
+            file_data, file_headers = parse_file(file_name)
+            all_fscores, header = get_row_data(file_data, file_headers, 0)
+            all_fscores = [float(x.replace(',', '.')) for x in all_fscores]
+
+            # all_epochs, header = get_row_data(file_data, file_headers, 9)
+            guids, header = get_row_data(file_data, file_headers, 12)
+            # all_epochs = [int(x) for x in all_epochs]
+
+            # print(all_epochs[-1], all_fscores[-1])
+            # all_fscores = [float(x.replace(',','.')) for x in all_fscores]
+            # print("{}\t{}\t{}".format(len(file_data), dataset_name, max(all_fscores)))
+            idx = all_fscores.index(max(all_fscores))
+            print(dataset_name, all_fscores[idx])
+            print(file_data[idx])
+
+
+get_best_parameters()
 # plot_dropout()
 '''
 data = pd.read_csv('C:\\Users\\Jens\\Documents\\Results\\2000\\MLP_Tensorflow\\Spamassassin\\resultsfile.csv', index_col=0, delimiter='\t')
