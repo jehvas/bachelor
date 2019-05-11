@@ -128,7 +128,10 @@ for dataset in datasets_to_use:
             set_random_seed(1)
             print("#### STARTING RUN NUMBER {} #####".format(counter))
 
-            parameters = eval(sys.argv[5])
+            parameters = {'hidden_dim': 198, 'input_function': 'relu', 'output_function': 'softmax',
+                          'optimizer': Adam(lr=0.0311, decay=1e-6), 'learning_rate': '0.0311', 'output_dim': 5,
+                          'input_dim': 300, 'hidden_layers': [('Dense', 265.000000, 'relu'), ('Dropout', 0.300000, ''),
+                                                              ('Dense', 2.000000, 'softmax')]}
             # get_random_params(algorithm.get_name(), features.shape[1], output_dim)
             print(str(parameters))
 
