@@ -104,7 +104,8 @@ def get_row_data(data, headers, row_idx, includeRelu=False):
 
 def process_bar_data(row_idx, dataset_name, algo):
     # file_name = 'C:\\Users\\Jens\\Downloads\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
-    file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+    # file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+    file_name = 'C:\\Users\\Mads\\IdeaProjects\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
     # file_name = 'C:\\Users\\Jens\\IdeaProjects\\Bachelor\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
     # print('Reading ' + file_name)
     data, headers = parse_file(file_name)
@@ -116,9 +117,9 @@ def process_bar_data(row_idx, dataset_name, algo):
     groups = []
     data.sort()
     print("{} {} {}".format(len(data), dataset_name, algo))
-    top_10 = int(len(data) / 10)
+    top_10 = int(len(data) / 1)
     data = list(reversed(data))[:top_10]
-    print('lowest: {} {}'.format(data[top_10 - 1][0], dataset_name))
+    # print('lowest: {} {}'.format(data[top_10 - 1][0], dataset_name))
     all_fscores = []
     for row in data:
         key = row[row_idx]
@@ -127,7 +128,8 @@ def process_bar_data(row_idx, dataset_name, algo):
         print(row[8])
         if m is not None:
             continue
-        m = re.search('RNN(;\d+\.\d+,|., \d+, \')(\w+)', key)  # first dropout layer
+        m = re.search('\'?Dense\'?(;\d+\.\d+,|., \d+, \')(\w+)', key)  # first dropout layer
+        # m = re.search('\(\'?Dense\'? ?(;\d+\.\d+,|., \d+ ?, ?\')(\w+)', key)  # first dropout layer
         if m is None:
             print(m)
             print(key)
@@ -150,6 +152,8 @@ def process_bar_data(row_idx, dataset_name, algo):
         fscore_dict['softmax'] = [0]
     if (fscore_dict.get('LeakyReLU') is None):
         fscore_dict['LeakyReLU'] = [0]
+        # if (fscore_dict.get('tanh') is None):
+        #   fscore_dict['tanh'] = [0]
         '''
     if fscore_dict.get('0') is None:
         fscore_dict['0'] = [0]
@@ -170,14 +174,18 @@ def process_bar_data(row_idx, dataset_name, algo):
         # std = 0
         mean_fscore = statistics.mean(val_array)
         # print(mean_fscore, std)
-        re_list.append((key, mean_fscore, std))
+        re_list.append((key, mean_fscore, 0))
 
         # print('{} {:.3f}'.format(dataset_name, max(all_fscores)))
     return re_list, headers[row_idx]
 
 
 def run_bars():
-    for algo in ['RNN_Tensorflow']:  # 'Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in [
+        # 'RNN_Tensorflow'
+        # 'Bi_LSTM_Tensorflow',
+        'MLP_Tensorflow'
+    ]:
         # print(algo)
         datas = ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']
 
@@ -201,7 +209,8 @@ def run_bars():
 
         # print(bar_data)
         bar_data.sort()
-        plot_bar_chart(bar_data, datas, algo + ' activation function', 'Dataset', 'F-Score')
+        plot_bar_chart(bar_data, datas, algo + ' activation function in the Dense layer (100% of dataset)',
+                       'Dataset', 'F-Score')
 
 
 run_bars()
@@ -395,14 +404,19 @@ for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
 
 
 def plot_optimizers():
-    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in [
+        'Bi_LSTM_Tensorflow',
+        # 'MLP_Tensorflow',
+        # 'RNN_Tensorflow'
+    ]:
         # print(algo)
         fig, ax = plt.subplots()
         for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
-            file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+            # file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+            file_name = 'C:\\Users\\Mads\\IdeaProjects\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
             print(file_name)
             file_data, file_headers = parse_file(file_name)
-            use_relu = True
+            use_relu = False
 
             all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, use_relu)
             all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
@@ -432,11 +446,16 @@ def get_max_fscores():
 
 
 def plot_dropout():
-    for algo in ['Bi_LSTM_Tensorflow']:  # , 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in [
+        # 'Bi_LSTM_Tensorflow'
+        'MLP_Tensorflow',
+        # 'RNN_Tensorflow'
+    ]:
         # print(algo)
         fig, ax = plt.subplots()
-        for dataset_name in ['EnronFinancial']:  # , 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
-            file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+        for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+            # file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+            file_name = 'C:\\Users\\Mads\\IdeaProjects\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
             print(file_name)
             file_data, file_headers = parse_file(file_name)
             use_relu = False
@@ -445,9 +464,13 @@ def plot_dropout():
             all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
             print(max(all_f_scores))
             all_hidden, xlabel = get_row_data(file_data, file_headers, 8, use_relu)
-            first_dropout = [float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[0][1]) + float(
-                re.findall('Dropout(;|\', )(\d+\.\d+)', x)[1][1]) + float(
-                re.findall('Dropout(;|\', )(\d+\.\d+)', x)[2][1]) for x in all_hidden]
+            if algo == "MLP_Tensorflow":
+                first_dropout = [float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[0][1]) for x in all_hidden]
+            else:
+                first_dropout = [float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[0][1])
+                                 + float(
+                    re.findall('Dropout(;|\', )(\d+\.\d+)', x)[1][1]) + float(
+                    re.findall('Dropout(;|\', )(\d+\.\d+)', x)[2][1]) for x in all_hidden]
             all_f_scores, first_dropout = sort_data(all_f_scores, first_dropout)
             all_f_scores = all_f_scores
             first_dropout = first_dropout
@@ -459,11 +482,11 @@ def plot_dropout():
             xdata = list(drop_dict.keys())
             xdata.sort()
             ydata = [statistics.mean(drop_dict[val]) for val in xdata]
-            plot_line_data(ax, xdata, ydata, dataset_name)
+            plot_trend_line(xdata, ydata, dataset_name)
 
         ax.set_xlabel('Dropout')
-        ax.set_ylabel(ylabel)
-        title = algo + ' Dropout first layer'
+        ax.set_ylabel('fscore')
+        title = algo + ' Dropout sum layer'
         ax.set_title(title)
         ax.legend()
         fig.tight_layout()
@@ -471,4 +494,61 @@ def plot_dropout():
         fig.savefig(title.replace('/', ''))
 
 
-# plot_dropout()
+def plot_normalized_dropout():
+    for algo in [
+        # 'Bi_LSTM_Tensorflow',
+        'MLP_Tensorflow',
+        # 'RNN_Tensorflow'
+    ]:
+        # print(algo)
+        fig, ax = plt.subplots()
+        for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+            # file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+            file_name = 'C:\\Users\\Mads\\IdeaProjects\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
+            print(file_name)
+            file_data, file_headers = parse_file(file_name)
+            use_relu = False
+            file_data.sort()
+            top_10 = int(len(file_data) / 10)
+            file_data = list(reversed(file_data))[:top_10]
+            all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, use_relu)
+            all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
+
+            # all_f_scores = [(x-minv)/(maxv-minv) for x in all_f_scores]
+            # maxvnew = max(all_f_scores)
+            # minvnew = min(all_f_scores)
+            print(max(all_f_scores))
+            all_hidden, xlabel = get_row_data(file_data, file_headers, 8, use_relu)
+            if algo == "MLP_Tensorflow":
+                first_dropout = [float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[0][1]) for x in all_hidden]
+            else:
+                first_dropout = [float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[0][1])
+                                 + float(
+                    re.findall('Dropout(;|\', )(\d+\.\d+)', x)[1][1]) + float(
+                    re.findall('Dropout(;|\', )(\d+\.\d+)', x)[2][1]) for x in all_hidden]
+            all_f_scores, first_dropout = sort_data(all_f_scores, first_dropout)
+            all_f_scores = all_f_scores
+            first_dropout = first_dropout
+            drop_dict = {}
+            for i, x in enumerate(first_dropout):
+                dropout_list = drop_dict.get(x, [])
+                dropout_list.append(all_f_scores[i])
+                drop_dict[x] = dropout_list
+            xdata = list(drop_dict.keys())
+            xdata.sort()
+            ydata = [statistics.mean(drop_dict[val]) for val in xdata]
+            maxv = max(ydata)
+            minv = min(ydata)
+            ydata = [(x - minv) / (maxv - minv) for x in ydata]
+            plot_trend_line(xdata, ydata, dataset_name)
+
+        ax.set_xlabel('Summed dropout')
+        ax.set_ylabel('Normalized fscore')
+        title = algo + ' Dropout sum layer'
+        ax.set_title(title)
+        ax.legend()
+        fig.tight_layout()
+        plt.show()
+        fig.savefig(title.replace('/', ''))
+
+# plot_normalized_dropout()
