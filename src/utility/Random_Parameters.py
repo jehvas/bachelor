@@ -41,7 +41,7 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("RNN", random.randint(10, 300), "linear"),
                                        ("LeakyReLU", "", ""),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("Dense", input_dim, "linear"),
+                                       ("Dense", random.randint(10, 300), "linear"),
                                        ("LeakyReLU", "", ""),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
@@ -52,7 +52,7 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("Bi_LSTM", random.randint(10, 300), "linear"),
                                        ("LeakyReLU", "", ""),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("Dense", input_dim, "linear"),
+                                       ("Dense", random.randint(10, 300), "linear"),
                                        ("LeakyReLU", "", ""),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
