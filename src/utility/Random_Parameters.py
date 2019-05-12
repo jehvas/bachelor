@@ -46,15 +46,15 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("Dropout", 0.5, ""),
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "Bi_LSTM_Tensorflow":
-            params["hidden_layers"] = [("Bi_LSTM", 168, "relu"),
-                                       #("LeakyReLU", "", ""),
-                                       ("Dropout", 0.5, ""),
-                                       ("Bi_LSTM", 30, "softmax"),
+            params["hidden_layers"] = [("Bi_LSTM", 225, "relu"),
                                        #("LeakyReLU", "", ""),
                                        ("Dropout", 0.2, ""),
-                                       ("Dense", 300, "linear"),
-                                       ("LeakyReLU", "", ""),
+                                       ("Bi_LSTM", 171, "softmax"),
+                                       #("LeakyReLU", "", ""),
                                        ("Dropout", 0.5, ""),
+                                       ("Dense", 25, "linear"),
+                                       ("LeakyReLU", "", ""),
+                                       ("Dropout", 0.1, ""),
                                        ("Dense", output_dim, 'softmax')]
         return params
 
@@ -89,7 +89,7 @@ def pick_optimizer():
     random_lr = random.randint(1, 1000) / 10000
     possible_optimizers = [
         # AdagradOptimizer(learning_rate=random_lr),
-        SGD(lr=0.0261, decay=1e-6),
+        SGD(lr=0.047, decay=1e-6),
         # AdadeltaOptimizer(learning_rate=random_lr),
         #Adam(lr=0.0311, decay=1e-6),
         # FtrlOptimizer(learning_rate=random_lr),
