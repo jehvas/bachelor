@@ -1,6 +1,5 @@
 import os
 from typing import List
-
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 
@@ -30,7 +29,6 @@ class Spamassassin(AbstractDataset):
                 ec = ec - 1
                 f = open(email, encoding="latin-1")
                 text = f.read()
-                # text_without_html = re.sub(regex, "", text)
                 f.close()
 
                 words.append(self.process_single_mail(text))

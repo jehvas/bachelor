@@ -1,7 +1,6 @@
 import os
 
 from joblib import Parallel, delayed
-
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 
