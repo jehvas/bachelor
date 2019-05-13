@@ -1,11 +1,9 @@
 import abc
 import uuid
-from typing import List
 
 import numpy as np
 import tensorflow as tf
 from sklearn.metrics import precision_recall_fscore_support
-from tensorflow.python import set_random_seed
 from tensorflow.python.keras.callbacks import EarlyStopping
 
 from rootfile import ROOTPATH
