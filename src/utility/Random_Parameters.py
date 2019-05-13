@@ -24,7 +24,7 @@ def get_random_params(algorithm, input_dim, output_dim):
             'input_function': pick_random_activation_function(),
             # 'hidden_layers': generate_middle_layers(layer_dim, algorithm),
             'output_function': pick_random_activation_function(),
-            'optimizer': optimizer,
+            'optimizer': SGD(lr=0.0161, decay=1e-6),
             'learning_rate': lr,
             'output_dim': output_dim,
             'input_dim': input_dim,
@@ -35,15 +35,12 @@ def get_random_params(algorithm, input_dim, output_dim):
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "RNN_Tensorflow":
-            params["hidden_layers"] = [("RNN", random.randint(10, 300), "linear"),
-                                       ("LeakyReLU", "", ""),
-                                       ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("RNN", random.randint(10, 300), "linear"),
-                                       ("LeakyReLU", "", ""),
-                                       ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("Dense", random.randint(10, 300), "linear"),
-                                       ("LeakyReLU", "", ""),
-                                       ("Dropout", random.randint(0, 5) / 10, ""),
+            params["hidden_layers"] = [("RNN", 240, "relu"),
+                                       ("Dropout", 0.3, ""),
+                                       ("RNN", 217, "relu"),
+                                       ("Dropout", 0.3, ""),
+                                       ("Dense", 264, "relu"),
+                                       ("Dropout", 0.5, ""),
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "Bi_LSTM_Tensorflow":
             params["hidden_layers"] = [("Bi_LSTM", random.randint(10, 300), "linear"),
