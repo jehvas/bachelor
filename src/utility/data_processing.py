@@ -1,20 +1,16 @@
-import random
+import csv
+import re
+import statistics
 
+import matplotlib.pyplot as plt
 import numpy
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.ticker import MaxNLocator
-from collections import namedtuple
-import csv
-import statistics
-import re
-import math
-import matplotlib.pyplot as plt
 
 # file_name = ROOTPATH + "/Results/MLP_Tensorflow/Newsgroups/resultsfile.csv"
-import sys
 
-from sklearn.preprocessing import MinMaxScaler
+#file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\{}\\{}\\resultsfile.csv'
+file_name = 'C:\\Users\\Mads\\IdeaProjects\\Results\\2000\\{}\\{}\\resultsfile.csv'
+
 
 
 def plot_line_graph(ax, data, title, xlabel, ylabel):
@@ -103,11 +99,8 @@ def get_row_data(data, headers, row_idx, includeRelu=False):
 
 
 def process_bar_data(row_idx, dataset_name, algo):
-    # file_name = 'C:\\Users\\Jens\\Downloads\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
-    file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
-    # file_name = 'C:\\Users\\Jens\\IdeaProjects\\Bachelor\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
-    # print('Reading ' + file_name)
-    data, headers = parse_file(file_name)
+
+    data, headers = parse_file(file_name.format(algo, dataset_name))
 
     # print(f'Processed {line_count} lines.')
     # steps = 100
@@ -207,10 +200,8 @@ def run_bars():
 run_bars()
 
 def process_line_data(row_idx, dataset_name, algo, ax):
-    file_name = 'C:\\Users\\Jens\\Dropbox\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
-    # file_name = 'C:\\Users\\Jens\\IdeaProjects\\Bachelor\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
-    # print('Reading ' + file_name)
-    data, headers = parse_file(file_name)
+
+    data, headers = parse_file(file_name.format(algo, dataset_name))
 
     fscore_dict = {}
     re_list = []
@@ -303,8 +294,7 @@ def plot_all_hidden_dim_lines():
         # print(algo)
         fig, ax = plt.subplots()
         for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
-            file_name = 'C:\\Users\\Jens\\Dropbox\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
-            file_data, file_headers = parse_file(file_name)
+            file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
             use_relu = False
 
             all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, use_relu)
@@ -339,9 +329,8 @@ def plot_layer_correlation():
         # print(algo)
         fig, ax = plt.subplots()
         for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
-            file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
-            print(file_name)
-            file_data, file_headers = parse_file(file_name)
+            print(file_name.format(algo, dataset_name))
+            file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
             use_relu = True
 
             all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, use_relu)
@@ -385,13 +374,12 @@ for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
     # print(algo)
     fig, ax = plt.subplots()
     for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
-        file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
-        data, headers = parse_file(file_name)
-        # print(file_name)
+        data, headers = parse_file(file_name.format(algo, dataset_name)
+        # print(file_name.format(algo, dataset_name)
         for i, row in enumerate(data):
             matches = len(re.findall('Dropout;0.0', row[8]))
             if matches == 3:
-                print(file_name, i)'''
+                print(file_name.format(algo, dataset_name), i)'''
 
 
 def plot_optimizers():
@@ -399,9 +387,8 @@ def plot_optimizers():
         # print(algo)
         fig, ax = plt.subplots()
         for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
-            file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
-            print(file_name)
-            file_data, file_headers = parse_file(file_name)
+            print(file_name.format(algo, dataset_name))
+            file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
             use_relu = True
 
             all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, use_relu)
@@ -424,8 +411,7 @@ def get_max_fscores():
         print(algo)
         fig, ax = plt.subplots()
         for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
-            file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
-            file_data, file_headers = parse_file(file_name)
+            file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
             all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, True)
             all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
             print("{} {:.3f}".format(dataset_name, max(all_f_scores)))
@@ -436,9 +422,8 @@ def plot_dropout():
         # print(algo)
         fig, ax = plt.subplots()
         for dataset_name in ['EnronFinancial']:  # , 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
-            file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
-            print(file_name)
-            file_data, file_headers = parse_file(file_name)
+            print(file_name.format(algo, dataset_name))
+            file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
             use_relu = False
 
             all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, use_relu)
@@ -482,10 +467,8 @@ def plot_normalized_dropout():
         # print(algo)
         fig, ax = plt.subplots()
         for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
-            # file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
-            file_name = 'C:\\Users\\Mads\\IdeaProjects\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
-            print(file_name)
-            file_data, file_headers = parse_file(file_name)
+            print(file_name.format(algo, dataset_name))
+            file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
             use_relu = False
             file_data.sort()
             top_10 = int(len(file_data) / 10)
