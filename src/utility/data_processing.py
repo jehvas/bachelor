@@ -472,3 +472,62 @@ def plot_dropout():
 
 
 # plot_dropout()
+
+def plot_normalized_dropout():
+    for algo in [
+        # 'Bi_LSTM_Tensorflow',
+        'MLP_Tensorflow',
+        # 'RNN_Tensorflow'
+    ]:
+        # print(algo)
+        fig, ax = plt.subplots()
+        for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+            # file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'
+            file_name = 'C:\\Users\\Mads\\IdeaProjects\\Results\\2000\\' + algo + '\\' + dataset_name + '\\resultsfile.csv'  # sys.argv[1]
+            print(file_name)
+            file_data, file_headers = parse_file(file_name)
+            use_relu = False
+            file_data.sort()
+            top_10 = int(len(file_data) / 10)
+            file_data = list(reversed(file_data))[:top_10]
+            all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, use_relu)
+            all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
+
+            # all_f_scores = [(x-minv)/(maxv-minv) for x in all_f_scores]
+            # maxvnew = max(all_f_scores)
+            # minvnew = min(all_f_scores)
+            print(max(all_f_scores))
+            all_hidden, xlabel = get_row_data(file_data, file_headers, 8, use_relu)
+            if algo == "MLP_Tensorflow":
+                first_dropout = [float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[0][1]) for x in all_hidden]
+            else:
+                first_dropout = [float(re.findall('Dropout(;|\', )(\d+\.\d+)', x)[0][1])
+                                 + float(
+                    re.findall('Dropout(;|\', )(\d+\.\d+)', x)[1][1]) + float(
+                    re.findall('Dropout(;|\', )(\d+\.\d+)', x)[2][1]) for x in all_hidden]
+            all_f_scores, first_dropout = sort_data(all_f_scores, first_dropout)
+            all_f_scores = all_f_scores
+            first_dropout = first_dropout
+            drop_dict = {}
+            for i, x in enumerate(first_dropout):
+                dropout_list = drop_dict.get(x, [])
+                dropout_list.append(all_f_scores[i])
+                drop_dict[x] = dropout_list
+            xdata = list(drop_dict.keys())
+            xdata.sort()
+            ydata = [statistics.mean(drop_dict[val]) for val in xdata]
+            maxv = max(ydata)
+            minv = min(ydata)
+            ydata = [(x - minv) / (maxv - minv) for x in ydata]
+            plot_trend_line(xdata, ydata, dataset_name)
+
+        ax.set_xlabel('Summed dropout')
+        ax.set_ylabel('Normalized fscore')
+        title = algo + ' Dropout sum layer'
+        ax.set_title(title)
+        ax.legend()
+        fig.tight_layout()
+        plt.show()
+        fig.savefig(title.replace('/', ''))
+
+# plot_normalized_dropout()
