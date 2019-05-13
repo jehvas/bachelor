@@ -1,11 +1,10 @@
 import abc
 import time
-from typing import List, Counter
-
 import numpy as np
+
+from typing import List
 from nltk import word_tokenize
 from nltk.corpus import stopwords
-
 from utility.utility import save, file_exists, load
 
 
@@ -49,7 +48,6 @@ class AbstractDataset(abc.ABC):
             print("--- %s seconds ---" % (time.time() - start_time))
 
         self.set_classes()
-        # print(Counter(labels))
 
         emails, labels = np.asarray(emails), np.asarray(labels)
         self.post_load(emails, labels)

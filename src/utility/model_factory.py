@@ -1,6 +1,5 @@
-from tensorflow.python import set_random_seed
-from tensorflow.python.keras.layers import LSTM, Dense, Bidirectional, RNN, SimpleRNNCell, CuDNNLSTM, Dropout, LeakyReLU
 import tensorflow as tf
+from tensorflow.python.keras.layers import Dense, Bidirectional, RNN, SimpleRNNCell, CuDNNLSTM, Dropout, LeakyReLU
 
 
 def make_hidden_layers(middle_layers, input_shape):
@@ -30,10 +29,7 @@ def make_hidden_layers(middle_layers, input_shape):
                 else:
                     layers.append(Bidirectional(CuDNNLSTM(size)))
             else:
-                print("Please install GPU version of TF")
-                if idx == 0:
-                    layers.append(Bidirectional(
-                        LSTM(size, activation=activation_func, input_shape=input_shape, return_sequences=True)))
-                else:
-                    layers.append(Bidirectional(LSTM(size, activation=activation_func)))
+                raise Exception("This device does not support the GPU version of Tensorflow.\nPlease install needed "
+                                "drivers or run on Google Colab")
+
     return layers

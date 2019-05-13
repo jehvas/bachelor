@@ -1,8 +1,6 @@
 import abc
 from collections import Counter
-
 from joblib import Parallel, delayed
-
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 from utility import load_trees

@@ -1,21 +1,10 @@
-import math
 import random
-from typing import Dict
 
 from tensorflow.python.keras.optimizers import Adam, SGD
-from tensorflow.python.training.adadelta import AdadeltaOptimizer
-from tensorflow.python.training.adagrad import AdagradOptimizer
-from tensorflow.python.training.adam import AdamOptimizer
-from tensorflow.python.training.ftrl import FtrlOptimizer
-from tensorflow.python.training.gradient_descent import GradientDescentOptimizer
-from tensorflow.python.training.proximal_adagrad import ProximalAdagradOptimizer
-from tensorflow.python.training.proximal_gradient_descent import ProximalGradientDescentOptimizer
-from tensorflow.python.training.rmsprop import RMSPropOptimizer
 
 
 def get_random_params(algorithm, input_dim, output_dim):
     if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi_LSTM_Tensorflow':
-        # layer_dim = 5 - int(math.log10(random.randint(10, 9000)))
         hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()
         params = {

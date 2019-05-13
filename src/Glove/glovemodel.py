@@ -1,14 +1,12 @@
-from typing import Dict, List
-
-import numpy as np
+from typing import List
 from keras_preprocessing import sequence
 from keras_preprocessing.text import Tokenizer
 from sklearn import preprocessing
 from sklearn.preprocessing import MinMaxScaler
-
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 from utility.utility import file_exists, load, save
+import numpy as np
 import tensorflow as tf
 
 GLOVE_DIR = ROOTPATH + "data/GloveWordEmbeddings/"
@@ -33,7 +31,7 @@ class GloVe:
         num_lines = 0
         line_counter = 0
         with open(GLOVE_DIR + self.glove_file, 'r+', encoding="utf8") as f:
-            for line in f:
+            for _ in f:
                 num_lines += 1
         with open(GLOVE_DIR + self.glove_file, 'r+', encoding="utf8") as f:
             for line in f:
@@ -81,19 +79,6 @@ class GloVe:
         features = preprocessing.scale(sum_vectors_array)
         save(features, feature_file_name)
         return features
-
-    def sum_vectors2(self, words_in_emails, tfidf):
-        all_vector_sum = []
-        for i in range(len(words_in_emails)):
-            words = words_in_emails[i]
-            vector_sum = np.zeros(self.dimensionCount)
-            for word in words:
-                if word in self.model:
-                    word_vector = self.model[word].numpy()
-                    word_vector *= tfidf[i][word]
-                    vector_sum += word_vector
-            all_vector_sum.append(vector_sum)
-        return all_vector_sum
 
     def sum_vectors(self, words_in_emails):
         all_vector_sum = []

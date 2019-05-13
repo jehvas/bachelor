@@ -1,9 +1,7 @@
 import ast
-from collections import Counter
-from typing import List
 import numpy as np
+from typing import List
 from joblib import Parallel, delayed
-
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
 
@@ -45,11 +43,6 @@ class Trustpilot(AbstractDataset):
                     reviews.pop(i)
                     ratings.pop(i)
                     genders.pop(i)
-            # num_empty_reviews = sum(num_empty_reviews)
-            # num_no_rating = sum(num_no_rating)
-            # print(num_empty_reviews, num_no_rating)
-            # print("Empty reviews: ", num_empty_reviews)
-            # labels = list((list(zip(*labels)))[label_idx])
             if label_idx == 1:
                 return filter_genders(reviews, genders)
 
@@ -76,7 +69,6 @@ class Trustpilot(AbstractDataset):
                     gender = 1
             for review in user_json_object["reviews"]:
                 if review["rating"] is not None:
-                    # 0-index ratings
                     rating = int(review["rating"]) - 1
                     text = review["text"]
                     if len(text) != 0:
