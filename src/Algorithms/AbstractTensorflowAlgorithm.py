@@ -13,16 +13,8 @@ from utility.plotter import plot_data, PlotClass
 
 class AbstractTensorflowAlgorithm(abc.ABC):
     epochs_run = 0
-    embedding = []
     model = None
-    output_dim = None
-    hidden_dim = None
-    input_dim = None
-    num_epochs = None
-    batch_size = None
-    input_function = None
     hidden_layers = None
-    output_function = None
     optimizer = None
     fscore = []
     dataset = None
@@ -39,12 +31,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         pass
 
     def load_parameters(self, parameters):
-        self.output_dim = parameters['output_dim']
-        self.hidden_dim = parameters['hidden_dim']
-        self.input_dim = parameters['input_dim']
-        self.input_function = parameters['input_function']
         self.hidden_layers = parameters['hidden_layers']
-        self.output_function = parameters['output_function']
         self.optimizer = parameters['optimizer']
 
     def plot_data(self, dataset_name, counter, dataset_mode):
@@ -67,12 +54,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
         plot_confusion_matrix(self.y_test, self.predictions, self.dataset, self.get_name(), normalize=True,
                               save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_" + self.guid + ".png")
 
-    def run_train(self, dataset, train_data, test_data, parameters, embedding=None):
-        x_train, y_train = train_data
-        x_test, y_test = test_data
-
-
-        self.embedding = embedding
+    def run_train(self, dataset, x_train, y_train, x_test, y_test, labels, parameters):
         self.load_parameters(parameters)
         self.dataset = dataset
         self.y_test = y_test
@@ -106,7 +88,7 @@ class AbstractTensorflowAlgorithm(abc.ABC):
                                       epochs=50,
                                       callbacks=[es_loss],
                                       validation_data=(x_test, y_test),
-                                      verbose=1)
+                                      verbose=0)
 
         self.predictions = self.model.predict(x_test)
 

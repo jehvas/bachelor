@@ -400,31 +400,6 @@ for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
                 print(file_name.format(algo, dataset_name), i)'''
 
 
-def plot_optimizers():
-    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
-        print(algo)
-        fig, ax = plt.subplots()
-        for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
-            print(file_name.format(algo, dataset_name))
-            file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
-            use_relu = True
-
-            all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, use_relu)
-            all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
-            print('num: {}'.format(len(all_f_scores)))
-
-            all_optimizers, xlabel = get_row_data(file_data, file_headers, 4, use_relu)
-
-        ax.set_xlabel(xlabel)
-        ax.set_ylabel(ylabel)
-        title = algo + ' Optimizers'
-        ax.set_title(title)
-        ax.legend()
-        fig.tight_layout()
-        plt.show()
-        fig.savefig(title.replace('/', ''))
-
-
 def get_max_fscores():
     for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
         print(algo)
@@ -433,10 +408,20 @@ def get_max_fscores():
             file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
             all_f_scores, ylabel = get_row_data(file_data, file_headers, 0, True)
             all_f_scores = [float(x.replace(',', '.')) for x in all_f_scores]
+            all_optimizer, ylabel = get_row_data(file_data, file_headers, 4, True)
+            all_learning_rate, ylabel = get_row_data(file_data, file_headers, 5, True)
+            all_hidden_layers, ylabel = get_row_data(file_data, file_headers, 8, True)
             idx = all_f_scores.index(max(all_f_scores))
             all_l, abel = get_row_data(file_data, file_headers, 5, True)
-            print("{} {:.3f}".format(dataset_name, max(all_f_scores)))
-            print(file_data[idx])
+            # print("{} {:.3f}".format(dataset_name, max(all_f_scores)))
+            # print(file_data[idx])
+            print(dataset_name)
+            print(all_f_scores[idx])
+            # print("{}\t{}\t{}\t{}".format(str(all_f_scores[idx]).replace('.', ','),
+            #                               all_optimizer[idx],
+            #                               all_learning_rate[idx].replace('.', ','),
+            #                               all_hidden_layers[idx]))
+            # print(file_data[idx])
 
 
 def plot_dropout():
@@ -577,18 +562,33 @@ def plot_learning_rate():
         ax.set_ylabel('Normalized average f-score')
         ax.set_title(title)
         plt.grid(True)
-        ax.legend()
         fig.tight_layout()
         plt.show()
         fig.savefig(title.replace('/', ''))
 
 
+def plot_boxplot_output_functions():
+    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+        ALL_DF = pd.DataFrame()
+        for dataset in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+            df = pd.read_csv(file_name.format(algo, dataset),
+                             delimiter='\t',
+                             index_col=False,
+                             usecols=['Avg_Fscore', 'hidden_layers'])
+            df['Avg_Fscore'] = df['Avg_Fscore'].apply(lambda x: float(x.replace(',', '.')))
+            df['output_function'] = df['hidden_layers'].apply(lambda x: re.search('(\w+)(\')?\)$', x).group(1))
+            df['Dataset'] = dataset
+            df = df.sort_values('output_function')
+            ALL_DF = pd.concat([ALL_DF, df], ignore_index=True)
+        bx = sns.boxplot(x="Dataset", y="Avg_Fscore", hue="output_function", data=ALL_DF, palette="Set1")
+        title = '{} output function'.format(algo)
+        plt.title(title)
+        plt.show()
+        bx.get_figure().savefig(title)
+
+
 def plot_normalized_dropout():
-    for algo in [
-        # 'Bi_LSTM_Tensorflow',
-        'MLP_Tensorflow',
-        # 'RNN_Tensorflow'
-    ]:
+    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
         # print(algo)
         fig, ax = plt.subplots()
         for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
@@ -630,7 +630,7 @@ def plot_normalized_dropout():
             plot_trend_line(xdata, ydata, dataset_name)
 
         ax.set_xlabel('Summed dropout')
-        ax.set_ylabel('Normalized fscore')
+        ax.set_ylabel('Normalized f-score')
         title = algo + ' Dropout sum layer'
         ax.set_title(title)
         ax.legend()
@@ -639,12 +639,12 @@ def plot_normalized_dropout():
         fig.savefig(title.replace('/', ''))
 
 
-# plot_optimizers()
-# plot_normalized_dropout()
-# get_max_fscores()
+get_max_fscores()
 # plot_all_hidden_dim_lines_mlp()
 # plot_hidden_dim_lines_RNN_LSTM()
 # plot_boxplot_optimizer()
 # plot_boxplot_activation_function_RNN_LSTM()
 # plot_boxplot_activation_function_MLP()
-plot_learning_rate()
+# plot_learning_rate()
+# plot_normalized_dropout()
+# plot_boxplot_output_functions()
