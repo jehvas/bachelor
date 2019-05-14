@@ -64,7 +64,7 @@ for dataset in datasets_to_use:
             if avg_fscore > best_fscore:
                 print('New champion! {}'.format(avg_fscore))
                 best_fscore = avg_fscore
-                algorithm.plot_data(dataset, counter, dataset_mode, y_test)
+                algorithm.plot_data(dataset, dataset_mode, y_test)
 
             time_taken = time.time() - start_time
 

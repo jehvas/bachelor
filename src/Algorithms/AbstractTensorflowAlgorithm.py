@@ -41,7 +41,6 @@ class AbstractTensorflowAlgorithm(AbstractAlgorithm):
             metrics=['accuracy'],
         )
         es_loss = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=5, restore_best_weights=True)
-        self.model.summary()
         self.history = self.model.fit(x_train,
                                       y_train,
                                       epochs=50,

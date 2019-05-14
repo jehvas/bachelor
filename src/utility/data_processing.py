@@ -11,10 +11,12 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 
-#file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\{}\\{}\\resultsfile.csv'
+file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\{}\\{}\\resultsfile.csv'
+# file_name = 'C:\\Users\\Mads\\IdeaProjects\\Results\\2000\\{}\\{}\\resultsfile.csv'
 
+def save_fig(fig, name):
+    fig.savefig("images/"+name)
 
-file_name = 'C:\\Users\\Mads\\IdeaProjects\\Results\\2000\\{}\\{}\\resultsfile.csv'
 
 def normalize(data):
     data_max = max(data)
@@ -24,24 +26,18 @@ def normalize(data):
 
 def plot_line_graph(ax, data, title, xlabel, ylabel):
     for xdata, ydata, label in data:
-        # ax.plot(xdata, ydata)
         trend = numpy.polyfit(xdata, ydata, 5)
         trendpoly = np.poly1d(trend)
         plt.plot(xdata, trendpoly(xdata), label=label)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    # plt.ylim([0, 1])
-    # plt.yticks([i/10 for i in range(10)])
 
 
 def plot_bar_chart(bars, groups, title, xlabel, ylabel):
     n_groups = len(groups)
-
     fig, ax = plt.subplots()
-
     index = np.arange(n_groups)
     bar_width = 0.9 / n_groups
-
     opacity = 0.4
     error_config = {'ecolor': '0.3'}
     c = 0
@@ -63,7 +59,7 @@ def plot_bar_chart(bars, groups, title, xlabel, ylabel):
 
     fig.tight_layout()
     plt.show()
-    fig.savefig(title)
+    save_fig(fig, title)
 
 
 def parse_file(file_name):
@@ -98,9 +94,6 @@ def to_bar_data():
 
 def process_bar_data(row_idx, dataset_name, algo):
     data, headers = parse_file(file_name.format(algo, dataset_name))
-
-    # print(f'Processed {line_count} lines.')
-    # steps = 100
     fscore_dict = {}
     re_list = []
     groups = []
@@ -211,56 +204,14 @@ def process_line_data(row_idx, dataset_name, algo, ax):
         key_list = key_dict1.get(key1, [])
         key_list.append(fscore)
         key_dict1[key1] = key_list
-
-        '''
-        m = re.findall('Bi_LSTM;(\d+)', key1)
-
-        key1 = int(float(m[0]) / 2) * 2
-        key2 = int(float(m[1]) / 2) * 2
-        key_list = key_dict1.get(key1, [])
-        key_list.append(fscore)
-        key_dict1[key1] = key_list
-
-        key_list = key_dict2.get(key2, [])
-        key_list.append(fscore)
-        key_dict2[key2] = key_list
-        # all_fscores.append(fscore)
-    for key in key_dict1:
-        all_keys1.append(key)
-        all_fscores.append(statistics.mean(key_dict1[key]))
-    for key in key_dict2:
-        all_keys2.append(key)
-    #    all_fscores.append(statistics.mean(key_dict2[key]))
-    '''
-
     for key in key_dict1:
         all_keys1.append(key)
         all_fscores.append(statistics.mean(key_dict1[key]))
     comb = list(zip(all_keys1, all_fscores))
     comb.sort()
     all_keys1, all_fscores1 = zip(*comb)
-    '''
-    comb1 = list(zip(all_keys2, all_fscores))
-    comb1.sort()
-    all_keys2, all_fscores2 = zip(*comb1)'''
-    # plot_3d((all_keys1, all_keys2, all_fscores))
     plot_line_graph(ax, [(all_keys1, all_fscores, dataset_name)], 'Learning rate ' + dataset_name, 'Learning Rate',
                     'F-Score')
-
-
-def run_line_graph():
-    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
-        # print(algo)
-        datas = ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']
-
-        fig, ax = plt.subplots()
-        data_grab = [process_line_data(5, dataset, algo, ax) for dataset in datas]
-        ax.set_title('Learning rate ' + algo)
-        ax.legend()
-        fig.tight_layout()
-        plt.show()
-        fig.savefig('Learning rate ' + algo)
-
 
 def plot_line_data(ax, xdata, ydata, label=None):
     ax.plot(xdata, ydata, label=label)
@@ -303,7 +254,7 @@ def plot_all_hidden_dim_lines_mlp():
     fig.tight_layout()
     plt.grid(True)
     plt.show()
-    fig.savefig(algo + ' Hidden dim - Output dim, normalized')
+    save_fig(fig, algo + ' Hidden dim - Output dim, normalized')
 
 
 def plot_hidden_dim_lines_RNN_LSTM():
@@ -339,7 +290,7 @@ def plot_hidden_dim_lines_RNN_LSTM():
         fig.tight_layout()
         plt.grid(True)
         plt.show()
-        fig.savefig(title)
+        save_fig(fig, title)
 
 
 def plot_layer_correlation():
@@ -382,7 +333,7 @@ def plot_layer_correlation():
         ax.legend()
         fig.tight_layout()
         plt.show()
-        fig.savefig(title.replace('/', ''))
+        save_fig(fig, title.replace('/', ''))
 
 
 # plot_layer_correlation()
@@ -460,7 +411,7 @@ def plot_dropout():
         ax.legend()
         fig.tight_layout()
         plt.show()
-        fig.savefig(title.replace('/', ''))
+        save_fig(fig, title.replace('/', ''))
 
 
 def plot_boxplot_optimizer():
@@ -480,7 +431,7 @@ def plot_boxplot_optimizer():
         title = '{} Optimizer'.format(algo)
         plt.title(title)
         plt.show()
-        bx.get_figure().savefig(title)
+        save_fig(bx.get_figure(), title)
 
 
 def plot_boxplot_activation_function_RNN_LSTM():
@@ -499,9 +450,14 @@ def plot_boxplot_activation_function_RNN_LSTM():
                     lambda x: re.findall('(RNN|Bi_LSTM|Dense).+?\d+(\.\d+)?,( \')?(\w+)', x)[layer_idx][3])
                 df['dense_size'] = df['hidden_layers'].apply(
                     lambda x: re.findall('(Dense).+?(\d+)(\.\d+)?,( \')?(\w+)', x)[0][1])
+                if algo == 'Bi_LSTM_Tensorflow' and layer_idx < 2:
+                    df = df.replace('relu', 'No LeakyReLU')
+                    df = df.replace('softmax', 'No LeakyReLU')
+                else:
+                    df = df.replace('relu', 'ReLU')
+
                 df = df.replace('None', 'LeakyReLU')
                 df = df.replace('linear', 'LeakyReLU')
-                df = df.replace('relu', 'ReLU')
                 # df['activation_function'] = df['hidden_layers'].apply(lambda x: x.replace('None', 'LeakyReLU'))
                 # df['activation_function'] = df['hidden_layers'].apply(lambda x: x.replace('linear', 'LeakyReLU'))
                 # df['activation_function'] = df['hidden_layers'].apply(lambda x: x.replace('relu', 'ReLU'))
@@ -513,7 +469,7 @@ def plot_boxplot_activation_function_RNN_LSTM():
             title = '{} Activation Function - layer {}'.format(algo, (layer_idx + 1))
             plt.title(title)
             plt.show()
-            bx.get_figure().savefig(title)
+            save_fig(bx.get_figure(), title)
 
 
 def plot_boxplot_activation_function_MLP():
@@ -540,7 +496,7 @@ def plot_boxplot_activation_function_MLP():
     title = '{} Activation Function'.format(algo)
     plt.title(title)
     plt.show()
-    bx.get_figure().savefig(title)
+    save_fig(bx.get_figure(), title)
 
 
 def plot_learning_rate():
@@ -564,7 +520,7 @@ def plot_learning_rate():
         plt.grid(True)
         fig.tight_layout()
         plt.show()
-        fig.savefig(title.replace('/', ''))
+        save_fig(fig, title.replace('/', ''))
 
 
 def plot_boxplot_output_functions():
@@ -584,7 +540,7 @@ def plot_boxplot_output_functions():
         title = '{} output function'.format(algo)
         plt.title(title)
         plt.show()
-        bx.get_figure().savefig(title)
+        save_fig(bx.get_figure(), title)
 
 
 def plot_normalized_dropout():
@@ -636,14 +592,14 @@ def plot_normalized_dropout():
         ax.legend()
         fig.tight_layout()
         plt.show()
-        fig.savefig(title.replace('/', ''))
+        save_fig(fig, title.replace('/', ''))
 
 
 get_max_fscores()
 # plot_all_hidden_dim_lines_mlp()
 # plot_hidden_dim_lines_RNN_LSTM()
 # plot_boxplot_optimizer()
-# plot_boxplot_activation_function_RNN_LSTM()
+plot_boxplot_activation_function_RNN_LSTM()
 # plot_boxplot_activation_function_MLP()
 # plot_learning_rate()
 # plot_normalized_dropout()

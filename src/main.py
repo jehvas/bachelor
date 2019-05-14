@@ -29,3 +29,5 @@ for dataset in datasets_to_use:
 
         algorithm.run_train(dataset, x_train, y_train, x_test, y_test, parameters)
 
+        algorithm.plot_data(dataset, dataset_mode, y_test)
+
