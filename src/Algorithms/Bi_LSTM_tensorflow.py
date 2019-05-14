@@ -21,11 +21,11 @@ class Bi_LSTM_Tensorflow(AbstractTensorflowAlgorithm):
                             "drivers or run on Google Colab")
         layers = []
         layers.append(Input(input_shape))
-        layers.append(Bidirectional(CuDNNLSTM(hidden_layers[0][1], activation=hidden_layers[0][2], return_sequences=True)))
+        layers.append(Bidirectional(LSTM(hidden_layers[0][1], activation=hidden_layers[0][2], return_sequences=True)))
         if hidden_layers[0][2] != 'linear':
             layers.append(LeakyReLU())
         layers.append(Dropout(hidden_layers[1][1]))
-        layers.append(Bidirectional(CuDNNLSTM(hidden_layers[2][1], activation=hidden_layers[2][2])))
+        layers.append(Bidirectional(LSTM(hidden_layers[2][1], activation=hidden_layers[2][2])))
         if hidden_layers[2][2] != 'linear':
             layers.append(LeakyReLU())
         layers.append(Dropout(hidden_layers[3][1]))
