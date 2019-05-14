@@ -1,11 +1,18 @@
 from tensorflow.python.keras.optimizers import Adam, SGD
 
 
+def leaky_to_linear(parameters):
+    if 'hidden_layers' in parameters:
+        for i, (type, num, activation) in enumerate(parameters['hidden_layers']):
+            new_activation = 'linear' if activation.lower() == 'leakyrelu' else activation
+            parameters['hidden_layers'][i] = (type, num, new_activation)
+    return parameters
+
 def get_params(algorithm, dataset):
     if algorithm == 'RNN_Tensorflow':
         if dataset.get_name() == "Spamassassin":
             return {
-                'hidden_layers': [("RNN", 236, "linear"),
+                'hidden_layers': [("RNN", 236, "LeakyReLU"),
                                   ("Dropout", 0.2, ""),
                                   ("RNN", 192, "linear"),
                                   ("Dropout", 0.1, ""),

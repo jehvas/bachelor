@@ -1,16 +1,10 @@
-import uuid
-
-from sklearn.ensemble import BaggingClassifier
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.svm import LinearSVC
 
 from Algorithms.AbstractAlgorithm import AbstractAlgorithm
-from rootfile import ROOTPATH
-from utility.confusmatrix import plot_confusion_matrix
 
 
 class SVM(AbstractAlgorithm):
-    fscore = None
     loss_function = None
 
     def prepare_features(self, x_train, y_train, x_test, y_test):

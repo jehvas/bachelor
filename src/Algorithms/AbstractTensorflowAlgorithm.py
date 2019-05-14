@@ -1,5 +1,4 @@
 import abc
-import uuid
 
 import numpy as np
 import tensorflow as tf
@@ -7,9 +6,6 @@ from sklearn.metrics import precision_recall_fscore_support
 from tensorflow.python.keras.callbacks import EarlyStopping
 
 from Algorithms.AbstractAlgorithm import AbstractAlgorithm
-from rootfile import ROOTPATH
-from utility.confusmatrix import plot_confusion_matrix
-from utility.plotter import plot_data, PlotClass
 
 
 class AbstractTensorflowAlgorithm(AbstractAlgorithm):
@@ -17,7 +13,6 @@ class AbstractTensorflowAlgorithm(AbstractAlgorithm):
     model = None
     hidden_layers = None
     optimizer = None
-    fscore = []
     predictions = None
     history = None
 

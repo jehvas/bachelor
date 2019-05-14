@@ -3,20 +3,12 @@ import random
 from tensorflow.python.keras.optimizers import Adam, SGD
 
 
-def get_random_params(algorithm, input_dim, output_dim):
+def get_random_params(algorithm, output_dim):
     if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi_LSTM_Tensorflow':
-        hidden_dim = random.randint(10, 500)
         optimizer, lr = pick_optimizer()
         params = {
-            'hidden_dim': hidden_dim,
-            # 'layer_dim': layer_dim,
-            'input_function': pick_random_activation_function(),
-            # 'hidden_layers': generate_middle_layers(layer_dim, algorithm),
-            'output_function': pick_random_activation_function(),
             'optimizer': SGD(lr=0.0161, decay=1e-6),
             'learning_rate': lr,
-            'output_dim': output_dim,
-            'input_dim': input_dim,
         }
         if algorithm == "MLP_Tensorflow":
             params["hidden_layers"] = [("Dense", random.randint(10, 300), pick_random_activation_function()),

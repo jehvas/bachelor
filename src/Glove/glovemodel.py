@@ -69,9 +69,9 @@ class GloVe:
         return weights_matrix, sequences_matrix
 
     # Check if features exist
-    def get_features(self, emails: np.array, dataset: AbstractDataset, dataset_mode):
+    def get_features(self, emails: np.array, dataset: AbstractDataset):
         print("Loading embedding features")
-        feature_file_name = dataset_mode + "/" + dataset.get_name() + '_features_' + str(self.dimensionCount)
+        feature_file_name = dataset.mode + "/" + dataset.get_name() + '_features_' + str(self.dimensionCount)
         if file_exists(feature_file_name):
             return load(feature_file_name)
         self.load_glove_model()

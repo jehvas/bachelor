@@ -5,6 +5,8 @@ import numpy as np
 from typing import List
 from nltk import word_tokenize
 from nltk.corpus import stopwords
+
+from utility.undersample_split import resize_under_sample
 from utility.utility import save, file_exists, load
 
 
@@ -25,6 +27,7 @@ def check_types(emails, labels):
 class AbstractDataset(abc.ABC):
     stop_words = set(stopwords.words("english"))
     classes: List = []
+    mode = None
 
     @abc.abstractmethod
     def sub_load(self):
@@ -34,8 +37,9 @@ class AbstractDataset(abc.ABC):
     def set_classes(self):
         pass
 
-    def load(self, load_filtered_data=True):
+    def load(self, load_filtered_data=True, dataset_mode='standard'):
         emails, labels = None, None
+        self.mode = dataset_mode
         if load_filtered_data:
             load_check_result = self.pre_load()
             if load_check_result is not None:
@@ -51,6 +55,9 @@ class AbstractDataset(abc.ABC):
 
         emails, labels = np.asarray(emails), np.asarray(labels)
         self.post_load(emails, labels)
+        if dataset_mode == "2000":
+            emails, labels = resize_under_sample(emails, labels)
+
         return emails, labels
 
     def get_name(self):

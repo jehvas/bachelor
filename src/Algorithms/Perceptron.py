@@ -1,15 +1,11 @@
-import uuid
-
 import sklearn
 from sklearn.metrics import precision_recall_fscore_support
 
 from Algorithms.AbstractAlgorithm import AbstractAlgorithm
 from rootfile import ROOTPATH
-from utility.confusmatrix import plot_confusion_matrix
 
 
 class Perceptron(AbstractAlgorithm):
-    fscore = None
     penalty = None
 
     def prepare_features(self, x_train, y_train, x_test, y_test):

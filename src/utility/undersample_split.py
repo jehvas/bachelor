@@ -9,7 +9,7 @@ def under_sample_split(features, labels, test_size=0.2, random_state=None):
         raise Exception(
             "Features not equal labels length: len(features): {}, len(labels): {}".format(len(features), len(labels)))
     if random_state:
-        pass # random.seed(random_state)
+        pass  # random.seed(random_state)
     comb = list(zip(features, labels))
     random.shuffle(comb)
     features, labels = zip(*comb)
@@ -31,9 +31,10 @@ def under_sample_split(features, labels, test_size=0.2, random_state=None):
     print('test:', Counter(y_test))
     return np.array(x_train), np.array(x_test), np.array(y_train), np.array(y_test)
 
+
 def resize_under_sample(emails, labels, size=2000):
     class_count = len(set(labels))
-    num_per_class = size/class_count
+    num_per_class = size / class_count
 
     class_counts = [0] * class_count
     re_emails, re_labels = [], []
