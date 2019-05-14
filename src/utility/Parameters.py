@@ -5,9 +5,12 @@ def get_params(algorithm, dataset):
     if algorithm == 'RNN_Tensorflow':
         if dataset.get_name() == "Spamassassin":
             return {
-                'hidden_layers': [("RNN", 236, "linear"), ("LeakyReLU", "", ""), ("Dropout", 0.2, ""),
-                                  ("RNN", 192, "linear"), ("LeakyReLU", "", ""), ("Dropout", 0.1, ""),
-                                  ("Dense", 300, "linear"), ("LeakyReLU", "", ""), ("Dropout", 0.1, ""),
+                'hidden_layers': [("RNN", 236, "linear"),
+                                  ("Dropout", 0.2, ""),
+                                  ("RNN", 192, "linear"),
+                                  ("Dropout", 0.1, ""),
+                                  ("Dense", 300, "linear"),
+                                  ("Dropout", 0.1, ""),
                                   ("Dense", 2, "softmax")],
                 'optimizer': Adam(lr=0.0029),
                 'learning_rate': '0.0029'}
@@ -70,9 +73,13 @@ def get_params(algorithm, dataset):
     elif algorithm == 'Bi_LSTM_Tensorflow':
         if dataset.get_name() == "Spamassassin":
             return {
-                'hidden_layers': [("Bi_LSTM", 141, "relu"), ("Dropout", 0.2, ""), ("Bi_LSTM", 210, "softmax"),
-                                  ("Dropout", 0.2, ""), ("Dense", 300, "linear"), ("LeakyReLU", "", ""),
-                                  ("Dropout", 0.3, ""), ("Dense", 2, "softmax")],
+                'hidden_layers': [("Bi_LSTM", 141, "tanh"),
+                                  ("Dropout", 0.2, ""),
+                                  ("Bi_LSTM", 210, "tanh"),
+                                  ("Dropout", 0.2, ""),
+                                  ("Dense", 300, "linear"),
+                                  ("Dropout", 0.3, ""),
+                                  ("Dense", 2, "softmax")],
                 'optimizer': SGD(lr=0.0898, decay=1e-6),
                 'learning_rate': '0.0898'}
         if dataset.get_name() == "Newsgroups":

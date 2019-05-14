@@ -19,27 +19,23 @@ def get_random_params(algorithm, input_dim, output_dim):
             'input_dim': input_dim,
         }
         if algorithm == "MLP_Tensorflow":
-            params["hidden_layers"] = [("Dense", random.randint(10, 300) / 10, "linear"),
-                                       ("LeakyReLU", "", ""),
+            params["hidden_layers"] = [("Dense", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "RNN_Tensorflow":
-            params["hidden_layers"] = [("RNN", 240, "relu"),
-                                       ("Dropout", 0.3, ""),
-                                       ("RNN", 217, "relu"),
-                                       ("Dropout", 0.3, ""),
-                                       ("Dense", 264, "relu"),
-                                       ("Dropout", 0.5, ""),
+            params["hidden_layers"] = [("RNN", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Dropout", random.randint(0, 5) / 10, ""),
+                                       ("RNN", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Dropout", random.randint(0, 5) / 10, ""),
+                                       ("Dense", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "Bi_LSTM_Tensorflow":
-            params["hidden_layers"] = [("Bi_LSTM", random.randint(10, 300), "linear"),
-                                       ("LeakyReLU", "", ""),
+            params["hidden_layers"] = [("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("Bi_LSTM", random.randint(10, 300), "linear"),
-                                       ("LeakyReLU", "", ""),
+                                       ("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("Dense", random.randint(10, 300), "linear"),
-                                       ("LeakyReLU", "", ""),
+                                       ("Dense", random.randint(10, 300), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         return params
@@ -61,12 +57,13 @@ def pick_random_activation_function():
     possible_activations = [
         "relu",
         "softmax",
+        "LeakyReLU",
         # "sigmoid",
         # "elu",
         # "selu",
         # "softplus",
         # "softsign",
-        "tanh"
+        # "tanh"
     ]
     return random.choice(possible_activations)
 

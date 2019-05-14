@@ -10,14 +10,14 @@ from utility.confusmatrix import plot_confusion_matrix
 
 
 class SVM(AbstractAlgorithm):
+    fscore = None
+    loss_function = None
+
     def prepare_features(self, x_train, y_train, x_test, y_test):
         return None
 
     def load_parameters(self, parameters):
         self.loss_function = parameters['loss_function']
-
-    fscore = None
-    loss_function = None
 
     def train(self, x_train, y_train, x_test, y_test):
         clf = LinearSVC(loss=self.loss_function, class_weight='balanced')

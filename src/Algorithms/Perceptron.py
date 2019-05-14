@@ -1,6 +1,6 @@
 import uuid
 
-from sklearn.linear_model import Perceptron
+import sklearn
 from sklearn.metrics import precision_recall_fscore_support
 
 from Algorithms.AbstractAlgorithm import AbstractAlgorithm
@@ -9,17 +9,17 @@ from utility.confusmatrix import plot_confusion_matrix
 
 
 class Perceptron(AbstractAlgorithm):
+    fscore = None
+    penalty = None
+
     def prepare_features(self, x_train, y_train, x_test, y_test):
         return None
 
     def load_parameters(self, parameters):
         self.penalty = parameters['penalty']
 
-    fscore = None
-    penalty = None
-
     def train(self, x_train, y_train, x_test, y_test):
-        model = Perceptron(max_iter=1_000, tol=1e-6, class_weight='balanced', penalty=self.penalty)
+        model = sklearn.linear_model.Perceptron(max_iter=1_000, tol=1e-6, class_weight='balanced', penalty=self.penalty)
         model.fit(x_train, y_train)
 
         predictions = model.predict(x_test)

@@ -21,8 +21,11 @@ class AbstractTensorflowAlgorithm(AbstractAlgorithm):
     predictions = None
     history = None
 
+    def get_name(self):
+        return type(self).__name__
+
     @abc.abstractmethod
-    def generate_model(self, middle_layers, input_shape):
+    def generate_model(self, middle_layers, input_shape, output_dim):
         pass
 
     def load_parameters(self, parameters):
@@ -30,13 +33,7 @@ class AbstractTensorflowAlgorithm(AbstractAlgorithm):
         self.optimizer = parameters['optimizer']
 
     def train(self, x_train, y_train, x_test, y_test):
-        if self.get_name() == "MLP_Tensorflow":
-            x_train = np.array(x_train)
-            y_train = np.array(y_train)
-            x_test = np.array(x_test)
-            y_test = np.array(y_test)
-
-        self.generate_model(self.hidden_layers, x_train.shape[1:])
+        self.generate_model(self.hidden_layers, x_train.shape[1:], len(self.dataset.classes))
 
         self.model.compile(
             loss='sparse_categorical_crossentropy',
@@ -44,7 +41,7 @@ class AbstractTensorflowAlgorithm(AbstractAlgorithm):
             metrics=['accuracy'],
         )
         es_loss = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=5, restore_best_weights=True)
-
+        self.model.summary()
         self.history = self.model.fit(x_train,
                                       y_train,
                                       epochs=50,

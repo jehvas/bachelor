@@ -28,8 +28,5 @@ def make_hidden_layers(middle_layers, input_shape):
                     layers.append(Bidirectional(CuDNNLSTM(size, input_shape=input_shape, return_sequences=True)))
                 else:
                     layers.append(Bidirectional(CuDNNLSTM(size)))
-            else:
-                raise Exception("This device does not support the GPU version of Tensorflow.\nPlease install needed "
-                                "drivers or run on Google Colab")
 
     return layers
