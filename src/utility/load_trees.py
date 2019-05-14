@@ -8,6 +8,7 @@ from utility import ai_util
 
 DEBUG_PRINT = False
 
+
 class Warnings:
     warnRootNodeWord = 0
 
@@ -92,7 +93,7 @@ class Node:
     def has_only_words_at_leafs(self):
         if self.number_of_children() == 0:
             return (
-                self.word != None
+                    self.word != None
             )  # a self.word==None for leaf nodes is also a reason for reporting false
         if self.word != None:
             if self.parent != None:  # workaround for "hack" for monsanto
@@ -222,11 +223,11 @@ def parse_line(l, index, node):
             if len(word) != 0:
                 raise Exception(
                     "Found begin parenthese while parsing word {}:\"{}\"".
-                    format(i, word))
+                        format(i, word))
             if len(syntaxname) == 0:
                 raise Exception(
                     "Found begin parenthese while having no syntax name (implying leaf) {}".
-                    format(i))
+                        format(i))
             child = node.add_child()
             i = parse_line(l, i, child)
             continue
@@ -235,7 +236,7 @@ def parse_line(l, index, node):
                 if node.word != None:
                     raise Exception(
                         "found word in tree but node already has word {}:\"{}\"".
-                        format(i, word))
+                            format(i, word))
                 node.word = word
                 # word = ""
             else:
@@ -266,6 +267,7 @@ def parse_line(l, index, node):
             word += c
     return i
 
+
 def get_tree(line, fn="get_tree"):
     if not line.startswith(" ("):
         raise Exception(fn + " line does not start with \" (\"")
@@ -286,6 +288,7 @@ def get_tree(line, fn="get_tree"):
     if not tree.has_only_words_at_leafs():
         raise Exception(fn + " tree is not properly normalized")
     return tree
+
 
 # filename = "trees/train.txt"
 # max_count = -1
@@ -310,6 +313,7 @@ def get_trees(file, max_count=-1):
                 print("Extracted: ", count)
     print(fn + " done. Count={}. Roots with words count {}".format(count, Warnings.warnRootNodeWord))
     return trees
+
 
 def put_trees(filename, trees):
     count = 0
@@ -367,6 +371,7 @@ def count_leaf_nodes(node, count=0):
     count = count_leaf_nodes(node.right, count)
     return count
 
+
 def count_non_leaf_nodes(node, count=0):
     if node == None:
         return count
@@ -377,6 +382,7 @@ def count_non_leaf_nodes(node, count=0):
     count = count_non_leaf_nodes(node.right, count)
     return count
 
+
 def count_nodes(node, count=0):
     if node == None:
         return count
@@ -384,6 +390,7 @@ def count_nodes(node, count=0):
     count = count_non_leaf_nodes(node.left, count)
     count = count_non_leaf_nodes(node.right, count)
     return count
+
 
 # cleaners
 def cleanTreesByLength(trees, sentenceCutoffLow=5, sentenceCutoffHigh=200):
@@ -402,8 +409,12 @@ def cleanTreesByLength(trees, sentenceCutoffLow=5, sentenceCutoffHigh=200):
         else:
             removedLong += 1
 
-    print("cleanTreesByLength: removed short {}, removed long {}. Previous {} New length {}".format(removedShort, removedLong, len(trees), len(res)))
+    print("cleanTreesByLength: removed short {}, removed long {}. Previous {} New length {}".format(removedShort,
+                                                                                                    removedLong,
+                                                                                                    len(trees),
+                                                                                                    len(res)))
     return res
+
 
 def cleanTreesByBadChars(trees):
     res = []
@@ -418,6 +429,7 @@ def cleanTreesByBadChars(trees):
         res.append(t)
     print("cleanTreesByBadChars Cleaned: {}".format(ignoredSentenceCount))
     return res
+
 
 class SentenceCounter:
     def __init__(self, trees, labelList):
@@ -468,5 +480,5 @@ class SentenceCounter:
         return res
 
     def reportFindings(self):
-        print("contented {} ignored {}. New size {}".format(self.ambigousCount, self.ignoredSentenceCount, self.callCount - self.ignoredSentenceCount))
-
+        print("contented {} ignored {}. New size {}".format(self.ambigousCount, self.ignoredSentenceCount,
+                                                            self.callCount - self.ignoredSentenceCount))

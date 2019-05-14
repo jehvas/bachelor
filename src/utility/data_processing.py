@@ -11,10 +11,10 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 
-file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\{}\\{}\\resultsfile.csv'
+#file_name = 'C:\\Users\\Jens\\Documents\\Results\\2000\\{}\\{}\\resultsfile.csv'
 
 
-# file_name = 'C:\\Users\\Mads\\IdeaProjects\\Results\\2000\\{}\\{}\\resultsfile.csv'
+file_name = 'C:\\Users\\Mads\\IdeaProjects\\Results\\2000\\{}\\{}\\resultsfile.csv'
 
 def normalize(data):
     data_max = max(data)

@@ -107,44 +107,44 @@ def get_params(algorithm, dataset):
     elif algorithm == 'SVM':
         if dataset.get_name() == 'Spamassassin':
             return {
-                "penalty": None
+                "loss_function": "hinge"
             }
         if dataset.get_name() == 'Newsgroups':
             return {
-                "penalty": "l1"
+                "loss_function": "squared_hinge"
             }
         if dataset.get_name() == 'EnronEvidence':
             return {
-                "penalty": "l1"
+                "loss_function": "hinge"
             }
         if dataset.get_name() == 'EnronFinancial':
             return {
-                "penalty": None
+                "loss_function": "hinge"
             }
         if dataset.get_name() == 'Trustpilot':
             return {
-                "penalty": "l1"
+                "loss_function": "squared_hinge"
             }
 
 
     elif algorithm == 'Perceptron':
         if dataset.get_name() == 'Spamassassin':
             return {
-                "loss_function": ""
+                "penalty": None
             }
         if dataset.get_name() == 'Newsgroups':
             return {
-                "loss_function": ""
+                "penalty": "l1"
             }
         if dataset.get_name() == 'EnronEvidence':
             return {
-                "loss_function": ""
+                "penalty": "l1"
             }
         if dataset.get_name() == 'EnronFinancial':
             return {
-                "loss_function": ""
+                "penalty": None
             }
         if dataset.get_name() == 'Trustpilot':
             return {
-                "loss_function": ""
+                "penalty": "l1"
             }
