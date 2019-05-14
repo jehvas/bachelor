@@ -34,13 +34,8 @@ def parse_arguments(argv):
         "standard",
         "2000",
     ]
-
-    datasets_to_use = [Newsgroups()]
-    algorithms_to_use = [MLP_Tensorflow()]
-    amount = 10
-    dataset_mode = 0
     # Check arguments
-    if len(argv) != 5 or not (argv[1].lower() in algorithm_dict and argv[2].lower() in dataset_dict and argv[4].lower() in dataset_modes):
+    if len(argv) < 4 or not (argv[1].lower() in algorithm_dict and argv[2].lower() in dataset_dict and argv[3].lower() in dataset_modes):
         print("")
         print("There was an error in the program arguments")
         print("There must be 3 arguments: an algorithm, a dataset and a count for how many times it should run")
@@ -57,8 +52,10 @@ def parse_arguments(argv):
     else:
         algorithms_to_use = algorithm_dict[argv[1].lower()]
         datasets_to_use = dataset_dict[argv[2].lower()]
-        amount = int(argv[3])
-        dataset_mode = argv[4]
+        dataset_mode = argv[3]
+        amount = None
+        if len(argv) == 5:
+            amount = int(argv[4])
         if not os.path.exists(ROOTPATH + "output/" + dataset_mode):
             os.makedirs(ROOTPATH + "output/" + dataset_mode)
     return algorithms_to_use, datasets_to_use, amount, dataset_mode
