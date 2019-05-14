@@ -33,7 +33,6 @@ def parse_arguments(argv):
     dataset_modes = [
         "standard",
         "2000",
-        "equal"
     ]
 
     datasets_to_use = [Newsgroups()]
