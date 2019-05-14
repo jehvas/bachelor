@@ -1,9 +1,10 @@
 import os
 
-from Algorithms import SVM, Perceptron
 from Algorithms.Bi_LSTM_tensorflow import Bi_LSTM_Tensorflow
 from Algorithms.MLP_tensorflow import MLP_Tensorflow
+from Algorithms.Perceptron import Perceptron
 from Algorithms.RNN_tensorflow import RNN_Tensorflow
+from Algorithms.SVM import SVM
 from DatasetsConsumers.EnronEvidence import EnronEvidence
 from DatasetsConsumers.EnronFinancial import EnronFinancial
 from DatasetsConsumers.Newsgroups import Newsgroups
@@ -14,14 +15,13 @@ from rootfile import ROOTPATH
 
 def parse_arguments(argv):
     algorithm_dict = {
-        "all": [SVM, Perceptron, MLP_Tensorflow(), RNN_Tensorflow(), Bi_LSTM_Tensorflow()],
-        "svm": [SVM],
-        "perceptron": [Perceptron],
+        "all": [SVM(), Perceptron(), MLP_Tensorflow(), RNN_Tensorflow(), Bi_LSTM_Tensorflow()],
+        "SVM()": [SVM()],
+        "Perceptron()": [Perceptron()],
         "mlp": [MLP_Tensorflow()],
         "rnn": [RNN_Tensorflow()],
         "bi_lstm": [Bi_LSTM_Tensorflow()]
     }
-    newsgroup = Newsgroups()
     dataset_dict = {
         "all": [Newsgroups(), Spamassassin(), EnronEvidence(), EnronFinancial(), Trustpilot()],
         "newsgroups": [Newsgroups()],

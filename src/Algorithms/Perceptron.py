@@ -3,48 +3,32 @@ import uuid
 from sklearn.linear_model import Perceptron
 from sklearn.metrics import precision_recall_fscore_support
 
+from Algorithms.AbstractAlgorithm import AbstractAlgorithm
 from rootfile import ROOTPATH
 from utility.confusmatrix import plot_confusion_matrix
 
-recent_y_test = None
-recent_predictions = None
-recent_dataset = None
-fscore = None
-guid = None
 
-def get_name():
-    return 'Perceptron'
+class Perceptron(AbstractAlgorithm):
+    def prepare_features(self, x_train, y_train, x_test, y_test):
+        return None
 
+    def load_parameters(self, parameters):
+        self.penalty = parameters['penalty']
 
-def run_train(dataset, train_data, test_data, parameters, embedding=None):
-    x_train, y_train = train_data
-    x_test, y_test = test_data
-    model = Perceptron(max_iter=1_000, tol=1e-6, class_weight=parameters['class_weights'], penalty=parameters['penalty'])
-    # print("\nStarting fitting")
-    model.fit(x_train, y_train)
+    fscore = None
+    penalty = None
 
-    # print("Fitting done")
-    predictions = model.predict(x_test)
-    global recent_y_test
-    recent_y_test = y_test
-    global recent_predictions
-    recent_predictions = predictions
-    global recent_dataset
-    recent_dataset = dataset
+    def train(self, x_train, y_train, x_test, y_test):
+        model = Perceptron(max_iter=1_000, tol=1e-6, class_weight='balanced', penalty=self.penalty)
+        model.fit(x_train, y_train)
 
-    precision, recall, _fscore, support = precision_recall_fscore_support(y_test, predictions)
-    global fscore
-    fscore = _fscore
-    global guid
-    guid = str(uuid.uuid4())
-    return [], y_test, predictions
+        predictions = model.predict(x_test)
+        self.predictions = predictions
 
+        precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)
+        self.fscore = fscore
+        return [], y_test, predictions
 
-def plot_data(dataset_name, counter, dataset_mode):
-    file_path = ROOTPATH + "Results/" + dataset_mode + "/" + get_name() + "/" + recent_dataset.get_name() + "/"
-    plot_matrix(counter, file_path)
-
-
-def plot_matrix(counter, file_path):
-    plot_confusion_matrix(recent_y_test, recent_predictions, recent_dataset, get_name(), normalize=True,
-                          save_path=file_path + "/plots/" + str(counter) + "_confusmatrix_" + guid + ".png")
+    def plot_data(self, dataset, counter, dataset_mode, y_test):
+        file_path = ROOTPATH + "Results/" + dataset_mode + "/" + self.get_name() + "/" + dataset.get_name() + "/"
+        self.plot_matrix(dataset, counter, file_path, y_test)

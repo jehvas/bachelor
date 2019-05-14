@@ -18,8 +18,7 @@ from utility.utility import log_to_file, setup_result_folder
 
 algorithms_to_use, datasets_to_use, amount, dataset_mode = parse_arguments(sys.argv)
 for dataset in datasets_to_use:
-    emails, labels = dataset.load(True, dataset_mode)
-
+    emails, labels = dataset.load()
     if dataset_mode == "2000":
         emails, labels = resize_under_sample(emails, labels)
 
@@ -65,7 +64,7 @@ for dataset in datasets_to_use:
             if avg_fscore > best_fscore:
                 print('New champion! {}'.format(avg_fscore))
                 best_fscore = avg_fscore
-                algorithm.plot_data(dataset.get_name(), counter, dataset_mode)
+                algorithm.plot_data(dataset, counter, dataset_mode, y_test)
 
             time_taken = time.time() - start_time
 
