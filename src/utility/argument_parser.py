@@ -16,8 +16,8 @@ from rootfile import ROOTPATH
 def parse_arguments(argv):
     algorithm_dict = {
         "all": [SVM(), Perceptron(), MLP_Tensorflow(), RNN_Tensorflow(), Bi_LSTM_Tensorflow()],
-        "SVM()": [SVM()],
-        "Perceptron()": [Perceptron()],
+        "svm": [SVM()],
+        "perceptron": [Perceptron()],
         "mlp": [MLP_Tensorflow()],
         "rnn": [RNN_Tensorflow()],
         "bi_lstm": [Bi_LSTM_Tensorflow()]
