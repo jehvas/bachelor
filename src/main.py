@@ -3,6 +3,7 @@ import time
 
 import numpy as np
 from sklearn.model_selection import train_test_split
+from tensorflow.python import set_random_seed
 
 from Glove.glovemodel import GloVe
 from utility.Parameters import get_params
@@ -20,6 +21,8 @@ for dataset in datasets_to_use:
     features = glove.get_features(emails, dataset, dataset_mode)
 
     for algorithm in algorithms_to_use:
+        np.random.seed(1)
+        set_random_seed(1)
         print("Running algorithm:", algorithm.get_name())
         parameters = get_params(algorithm.get_name(), dataset)
         print(str(parameters))
