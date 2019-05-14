@@ -1,5 +1,5 @@
 import uuid
-
+import numpy as np
 from sklearn.linear_model import Perceptron
 from sklearn.metrics import precision_recall_fscore_support
 
@@ -16,10 +16,10 @@ def get_name():
     return 'Perceptron'
 
 
-def run_train(dataset, train_data, test_data, parameters, embedding=None):
+def run_train(dataset, train_data, test_data, parameters):
     x_train, y_train = train_data
     x_test, y_test = test_data
-    model = Perceptron(max_iter=1_000, tol=1e-6, class_weight=parameters['class_weights'], penalty=parameters['penalty'])
+    model = Perceptron(max_iter=1_000, tol=1e-6, class_weight='balanced', penalty=parameters['penalty'])
     # print("\nStarting fitting")
     model.fit(x_train, y_train)
 
@@ -37,6 +37,7 @@ def run_train(dataset, train_data, test_data, parameters, embedding=None):
     fscore = _fscore
     global guid
     guid = str(uuid.uuid4())
+    print(np.average(fscore))
     return [], y_test, predictions
 
 

@@ -26,7 +26,7 @@ for dataset in datasets_to_use:
         x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
 
         start_time = time.time()
-        algorithm.run_train(dataset, x_train, y_train, x_test, y_test, labels, parameters)
+        algorithm.run_train(dataset, (x_train, y_train), (x_test, y_test), parameters)
         time_taken = time.time() - start_time
         print("Finished in {:.3f}".format(time_taken))
 

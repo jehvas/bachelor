@@ -33,9 +33,7 @@ def plot_data(plot_class, save_file_path="", save=True, show=False):
                                         plot_class.y_label)
 
     plt.title(title, fontsize=18)
-    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     plt.grid(True)
-    # plt.subplots_adjust(right=0.8)
     if save_file_path != "":
         plt.savefig(save_file_path)
     elif save:
