@@ -3,10 +3,11 @@ from tensorflow.python.keras.optimizers import Adam, SGD
 
 def leaky_to_linear(parameters):
     if 'hidden_layers' in parameters:
-        for i, (type, num, activation) in enumerate(parameters['hidden_layers']):
+        for i, (layer_type, num, activation) in enumerate(parameters['hidden_layers']):
             new_activation = 'linear' if activation.lower() == 'leakyrelu' else activation
-            parameters['hidden_layers'][i] = (type, num, new_activation)
+            parameters['hidden_layers'][i] = (layer_type, num, new_activation)
     return parameters
+
 
 def get_params(algorithm, dataset):
     if algorithm == 'RNN_Tensorflow':
