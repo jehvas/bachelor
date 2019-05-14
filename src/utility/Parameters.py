@@ -34,7 +34,7 @@ def get_params(algorithm, dataset):
                                   ("Dense", 147, "relu"),
                                   ("Dropout", 0.5, ""),
                                   ("Dense", 2, "softmax")],
-                'optimizer': Adam(lr=0.0614),
+                'optimizer': SGD(lr=0.0614),
                 'learning_rate': '0.0614'}
         if dataset.get_name() == "EnronFinancial":
             return {
@@ -45,7 +45,7 @@ def get_params(algorithm, dataset):
                                   ("Dense", 300, "linear"),
                                   ("Dropout", 0.5, ""),
                                   ("Dense", 2, "softmax")],
-                'optimizer': Adam(lr=0.0447),
+                'optimizer': SGD(lr=0.0447),
                 'learning_rate': '0.0447'}
         if dataset.get_name() == "Trustpilot":
             return {
@@ -56,7 +56,7 @@ def get_params(algorithm, dataset):
                                   ("Dense", 105, "linear"),
                                   ("Dropout", 0.1, ""),
                                   ("Dense", 5, "softmax")],
-                'optimizer': Adam(lr=0.0464),
+                'optimizer': SGD(lr=0.0464),
                 'learning_rate': '0.0464'}
 
     elif algorithm == 'MLP_Tensorflow':
