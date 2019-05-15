@@ -158,8 +158,8 @@ def get_params(algorithm, dataset):
                                   ("Dense", 140, "softmax"),
                                   ("Dropout", 0.5, ""),
                                   ("Dense", 5, "softmax")],
-                'optimizer': SGD(lr=0.0398, decay=1e-6),
-                'learning_rate': '0.0398'}
+                'optimizer': SGD(lr=0.0004, decay=1e-6),
+                'learning_rate': '0.0004'}
 
     elif algorithm == 'SVM':
         if dataset.get_name() == 'Spamassassin':
