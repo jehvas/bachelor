@@ -13,26 +13,26 @@ def get_params(algorithm, dataset):
     if algorithm == 'RNN_Tensorflow':
         if dataset.get_name() == "Spamassassin":
             return {
-                'hidden_layers': [("RNN", 236, "LeakyReLU"),
-                                  ("Dropout", 0.2, ""),
-                                  ("RNN", 192, "linear"),
-                                  ("Dropout", 0.1, ""),
-                                  ("Dense", 300, "linear"),
+                'hidden_layers': [("RNN", 207, "LeakyReLU"),
+                                  ("Dropout", 0.4, ""),
+                                  ("RNN", 161, "LeakyReLU"),
+                                  ("Dropout", 0.3, ""),
+                                  ("Dense", 99, "LeakyReLU"),
                                   ("Dropout", 0.1, ""),
                                   ("Dense", 2, "softmax")],
-                'optimizer': Adam(lr=0.0029),
-                'learning_rate': '0.0029'}
+                'optimizer': SGD(lr=0.0843),
+                'learning_rate': '0.0843'}
         if dataset.get_name() == "Newsgroups":
             return {
-                'hidden_layers': [("RNN", 240, "relu"),
-                                  ("Dropout", 0.3, ""),
-                                  ("RNN", 217, "relu"),
-                                  ("Dropout", 0.3, ""),
-                                  ("Dense", 246, "relu"),
+                'hidden_layers': [("RNN", 236, "LeakyReLU"),
                                   ("Dropout", 0.5, ""),
+                                  ("RNN", 233, "LeakyReLU"),
+                                  ("Dropout", 0.2, ""),
+                                  ("Dense", 138, "LeakyReLU"),
+                                  ("Dropout", 0.2, ""),
                                   ("Dense", 20, "softmax")],
-                'optimizer': SGD(lr=0.0161),
-                'learning_rate': '0.0161'}
+                'optimizer': SGD(lr=0.0520),
+                'learning_rate': '0.0520'}
         if dataset.get_name() == "EnronEvidence":
             return {
                 'hidden_layers': [("RNN", 63, "softmax"),
@@ -46,15 +46,15 @@ def get_params(algorithm, dataset):
                 'learning_rate': '0.0614'}
         if dataset.get_name() == "EnronFinancial":
             return {
-                'hidden_layers': [("RNN", 204, "tanh"),
-                                  ("Dropout", 0.3, ""),
-                                  ("RNN", 203, "tanh"),
+                'hidden_layers': [("RNN", 80, "relu"),
                                   ("Dropout", 0.1, ""),
-                                  ("Dense", 300, "linear"),
+                                  ("RNN", 16, "LeakyReLU"),
                                   ("Dropout", 0.5, ""),
+                                  ("Dense", 193, "relu"),
+                                  ("Dropout", 0.1, ""),
                                   ("Dense", 2, "softmax")],
-                'optimizer': SGD(lr=0.0447),
-                'learning_rate': '0.0447'}
+                'optimizer': SGD(lr=0.0316),
+                'learning_rate': '0.0316'}
         if dataset.get_name() == "Trustpilot":
             return {
                 'hidden_layers': [("RNN", 238, "linear"),
@@ -78,7 +78,7 @@ def get_params(algorithm, dataset):
         if dataset.get_name() == "Newsgroups":
             return {
                 'hidden_layers': [("Dense", 259, "relu"),
-                                  ("Dropout", 0, ""),
+                                  ("Dropout", 0.1, ""),
                                   ("Dense", 20, "softmax")],
                 'optimizer': SGD(lr=0.0681, decay=1e-6),
                 'learning_rate': '0.0681'}
@@ -140,7 +140,7 @@ def get_params(algorithm, dataset):
                 'learning_rate': '0.0470'}
         if dataset.get_name() == "EnronFinancial":
             return {
-                'hidden_layers': [("Bi_LSTM", 225, "softmax"),
+                'hidden_layers': [("Bi_LSTM", 206, "softmax"),
                                   ("Dropout", 0.2, ""),
                                   ("Bi_LSTM", 98, "softmax"),
                                   ("Dropout", 0.4, ""),
