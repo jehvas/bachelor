@@ -107,4 +107,6 @@ venv.bak/
 .idea/
 
 data/*
+!output/
+!output/2000
 output/*

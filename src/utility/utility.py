@@ -47,10 +47,14 @@ def print_progress(progress, total):
 
 
 def log_to_file(parameters, fscore, file_path, time_taken, guid):
+    tmp_param = {}
+    for key in sorted(parameters):
+        tmp_param[key] = parameters[key]
+    parameters = tmp_param
     create_file_is_not_exists(file_path, parameters)
     avg = sum(fscore) / len(fscore)
     with open(file_path, 'a+') as f:
-        f.write(str(avg).replace('.',',') + "\t ")
+        f.write(str(avg).replace('.', ',') + "\t ")
         for key, value in parameters.items():
             if isinstance(value, (np.ndarray, np.generic)):
                 f.write(np.array2string(value, separator=';', max_line_width=500) + "\t ")

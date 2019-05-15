@@ -13,7 +13,11 @@ algorithms_to_use, datasets_to_use, amount, dataset_mode = parse_arguments(sys.a
 for dataset in datasets_to_use:
     emails, labels = dataset.load(dataset_mode=dataset_mode)
     glove = GloVe(300)
-
+    unq = set(labels)
+    for key in unq:
+        idx = labels.index(key)
+        print(dataset.classes[key], emails[idx])
+    continue
     features = glove.get_features(emails, dataset)
 
     for algorithm in algorithms_to_use:

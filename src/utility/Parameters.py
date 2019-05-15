@@ -168,7 +168,7 @@ def get_params(algorithm, dataset):
             }
         if dataset.get_name() == 'Newsgroups':
             return {
-                "loss_function": "squared_hinge"
+                "loss_function": "hinge"
             }
         if dataset.get_name() == 'EnronEvidence':
             return {
@@ -180,7 +180,7 @@ def get_params(algorithm, dataset):
             }
         if dataset.get_name() == 'Trustpilot':
             return {
-                "loss_function": "squared_hinge"
+                "loss_function": "hinge"
             }
 
 
