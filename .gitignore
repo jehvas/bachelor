@@ -108,5 +108,5 @@ venv.bak/
 
 data/*
 !output/
-!output/2000
+!output/2000/
 output/*
