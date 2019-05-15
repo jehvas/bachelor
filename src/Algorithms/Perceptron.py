@@ -24,7 +24,3 @@ class Perceptron(AbstractAlgorithm):
         precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)
         self.fscore = fscore
         return [], y_test, predictions
-
-    def plot_data(self, dataset, counter, dataset_mode, y_test):
-        file_path = ROOTPATH + "Results/" + dataset_mode + "/" + self.get_name() + "/" + dataset.get_name() + "/"
-        self.plot_matrix(dataset, counter, file_path, y_test)

@@ -107,55 +107,55 @@ def get_params(algorithm, dataset):
     elif algorithm == 'Bi_LSTM_Tensorflow':
         if dataset.get_name() == "Spamassassin":
             return {
-                'hidden_layers': [("Bi_LSTM", 141, "tanh"),
-                                  ("Dropout", 0.2, ""),
-                                  ("Bi_LSTM", 210, "tanh"),
-                                  ("Dropout", 0.2, ""),
-                                  ("Dense", 300, "linear"),
-                                  ("Dropout", 0.3, ""),
+                'hidden_layers': [("Bi_LSTM", 52, "softmax"),
+                                  ("Dropout", 0.4, ""),
+                                  ("Bi_LSTM", 122, "softmax"),
+                                  ("Dropout", 0, ""),
+                                  ("Dense", 26, "relu"),
+                                  ("Dropout", 0.1, ""),
                                   ("Dense", 2, "softmax")],
-                'optimizer': SGD(lr=0.0898, decay=1e-6),
-                'learning_rate': '0.0898'}
+                'optimizer': SGD(lr=0.0715, decay=1e-6),
+                'learning_rate': '0.0715'}
         if dataset.get_name() == "Newsgroups":
             return {
-                'hidden_layers': [("Bi_LSTM", 168, "relu"),
-                                  ("Dropout", 0.5, ""),
-                                  ("Bi_LSTM", 30, "softmax"),
+                'hidden_layers': [("Bi_LSTM", 278, "softmax"),
+                                  ("Dropout", 0.3, ""),
+                                  ("Bi_LSTM", 277, "softmax"),
                                   ("Dropout", 0.2, ""),
-                                  ("Dense", 300, "linear"),
-                                  ("Dropout", 0.5, ""),
-                                  ("Dense", 2, "softmax")],
-                'optimizer': SGD(lr=0.0261, decay=1e-6),
-                'learning_rate': '0.0681'}
+                                  ("Dense", 12, "relu"),
+                                  ("Dropout", 0.2, ""),
+                                  ("Dense", 20, "softmax")],
+                'optimizer': Adam(lr=0.0037, decay=1e-6),
+                'learning_rate': '0.0037'}
         if dataset.get_name() == "EnronEvidence":
             return {
-                'hidden_layers': [("Bi_LSTM", 225, "relu"),
+                'hidden_layers': [("Bi_LSTM", 225, "softmax"),
                                   ("Dropout", 0.2, ""),
                                   ("Bi_LSTM", 171, "softmax"),
                                   ("Dropout", 0.5, ""),
-                                  ("Dense", 25, "linear"),
+                                  ("Dense", 25, "relu"),
                                   ("Dropout", 0.4, ""),
                                   ("Dense", 2, "softmax")],
                 'optimizer': SGD(lr=0.0470, decay=1e-6),
                 'learning_rate': '0.0470'}
         if dataset.get_name() == "EnronFinancial":
             return {
-                'hidden_layers': [("Bi_LSTM", 198, "relu"),
-                                  ("Dropout", 0.3, ""),
-                                  ("Bi_LSTM", 11, "relu"),
-                                  ("Dropout", 0, ""),
-                                  ("Dense", 300, "linear"),
-                                  ("Dropout", 0.1, ""),
+                'hidden_layers': [("Bi_LSTM", 225, "softmax"),
+                                  ("Dropout", 0.2, ""),
+                                  ("Bi_LSTM", 98, "softmax"),
+                                  ("Dropout", 0.4, ""),
+                                  ("Dense", 18, "relu"),
+                                  ("Dropout", 0.5, ""),
                                   ("Dense", 2, "softmax")],
-                'optimizer': SGD(lr=0.0945, decay=1e-6),
-                'learning_rate': '0.0945'}
+                'optimizer': SGD(lr=0.0864, decay=1e-6),
+                'learning_rate': '0.0864'}
         if dataset.get_name() == "Trustpilot":
             return {
-                'hidden_layers': [("Bi_LSTM", 14, "softmax"),
-                                  ("Dropout", 0.3, ""),
-                                  ("Bi_LSTM", 19, "softmax"),
-                                  ("Dropout", 0.3, ""),
-                                  ("Dense", 300, "linear"),
+                'hidden_layers': [("Bi_LSTM", 229, "relu"),
+                                  ("Dropout", 0, ""),
+                                  ("Bi_LSTM", 287, "softmax"),
+                                  ("Dropout", 0.4, ""),
+                                  ("Dense", 14, "softmax"),
                                   ("Dropout", 0.5, ""),
                                   ("Dense", 5, "softmax")],
                 'optimizer': SGD(lr=0.0398, decay=1e-6),
