@@ -1,3 +1,5 @@
+import numpy as np
+
 from utility.undersample_split import resize_under_sample
 from utility.utility import file_exists, load
 
@@ -9,5 +11,6 @@ def check_mini_load(dataset, dataset_mode, dimensionCount):
         labels = load(dataset.get_name() + "_saved_labels")
         if dataset_mode == "2000":
             emails, labels = resize_under_sample(labels, labels)
+        labels = np.asarray(labels)
         return True, labels
     return False, None

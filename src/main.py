@@ -16,6 +16,7 @@ for dataset in datasets_to_use:
     is_mini, mini_labels = check_mini_load(dataset, dataset_mode, 300)
     if is_mini:
         labels = mini_labels
+        dataset.set_classes()
         emails = None
     else:
         emails, labels = dataset.load(dataset_mode=dataset_mode)
