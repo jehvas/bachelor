@@ -13,11 +13,18 @@ from rootfile import ROOTPATH
 from utility.Parameters import leaky_to_linear
 from utility.Random_Parameters import get_random_params
 from utility.argument_parser import parse_arguments
+from utility.minimal_loader import check_mini_load
 from utility.utility import setup_result_folder
 
 algorithms_to_use, datasets_to_use, amount, dataset_mode = parse_arguments(sys.argv)
 for dataset in datasets_to_use:
-    emails, labels = dataset.load(dataset_mode=dataset_mode)
+    dataset.mode = dataset_mode
+    is_mini, mini_labels = check_mini_load(dataset, dataset_mode, 300)
+    if is_mini:
+        labels = mini_labels
+        emails = None
+    else:
+        emails, labels = dataset.load(dataset_mode=dataset_mode)
 
     glove = GloVe(300)
 
