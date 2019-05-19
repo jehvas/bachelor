@@ -7,7 +7,7 @@ from rootfile import ROOTPATH
 
 
 def filter_genders(reviews: np.array, genders: np.array):
-    idx_to_delete: List = []
+    idx_to_delete = []
     for i, gender in enumerate(genders):
         if gender == 2:
             idx_to_delete += i
@@ -20,7 +20,7 @@ def filter_genders(reviews: np.array, genders: np.array):
 class Trustpilot(AbstractDataset):
     num_no_gender_specified = 0
     num_json_parse_errors = 0
-    gender_list: List = []
+    gender_list = []
     num_line = 0
     num_lines = 0
 
@@ -57,9 +57,9 @@ class Trustpilot(AbstractDataset):
         user_json_object = ast.literal_eval(line)
         if "reviews" in user_json_object:
             gender = 2
-            reviews: List = []
-            ratings: List = []
-            genders: List = []
+            reviews = []
+            ratings = []
+            genders = []
             num_empty_review = 0
             num_empty_rating = 0
             if "gender" in user_json_object:
@@ -72,7 +72,7 @@ class Trustpilot(AbstractDataset):
                     rating = int(review["rating"]) - 1
                     text = review["text"]
                     if len(text) != 0:
-                        reviews.append(self.process_single_mail(text[0]))
+                        reviews.append(text[0])
                         ratings.append(rating)
                         genders.append(gender)
                     else:

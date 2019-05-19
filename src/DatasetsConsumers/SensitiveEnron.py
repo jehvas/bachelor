@@ -33,6 +33,5 @@ class SensitiveEnron(AbstractDataset):
 
         emails = emails_from_train + emails_from_test + emails_from_dev
         labels = labels_from_train + labels_from_test + labels_from_dev
-        emails = [self.process_single_mail(email) for email in emails]
         print('Labels:', Counter(labels))
         return emails, labels

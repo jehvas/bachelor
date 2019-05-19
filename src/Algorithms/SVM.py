@@ -23,4 +23,3 @@ class SVM(AbstractAlgorithm):
         precision, recall, fscore, support = precision_recall_fscore_support(y_test, predictions)
         print(sum(fscore) / len(fscore))
         self.fscore = fscore
-        return [], y_test, predictions

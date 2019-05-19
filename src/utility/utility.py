@@ -18,12 +18,13 @@ def check_directory(filename):
                 raise
 
 
-def save(object_to_save, file_name):
+def save(object_to_save, file_name, verbose=False):
     file_name = output_path + file_name
     check_directory(file_name)
     with open(file_name, "wb") as fp:
         p.dump(object_to_save, fp)
-    print("Utility saved", file_name)
+    if verbose:
+        print("Utility saved", file_name)
 
 
 def file_exists(file_name):
@@ -34,16 +35,18 @@ def get_file_path(file_name):
     return output_path + file_name
 
 
-def load(file_name):
+def load(file_name, verbose=False):
     file_name = output_path + file_name
     with open(file_name, "rb") as fp:
         data = p.load(fp)
-    print("Utility loaded", file_name)
+    if verbose:
+        print("Utility loaded", file_name)
     return data
 
 
 def print_progress(progress, total):
-    print("{:.2f}".format(progress / total * 100), "%")
+    if progress % int(total / 10) == 0:
+        print("{:.2f}".format(progress / total * 100), "%")
 
 
 def log_to_file(parameters, fscore, file_path, time_taken, guid):

@@ -3,11 +3,13 @@ import abc
 import time
 import uuid
 
+import numpy as np
+
 from rootfile import ROOTPATH
 from utility.confusmatrix import plot_confusion_matrix
 from utility.plotter import PlotClass, plot_data
 from utility.utility import check_directory, log_to_file
-
+import tensorflow as tf
 
 class AbstractAlgorithm(abc.ABC):
     dataset = None
@@ -69,9 +71,11 @@ class AbstractAlgorithm(abc.ABC):
         if prep is not None:
             x_train, y_train, x_test, y_test = prep
         self.train(x_train, y_train, x_test, y_test)
-
+        print('F-Score:', np.average(self.fscore))
         time_taken = time.time() - start_time
         self.write_to_file(parameters, time_taken, self.guid)
         if should_plot:
             self.plot_data(dataset, y_test)
-        print("Finished in {:.3f}".format(time_taken))
+
+
+        # print("Finished in {:.3f}".format(time_taken))

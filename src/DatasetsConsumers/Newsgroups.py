@@ -13,6 +13,18 @@ def get_subdirectories(path):
     return subdirectories
 
 
+def parse_email_category(path):
+    print(path)
+    words = []
+    files = os.listdir(path)
+
+    emails = [path + email for email in files]
+    for email in emails:
+        with open(email, encoding="latin-1") as f:
+            words.append(f.read())
+    return words
+
+
 class Newsgroups(AbstractDataset):
     def sub_load(self):
         directories = ROOTPATH + "data/20Newsgroups/"
@@ -20,7 +32,7 @@ class Newsgroups(AbstractDataset):
 
         emails = []
         labels = []
-        val = Parallel(n_jobs=-1)(delayed(self.parse_email_category)(directories + i + "/") for i in sub_directories)
+        val = Parallel(n_jobs=-1)(delayed(parse_email_category)(directories + i + "/") for i in sub_directories)
         for i in range(len(val)):
             labels += ([i] * len(val[i]))
 
@@ -34,16 +46,3 @@ class Newsgroups(AbstractDataset):
                         'rec.sport.baseball', 'rec.sport.hockey', 'sci.crypt', 'sci.electronics', 'sci.med',
                         'sci.space', 'soc.religion.christian', 'talk.politics.guns', 'talk.politics.mideast',
                         'talk.politics.misc', 'talk.religion.misc']
-
-    def parse_email_category(self, path):
-        print(path)
-        words = []
-        files = os.listdir(path)
-
-        emails = [path + email for email in files]
-        for email in emails:
-            f = open(email, encoding="latin-1")
-            text = f.read()
-            f.close()
-            words.append(self.process_single_mail(text))
-        return words

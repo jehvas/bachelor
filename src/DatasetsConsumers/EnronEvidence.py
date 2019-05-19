@@ -1,7 +1,5 @@
 from DatasetsConsumers.SensitiveEnron import SensitiveEnron
 
-DATA_PATH = "data/SensitiveEnron/evidence_tampering"
-
 
 class EnronEvidence(SensitiveEnron):
     def set_classes(self):
@@ -11,4 +9,4 @@ class EnronEvidence(SensitiveEnron):
         return super().common_load(data_path)
 
     def sub_load(self):
-        return self.common_load(DATA_PATH)
+        return self.common_load("data/SensitiveEnron/evidence_tampering")

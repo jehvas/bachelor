@@ -36,3 +36,10 @@ for dataset in datasets_to_use:
                                                             stratify=labels)
 
         algorithm.run_train(dataset, x_train, y_train, x_test, y_test, parameters, should_plot=True)
+        glove.load_glove_model()
+        while True:
+            txt = dataset.process_single_mail(input())
+            vec = glove.mail_to_vector(txt)
+            pred = algorithm.model.predict(vec)
+            print("Predicted {} stars".format(np.argmax(pred)+1))
+            print(pred)

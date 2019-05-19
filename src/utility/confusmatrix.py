@@ -25,9 +25,10 @@ def plot_confusion_matrix(y_true, y_pred, dataset, algorithm,
     classes = dataset.classes
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
+        # print("Normalized confusion matrix")
     else:
-        print('Confusion matrix, without normalization')
+        pass
+        # print('Confusion matrix, without normalization')
 
     fig, ax = plt.subplots(figsize=(10, 10))
     im = ax.imshow(cm, interpolation='nearest', cmap=cmap)

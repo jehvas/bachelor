@@ -1,7 +1,9 @@
+import time
 from typing import List
 from keras_preprocessing import sequence
 from keras_preprocessing.text import Tokenizer
 from sklearn import preprocessing
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import MinMaxScaler
 from DatasetsConsumers.AbstractDataset import AbstractDataset
 from rootfile import ROOTPATH
@@ -17,7 +19,7 @@ class GloVe:
     glove_file = ''
     model = {}
 
-    def __init__(self, dimension_count: int):
+    def __init__(self, dimension_count):
         self.dimensionCount = dimension_count
         self.glove_file = "glove.6B." + str(dimension_count) + "d.txt"
         # self.glove_file = 'glove.840B.300d.txt'
@@ -28,6 +30,9 @@ class GloVe:
             return
         print('Features / Weights matrix not found.')
         print("Loading Glove word embeddings")
+        if file_exists('glove'):
+            self.model = load('glove')
+            return
         num_lines = 0
         line_counter = 0
         with open(GLOVE_DIR + self.glove_file, 'r+', encoding="utf8") as f:
@@ -45,9 +50,10 @@ class GloVe:
                     continue
                 embedding = np.asarray(split_line[1:], dtype='float32')
                 self.model[word] = embedding
-            print("Done.", len(self.model), " tokens loaded!")
+            save(self.model, 'glove')
+            print("Done.", len(self.model), "tokens loaded!")
 
-    def get_weights_matrix(self, emails: List[List[str]], dataset: AbstractDataset, dataset_mode):
+    def get_weights_matrix(self, emails, dataset, dataset_mode):
         wm_file_name = dataset_mode + "/" + "{}_weights_matrix_{}".format(dataset.get_name(), self.dimensionCount)
 
         tokenizer = Tokenizer()
@@ -68,28 +74,33 @@ class GloVe:
         save(weights_matrix, wm_file_name)
         return weights_matrix, sequences_matrix
 
+    def mail_to_vector(self, email):
+        vector = np.zeros([1, self.dimensionCount])
+        for word in email:
+            if word in self.model:
+                word_vector = self.model[word]
+                vector[0] += word_vector
+        return vector
+
     # Check if features exist
-    def get_features(self, emails: np.array, dataset: AbstractDataset):
-        print("Loading embedding features")
+    def get_features(self, emails, dataset):
+        # print("Loading embedding features")
         feature_file_name = dataset.mode + "/" + dataset.get_name() + '_features_' + str(self.dimensionCount)
         if file_exists(feature_file_name):
             return load(feature_file_name)
         self.load_glove_model()
+        time_start = time.time()
         sum_vectors_array = self.sum_vectors(emails)
+        time_taken = time.time() - time_start
+        print('sum_vectors: {}'.format(time_taken))
         features = preprocessing.scale(sum_vectors_array)
         save(features, feature_file_name)
         return features
 
-    def sum_vectors(self, words_in_emails):
-        all_vector_sum = []
-        for i in range(len(words_in_emails)):
-            words = words_in_emails[i]
-            vector_sum = np.zeros(self.dimensionCount)
-            for word in words:
-                if word in self.model:
-                    word_vector = self.model[word]
-                    vector_sum += word_vector
-            all_vector_sum.append(vector_sum)
+    def sum_vectors(self, emails):
+        all_vector_sum = np.zeros([len(emails), self.dimensionCount])
+        for i, email in enumerate(emails):
+            all_vector_sum[i] = self.mail_to_vector(email)
         scaler = MinMaxScaler()
         scaler.fit(all_vector_sum)
         MinMaxScaler(copy=True, feature_range=(0, 1))

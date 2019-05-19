@@ -5,6 +5,7 @@ import numpy as np
 from typing import List
 from nltk import word_tokenize
 from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
 
 from utility.undersample_split import resize_under_sample
 from utility.utility import save, file_exists, load
@@ -26,7 +27,7 @@ def check_types(emails, labels):
 
 class AbstractDataset(abc.ABC):
     stop_words = set(stopwords.words("english"))
-    classes: List = []
+    classes = []
     mode = None
 
     @abc.abstractmethod
@@ -47,6 +48,7 @@ class AbstractDataset(abc.ABC):
         if emails is None or labels is None:
             start_time = time.time()
             emails, labels = self.sub_load()
+            emails = [self.process_single_mail(email) for email in emails]
             save(emails, self.get_name() + "_saved_mails")
             save(labels, self.get_name() + "_saved_labels")
             print("--- %s seconds ---" % (time.time() - start_time))
@@ -82,13 +84,13 @@ class AbstractDataset(abc.ABC):
         check_lengths(emails, labels)
         print("Finished loading dataset:", self.get_name(), "\t\t", "Size: ", len(emails), ",", len(labels))
 
-    def process_single_mail(self, text: str):
+    def process_single_mail(self, text):
         text_tokenized = word_tokenize(text.lower())
         sentence_no_stop_words = self.filter_stop_words(text_tokenized)
         email_words = [w for w in sentence_no_stop_words if w.isalpha()]
         return email_words
 
-    def filter_stop_words(self, text_tokenized: List[str]):
+    def filter_stop_words(self, text_tokenized):
         filtered_sentence = []
         for w in text_tokenized:
             if w not in self.stop_words:
