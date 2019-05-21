@@ -41,7 +41,7 @@ class AbstractTensorflowAlgorithm(AbstractAlgorithm):
                                       epochs=50,
                                       callbacks=[es_loss],
                                       validation_data=(x_test, y_test),
-                                      verbose=1)
+                                      verbose=0)
 
         self.predictions = self.model.predict(x_test)
 
