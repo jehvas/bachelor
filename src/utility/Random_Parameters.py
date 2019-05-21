@@ -7,7 +7,7 @@ def get_random_params(algorithm, output_dim):
     if algorithm == 'RNN_Tensorflow' or algorithm == 'MLP_Tensorflow' or algorithm == 'Bi_LSTM_Tensorflow':
         optimizer, lr = pick_optimizer()
         params = {
-            'optimizer': SGD(lr=0.0161, decay=1e-6),
+            'optimizer': optimizer,
             'learning_rate': lr,
         }
         if algorithm == "MLP_Tensorflow":
@@ -15,19 +15,19 @@ def get_random_params(algorithm, output_dim):
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "RNN_Tensorflow":
-            params["hidden_layers"] = [("RNN", random.randint(10, 300), pick_random_activation_function()),
+            params["hidden_layers"] = [("RNN", random.randint(10, 600), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("RNN", random.randint(10, 300), pick_random_activation_function()),
+                                       ("RNN", random.randint(10, 600), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("Dense", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Dense", random.randint(10, 600), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "Bi_LSTM_Tensorflow":
-            params["hidden_layers"] = [("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
+            params["hidden_layers"] = [("Bi_LSTM", random.randint(10, 600), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("Bi_LSTM", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Bi_LSTM", random.randint(10, 600), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
-                                       ("Dense", random.randint(10, 300), pick_random_activation_function()),
+                                       ("Dense", random.randint(10, 600), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         return params
@@ -61,7 +61,7 @@ def pick_random_activation_function():
 
 
 def pick_optimizer():
-    random_lr = random.randint(1, 1000) / 10000
+    random_lr = random.randint(1, 10000) / 100000
     possible_optimizers = [
         # AdagradOptimizer(learning_rate=random_lr),
         SGD(lr=random_lr, decay=1e-6),
