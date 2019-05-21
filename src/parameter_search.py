@@ -4,6 +4,7 @@ import sys
 from collections import Counter
 
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import train_test_split
 from tensorflow.python import set_random_seed, reset_default_graph, ops
 from tensorflow.python.keras.backend import clear_session
@@ -33,17 +34,23 @@ for dataset in datasets_to_use:
 
     for algorithm in algorithms_to_use:
         print("Running algorithm:", algorithm.get_name())
-
-        if not os.path.exists(ROOTPATH + "Results/" + dataset_mode + "/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots"):
-            os.makedirs(ROOTPATH + "Results/" + dataset_mode + "/" + algorithm.get_name() + "/" + dataset.get_name() + "/plots")
+        plot_path = "{}Results/{}/{}/{}/".format(ROOTPATH, dataset_mode, algorithm.get_name(), dataset.get_name())
+        if not os.path.exists(plot_path + "plots"):
+            os.makedirs(plot_path + "plots")
 
         setup_result_folder(algorithm.get_name(), dataset.get_name())
         best_fscore = 0
+        if os.path.exists(plot_path + "resultsfile.csv"):
+            best_fscore = float(pd.read_csv(plot_path + "resultsfile.csv",
+                                            delimiter='\t',
+                                            index_col=False)['Avg_Fscore'].max().replace(',', '.'))
+        print("best f-score on record {}".format(best_fscore))
         best_fscore_list = []
         output_dim = len(set(labels))
         assert not np.any(np.isnan(features))
         # Create training data
-        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1, stratify=labels)
+        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=1,
+                                                            stratify=labels)
 
         print(Counter(y_train))
         for counter in range(1, (amount + 1)):
