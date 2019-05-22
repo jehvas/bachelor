@@ -22,15 +22,15 @@ class Bi_LSTM_Tensorflow(AbstractTensorflowAlgorithm):
         layers = []
         layers.append(Input(input_shape))
         layers.append(Bidirectional(CuDNNLSTM(hidden_layers[0][1], return_sequences=True)))
-        if hidden_layers[0][2] != 'linear':
+        if hidden_layers[0][2] == 'linear':
             layers.append(LeakyReLU())
         layers.append(Dropout(hidden_layers[1][1]))
         layers.append(Bidirectional(CuDNNLSTM(hidden_layers[2][1])))
-        if hidden_layers[2][2] != 'linear':
+        if hidden_layers[2][2] == 'linear':
             layers.append(LeakyReLU())
         layers.append(Dropout(hidden_layers[3][1]))
         layers.append(Dense(hidden_layers[4][1], activation=hidden_layers[4][2]))
-        if hidden_layers[4][2] != 'linear':
+        if hidden_layers[4][2] == 'linear':
             layers.append(LeakyReLU())
         layers.append(Dropout(hidden_layers[5][1]))
         layers.append(Dense(output_dim, activation='softmax'))

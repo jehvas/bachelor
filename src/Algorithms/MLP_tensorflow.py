@@ -18,7 +18,7 @@ class MLP_Tensorflow(AbstractTensorflowAlgorithm):
     def generate_model(self, hidden_layers, input_shape, output_dim):
         layers = []
         layers.append(Dense(hidden_layers[0][1], activation=hidden_layers[0][2], input_shape=input_shape))
-        if hidden_layers[0][2] != 'linear':
+        if hidden_layers[0][2] == 'linear':
             layers.append(LeakyReLU())
         layers.append(Dropout(hidden_layers[1][1]))
         layers.append(Dense(output_dim, activation='softmax'))
