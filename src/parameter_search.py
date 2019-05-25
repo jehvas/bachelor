@@ -67,7 +67,7 @@ for dataset in datasets_to_use:
 
             avg_fscore = np.average(algorithm.fscore)
             if avg_fscore > best_fscore:
-                print('New champion! {}'.format(avg_fscore))
+                print('New champion! {} {}'.format(dataset, avg_fscore))
                 best_fscore = avg_fscore
                 algorithm.plot_data(dataset, y_test)
 
