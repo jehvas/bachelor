@@ -48,8 +48,8 @@ def get_random_params(algorithm, output_dim):
 def pick_random_activation_function():
     possible_activations = [
         "relu",
-        "softmax",
-        "LeakyReLU",
+        # "softmax",
+        # "LeakyReLU",
         # "sigmoid",
         # "elu",
         # "selu",
@@ -61,12 +61,12 @@ def pick_random_activation_function():
 
 
 def pick_optimizer():
-    random_lr = random.randint(1, 10000) / 100000
+    random_lr = random.randint(1, 35_000) / 1_000_000
     possible_optimizers = [
         # AdagradOptimizer(learning_rate=random_lr),
         SGD(lr=random_lr, decay=1e-6),
         # AdadeltaOptimizer(learning_rate=random_lr),
-        Adam(lr=random_lr, decay=1e-6),
+        # Adam(lr=random_lr, decay=1e-6),
         # FtrlOptimizer(learning_rate=random_lr),
         # ProximalAdagradOptimizer(learning_rate=random_lr),
         # ProximalGradientDescentOptimizer(learning_rate=random_lr),
