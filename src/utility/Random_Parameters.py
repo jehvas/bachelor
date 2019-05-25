@@ -11,7 +11,7 @@ def get_random_params(algorithm, output_dim):
             'learning_rate': lr,
         }
         if algorithm == "MLP_Tensorflow":
-            params["hidden_layers"] = [("Dense", random.randint(10, 300), pick_random_activation_function()),
+            params["hidden_layers"] = [("Dense", random.randint(output_dim*5, output_dim*20), pick_random_activation_function()),
                                        ("Dropout", random.randint(0, 5) / 10, ""),
                                        ("Dense", output_dim, 'softmax')]
         elif algorithm == "RNN_Tensorflow":
