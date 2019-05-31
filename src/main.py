@@ -1,6 +1,7 @@
 import sys
 
 import numpy as np
+from joblib import Parallel, delayed
 from sklearn.model_selection import train_test_split
 from tensorflow.python import set_random_seed
 
@@ -11,9 +12,14 @@ from utility.minimal_loader import check_mini_load
 
 algorithms_to_use, datasets_to_use, amount, dataset_mode = parse_arguments(sys.argv)
 
+def aa(a):
+    return a
+
 for dataset in datasets_to_use:
     dataset.mode = dataset_mode
-    is_mini, mini_labels = check_mini_load(dataset, dataset_mode, 300)
+    # is_mini, mini_labels = check_mini_load(dataset, dataset_mode, 300)
+
+    is_mini = False
     if is_mini:
         labels = mini_labels
         dataset.set_classes()

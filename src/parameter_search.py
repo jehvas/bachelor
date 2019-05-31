@@ -15,7 +15,6 @@ from utility.Parameters import leaky_to_linear
 from utility.Random_Parameters import get_random_params
 from utility.argument_parser import parse_arguments
 from utility.minimal_loader import check_mini_load
-from utility.utility import setup_result_folder
 
 algorithms_to_use, datasets_to_use, amount, dataset_mode = parse_arguments(sys.argv)
 for dataset in datasets_to_use:
@@ -38,7 +37,6 @@ for dataset in datasets_to_use:
         if not os.path.exists(plot_path + "plots"):
             os.makedirs(plot_path + "plots")
 
-        setup_result_folder(algorithm.get_name(), dataset.get_name())
         best_fscore = 0
         if os.path.exists(plot_path + "resultsfile.csv"):
             best_fscore = float(pd.read_csv(plot_path + "resultsfile.csv",

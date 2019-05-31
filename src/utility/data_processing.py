@@ -137,9 +137,9 @@ def process_bar_data(row_idx, dataset_name, algo):
 
 
 def run_bars():
-    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in ['MLP_Tensorflow', 'RNN_Tensorflow', 'Bi_LSTM_Tensorflow']:
         # print(algo)
-        datas = ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']
+        datas = ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']
 
         data_grab = [process_bar_data(4, dataset, algo) for dataset in datas]
 
@@ -210,7 +210,7 @@ def plot_all_hidden_dim_lines_mlp():
     algo = 'MLP_Tensorflow'
     # print(algo)
     fig, ax = plt.subplots()
-    for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+    for dataset_name in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
         file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
         use_relu = False
 
@@ -234,10 +234,10 @@ def plot_all_hidden_dim_lines_mlp():
 
 
 def plot_hidden_dim_lines_RNN_LSTM():
-    for algo in ['Bi_LSTM_Tensorflow', 'RNN_Tensorflow']:
+    for algo in ['RNN_Tensorflow']:
         # print(algo)
         fig, ax = plt.subplots()
-        for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+        for dataset_name in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
             file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
             use_relu = False
 
@@ -269,9 +269,9 @@ def plot_hidden_dim_lines_RNN_LSTM():
 
 
 def plot_layer_correlation():
-    for algo in ['MLP_Tensorflow']:  # ''Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in ['MLP_Tensorflow', 'RNN_Tensorflow', 'Bi_LSTM_Tensorflow']:  # ''Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow', 'Bi_LSTM_Tensorflow']:
         fig, ax = plt.subplots()
-        for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+        for dataset_name in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
             print(file_name.format(algo, dataset_name))
             file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
             use_relu = True
@@ -301,10 +301,10 @@ def plot_layer_correlation():
 
 
 '''
-for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow', 'Bi_LSTM_Tensorflow']:
     # print(algo)
     fig, ax = plt.subplots()
-    for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+    for dataset_name in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
         data, headers = parse_file(file_name.format(algo, dataset_name)
         # print(file_name.format(algo, dataset_name)
         for i, row in enumerate(data):
@@ -314,8 +314,8 @@ for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
 
 
 def get_max_fscores():
-    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
-        for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+    for algo in ['MLP_Tensorflow', 'RNN_Tensorflow', 'Bi_LSTM_Tensorflow']:
+        for dataset_name in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
             df = pd.read_csv(file_name.format(algo, dataset_name), delimiter='\t', index_col=False)
             df['is_relu_output'] = df['hidden_layers'].apply(lambda x: re.search('relu\)$', x) is not None)
             df = df.query('is_relu_output == False')
@@ -323,19 +323,19 @@ def get_max_fscores():
             all_optimizer = df['optimizer']
             all_learning_rate = df['learning_rate']
             all_hidden_layers = df['hidden_layers']
-            print("{} {} {}".format(algo, dataset_name, len(all_f_scores)))
+            # print("{} {} {}".format(algo, dataset_name, len(all_f_scores)))
             # print("{} {} {}".format(algo, dataset_name, max(all_f_scores)))
-            #idx = all_f_scores[all_f_scores == max(all_f_scores)].index[0]
-            #print("{}\t{}\t{}\t{}\t{}\t{}".format(algo,
-            #                                      dataset_name,
-            #                                      all_f_scores[idx],
-            #                                      all_optimizer[idx],
-            #                                      all_learning_rate[idx],
-            #                                      all_hidden_layers[idx]))
+            idx = all_f_scores[all_f_scores == max(all_f_scores)].index[0]
+            print("{}\t{}\t{}\t{}\t{}\t{}".format(algo,
+                                                  dataset_name,
+                                                  all_f_scores[idx],
+                                                  all_optimizer[idx],
+                                                  all_learning_rate[idx],
+                                                  all_hidden_layers[idx]))
 
 
 def plot_dropout():
-    for algo in ['Bi_LSTM_Tensorflow']:  # , 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in ['MLP_Tensorflow', 'RNN_Tensorflow', 'Bi_LSTM_Tensorflow']:
         print(algo)
         fig, ax = plt.subplots()
         for dataset_name in ['EnronFinancial']:  # , 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
@@ -373,9 +373,9 @@ def plot_dropout():
 
 
 def plot_boxplot_optimizer():
-    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in ['MLP_Tensorflow', 'RNN_Tensorflow', 'Bi_LSTM_Tensorflow']:
         ALL_DF = pd.DataFrame()
-        for dataset in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+        for dataset in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
             df = pd.read_csv(file_name.format(algo, dataset),
                              delimiter='\t',
                              index_col=False,
@@ -394,9 +394,9 @@ def plot_boxplot_optimizer():
 
 def plot_boxplot_activation_function_RNN_LSTM():
     for layer_idx in range(0, 3):
-        for algo in ['Bi_LSTM_Tensorflow', 'RNN_Tensorflow']:
+        for algo in ['RNN_Tensorflow']:
             ALL_DF = pd.DataFrame()
-            for dataset in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+            for dataset in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
                 df = pd.read_csv(file_name.format(algo, dataset),
                                  delimiter='\t',
                                  index_col=False,
@@ -433,7 +433,7 @@ def plot_boxplot_activation_function_RNN_LSTM():
 def plot_boxplot_activation_function_MLP():
     algo = 'MLP_Tensorflow'
     ALL_DF = pd.DataFrame()
-    for dataset in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+    for dataset in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
         df = pd.read_csv(file_name.format(algo, dataset),
                          delimiter='\t',
                          index_col=False,
@@ -458,9 +458,9 @@ def plot_boxplot_activation_function_MLP():
 
 
 def plot_learning_rate():
-    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in ['MLP_Tensorflow', 'RNN_Tensorflow', 'Bi_LSTM_Tensorflow']:
         fig, ax = plt.subplots()
-        for dataset in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+        for dataset in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
             df = pd.read_csv(file_name.format(algo, dataset),
                              delimiter='\t',
                              index_col=False,
@@ -482,9 +482,9 @@ def plot_learning_rate():
 
 
 def plot_boxplot_output_functions():
-    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in ['MLP_Tensorflow', 'RNN_Tensorflow', 'Bi_LSTM_Tensorflow']:
         ALL_DF = pd.DataFrame()
-        for dataset in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+        for dataset in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
             df = pd.read_csv(file_name.format(algo, dataset),
                              delimiter='\t',
                              index_col=False,
@@ -502,9 +502,9 @@ def plot_boxplot_output_functions():
 
 
 def plot_normalized_dropout():
-    for algo in ['Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
+    for algo in ['MLP_Tensorflow', 'RNN_Tensorflow', 'Bi_LSTM_Tensorflow']:
         fig, ax = plt.subplots()
-        for dataset_name in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+        for dataset_name in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
             print(file_name.format(algo, dataset_name))
             file_data, file_headers = parse_file(file_name.format(algo, dataset_name))
             use_relu = False
@@ -549,8 +549,8 @@ def plot_normalized_dropout():
 
 def plot_all_algorithms():
     ALL_DF = pd.DataFrame()
-    for algo in ['SVM', 'Perceptron', 'Bi_LSTM_Tensorflow', 'MLP_Tensorflow', 'RNN_Tensorflow']:
-        for dataset in ['EnronFinancial', 'Spamassassin', 'Newsgroups', 'EnronEvidence', 'Trustpilot']:
+    for algo in ['MLP_Tensorflow', 'RNN_Tensorflow', 'Bi_LSTM_Tensorflow']:
+        for dataset in ['Spamassassin', 'Newsgroups', 'EnronEvidence', 'EnronFinancial', 'Trustpilot']:
             print(file_name.format(algo, dataset))
             df = pd.read_csv(file_name.format(algo, dataset),
                              delimiter='\t',

@@ -1,6 +1,6 @@
 import numpy as np
 from tensorflow.python.keras.engine.sequential import Sequential
-from tensorflow.python.keras.layers import Dense, RNN, SimpleRNNCell, Dropout, LeakyReLU
+from tensorflow.python.keras.layers import Dense, RNN, SimpleRNNCell, Dropout, LeakyReLU, Embedding
 
 from Algorithms.AbstractTensorflowAlgorithm import AbstractTensorflowAlgorithm
 
@@ -13,9 +13,10 @@ class RNN_Tensorflow(AbstractTensorflowAlgorithm):
         y_test = np.expand_dims(y_test, axis=1)
         return x_train, y_train, x_test, y_test
 
-    def generate_model(self, hidden_layers, input_shape, output_dim):
+    def generate_model(self, hidden_layers, input_shape, output_dim, matrix):
         layers = []
-        layers.append(RNN(SimpleRNNCell(hidden_layers[0][1], activation=hidden_layers[0][2]), input_shape=input_shape, return_sequences=True))
+        layers.append(Embedding(input_length=input_shape, trainable=False))
+        layers.append(RNN(SimpleRNNCell(hidden_layers[0][1], activation=hidden_layers[0][2]), return_sequences=True))
         if hidden_layers[0][2] == 'linear':
             layers.append(LeakyReLU())
         layers.append(Dropout(hidden_layers[1][1]))

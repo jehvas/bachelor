@@ -57,15 +57,15 @@ def get_params(algorithm, dataset):
                 'learning_rate': '0.0316'}
         if dataset.get_name() == "Trustpilot":
             return {
-                'hidden_layers': [("RNN", 238, "linear"),
-                                  ("Dropout", 0.3, ""),
-                                  ("RNN", 159, "linear"),
-                                  ("Dropout", 0.0, ""),
-                                  ("Dense", 105, "linear"),
-                                  ("Dropout", 0.1, ""),
-                                  ("Dense", 5, "softmax")],
-                'optimizer': SGD(lr=0.0464),
-                'learning_rate': '0.0464'}
+                'hidden_layers': [('RNN', 118, 'linear'),
+                                  ('Dropout', 0.5, ''),
+                                  ('RNN', 579, 'softmax'),
+                                  ('Dropout', 0.0, ''),
+                                  ('Dense', 555, 'linear'),
+                                  ('Dropout', 0.3, ''),
+                                  ('Dense', 5, 'softmax')],
+                'optimizer': SGD(lr=0.0703),
+                'learning_rate': '0.0703'}
 
     elif algorithm == 'MLP_Tensorflow':
         if dataset.get_name() == "Spamassassin":

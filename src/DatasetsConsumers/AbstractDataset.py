@@ -3,6 +3,8 @@ import time
 import numpy as np
 
 from typing import List
+
+from joblib import Parallel, delayed
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
@@ -48,10 +50,15 @@ class AbstractDataset(abc.ABC):
         if emails is None or labels is None:
             start_time = time.time()
             emails, labels = self.sub_load()
-            emails = [self.process_single_mail(email) for email in emails]
+            emails = [Parallel(n_jobs=-1)(delayed(self.process_single_mail)(email) for email in emails)][0]
             save(emails, self.get_name() + "_saved_mails")
             save(labels, self.get_name() + "_saved_labels")
             print("--- %s seconds ---" % (time.time() - start_time))
+        # vectorizer = TfidfVectorizer()
+        # X = vectorizer.fit_transform(emails)
+
+        print("Total very:", sum([email.count("very") for email in emails]))
+        print("Total really:", sum([email.count("really") for email in emails]))
 
         self.set_classes()
 
@@ -93,6 +100,8 @@ class AbstractDataset(abc.ABC):
     def filter_stop_words(self, text_tokenized):
         filtered_sentence = []
         for w in text_tokenized:
+            if w == "very":
+                filtered_sentence.append(w)
             if w not in self.stop_words:
                 filtered_sentence.append(w)
         return filtered_sentence
