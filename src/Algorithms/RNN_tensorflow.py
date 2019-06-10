@@ -15,8 +15,8 @@ class RNN_Tensorflow(AbstractTensorflowAlgorithm):
 
     def generate_model(self, hidden_layers, input_shape, output_dim, matrix):
         layers = []
-        layers.append(Embedding(input_length=input_shape, trainable=False))
-        layers.append(RNN(SimpleRNNCell(hidden_layers[0][1], activation=hidden_layers[0][2]), return_sequences=True))
+#        layers.append(Embedding(input_length=input_shape, trainable=False))
+        layers.append(RNN(SimpleRNNCell(hidden_layers[0][1], activation=hidden_layers[0][2]), return_sequences=True, input_shape=input_shape))
         if hidden_layers[0][2] == 'linear':
             layers.append(LeakyReLU())
         layers.append(Dropout(hidden_layers[1][1]))

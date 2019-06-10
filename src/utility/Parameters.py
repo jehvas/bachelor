@@ -64,7 +64,7 @@ def get_params(algorithm, dataset):
                                   ('Dense', 555, 'linear'),
                                   ('Dropout', 0.3, ''),
                                   ('Dense', 5, 'softmax')],
-                'optimizer': SGD(lr=0.0703),
+                'optimizer': SGD(lr=0.0035),
                 'learning_rate': '0.0703'}
 
     elif algorithm == 'MLP_Tensorflow':

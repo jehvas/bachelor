@@ -54,7 +54,7 @@ class GloVe:
             print("Done.", len(self.model), "tokens loaded!")
 
     def get_weights_matrix(self, emails, dataset, dataset_mode):
-        wm_file_name = dataset_mode + "/" + "{}_weights_matrix_{}".format(dataset.get_name(), self.dimensionCount)
+        wm_file_name = "{}/{}_weights_matrix_{}".format(dataset_mode, dataset.get_name(), self.dimensionCount)
 
         tokenizer = Tokenizer()
         tokenizer.fit_on_texts(emails)
@@ -82,10 +82,19 @@ class GloVe:
                 vector[0] += word_vector
         return vector
 
+    def email_to_index_vector(self, emails):
+        tokenizer = Tokenizer()
+        tokenizer.fit_on_texts(emails)
+        sequences = tokenizer.texts_to_sequences(emails)
+        sequences_matrix = sequence.pad_sequences(sequences)
+        sequences_matrix = sequences_matrix/np.max(sequences_matrix)
+        print(np.max(sequences_matrix))
+        return sequences_matrix
+
     # Check if features exist
     def get_features(self, emails, dataset):
         # print("Loading embedding features")
-        feature_file_name = dataset.mode + "/" + dataset.get_name() + '_features_' + str(self.dimensionCount)
+        feature_file_name = "{}/{}_features_{}".format(dataset.mode, dataset.get_name(), self.dimensionCount)
         if file_exists(feature_file_name):
             return load(feature_file_name)
         self.load_glove_model()
@@ -101,8 +110,11 @@ class GloVe:
         all_vector_sum = np.zeros([len(emails), self.dimensionCount])
         for i, email in enumerate(emails):
             all_vector_sum[i] = self.mail_to_vector(email)
-        scaler = MinMaxScaler()
-        scaler.fit(all_vector_sum)
-        MinMaxScaler(copy=True, feature_range=(0, 1))
-        normed_vectors = scaler.transform(all_vector_sum)
-        return normed_vectors
+        # scaler = MinMaxScaler()
+        # scaler.fit(all_vector_sum)
+        # MinMaxScaler(copy=True, feature_range=(0, 1))
+        # normed_vectors = scaler.transform(all_vector_sum)
+        print(np.max(all_vector_sum))
+        all_vector_sum = all_vector_sum/np.max(all_vector_sum)
+        print(np.max(all_vector_sum))
+        return all_vector_sum

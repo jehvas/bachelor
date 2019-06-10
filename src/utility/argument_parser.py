@@ -10,6 +10,7 @@ from DatasetsConsumers.EnronFinancial import EnronFinancial
 from DatasetsConsumers.Newsgroups import Newsgroups
 from DatasetsConsumers.Spamassassin import Spamassassin
 from DatasetsConsumers.Trustpilot import Trustpilot
+from enums.enums import DatasetMode
 from rootfile import ROOTPATH
 
 
@@ -30,12 +31,10 @@ def parse_arguments(argv):
         "enronfinancial": [EnronFinancial()],
         "trustpilot": [Trustpilot()]
     }
-    dataset_modes = [
-        "standard",
-        "2000",
-    ]
+    dataset_modes = [mode.value for mode in DatasetMode]
     # Check arguments
-    if len(argv) < 4 or not (argv[1].lower() in algorithm_dict and argv[2].lower() in dataset_dict and argv[3].lower() in dataset_modes):
+    if len(argv) < 4 or not (
+            argv[1].lower() in algorithm_dict and argv[2].lower() in dataset_dict and argv[3].lower() in dataset_modes):
         print("")
         print("There was an error in the program arguments")
         print("There must be 3 arguments: an algorithm, a dataset and a count for how many times it should run")
@@ -52,10 +51,11 @@ def parse_arguments(argv):
     else:
         algorithms_to_use = algorithm_dict[argv[1].lower()]
         datasets_to_use = dataset_dict[argv[2].lower()]
-        dataset_mode = argv[3]
+        dataset_mode = DatasetMode(argv[3])
         amount = None
         if len(argv) == 5:
             amount = int(argv[4])
-        if not os.path.exists(ROOTPATH + "output/" + dataset_mode):
-            os.makedirs(ROOTPATH + "output/" + dataset_mode)
+        output_path = "{}output/{}".format(ROOTPATH, dataset_mode)
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
     return algorithms_to_use, datasets_to_use, amount, dataset_mode

@@ -1,34 +1,18 @@
 import sys
 
 import numpy as np
-from joblib import Parallel, delayed
 from sklearn.model_selection import train_test_split
 from tensorflow.python import set_random_seed
 
-from Glove.glovemodel import GloVe
 from utility.Parameters import leaky_to_linear, get_params
 from utility.argument_parser import parse_arguments
-from utility.minimal_loader import check_mini_load
+from utility.feature_loader import get_features_and_labels
 
 algorithms_to_use, datasets_to_use, amount, dataset_mode = parse_arguments(sys.argv)
 
-def aa(a):
-    return a
-
 for dataset in datasets_to_use:
     dataset.mode = dataset_mode
-    # is_mini, mini_labels = check_mini_load(dataset, dataset_mode, 300)
-
-    is_mini = False
-    if is_mini:
-        labels = mini_labels
-        dataset.set_classes()
-        emails = None
-    else:
-        emails, labels = dataset.load(dataset_mode=dataset_mode)
-    glove = GloVe(300)
-
-    features = glove.get_features(emails, dataset)
+    features, labels = get_features_and_labels(dataset, 300)
 
     for algorithm in algorithms_to_use:
         np.random.seed(1)

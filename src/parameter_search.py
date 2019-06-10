@@ -16,20 +16,12 @@ from utility.Random_Parameters import get_random_params
 from utility.argument_parser import parse_arguments
 from utility.minimal_loader import check_mini_load
 
+from utility.feature_loader import get_features_and_labels
+
 algorithms_to_use, datasets_to_use, amount, dataset_mode = parse_arguments(sys.argv)
 for dataset in datasets_to_use:
     dataset.mode = dataset_mode
-    is_mini, mini_labels = check_mini_load(dataset, dataset_mode, 300)
-    if is_mini:
-        labels = mini_labels
-        dataset.set_classes()
-        emails = None
-    else:
-        emails, labels = dataset.load(dataset_mode=dataset_mode)
-
-    glove = GloVe(300)
-
-    features = glove.get_features(emails, dataset)
+    features, labels = get_features_and_labels(dataset, 300)
 
     for algorithm in algorithms_to_use:
         print("Running algorithm:", algorithm.get_name())

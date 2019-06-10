@@ -35,7 +35,7 @@ class AbstractAlgorithm(abc.ABC):
 
     def plot_data(self, dataset, y_test):
         dataset_name = dataset.get_name()
-        file_path = ROOTPATH + "Results/" + dataset.mode + "/" + self.get_name() + "/" + dataset_name + "/plots/"
+        file_path = "{}Results/{}/{}/{}/plots/".format(ROOTPATH, dataset.mode, self.get_name(), dataset_name)
         check_directory(file_path)
         if self.get_name() is 'RNN_Tensorflow' or self.get_name() is 'MLP_Tensorflow' or self.get_name() is 'Bi_LSTM_Tensorflow':
             self.plot_graphs(dataset_name, file_path)
@@ -56,7 +56,7 @@ class AbstractAlgorithm(abc.ABC):
         plot_data(accuracy_plot, file_path + "plot_acc_" + self.guid + ".png")
 
     def write_to_file(self, parameters, time_taken, guid):
-        file_path = ROOTPATH + "Results/" + self.dataset.mode + "/" + self.get_name() + "/" + self.dataset.get_name() + "/"
+        file_path = "{}Results/{}/{}/{}/".format(ROOTPATH, self.dataset.mode, self.get_name(), self.dataset.get_name())
         check_directory(file_path)
         log_to_file(parameters, self.fscore, file_path + "resultsfile.csv", time_taken, guid)
 
